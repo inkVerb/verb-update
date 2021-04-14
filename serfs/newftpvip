@@ -1,0 +1,19 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This creates a powerful user who can read everything and access everything in the shared home folder /srv/www/vip, including filers' home folders
+## Requires installvsftpd
+
+# How to use:
+## ./newftpvip [new user] [new user password]
+
+
+NEWFTPGURU=$1
+NEWUSERPASS=$2
+
+# Create the user with password
+/usr/sbin/adduser ${NEWFTPGURU} --gecos ",,," --disabled-password
+/bin/echo "${NEWFTPGURU}:${NEWUSERPASS}" | chpasswd
+
+# Change the user's directory to the vsftpd vips directory
+usermod -d /srv/vip ${NEWFTPGURU}

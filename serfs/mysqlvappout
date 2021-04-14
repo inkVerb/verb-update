@@ -1,0 +1,22 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This exports a MySQL database using an existing vapp config
+## The vapp config file must me located in ~/verb/conf
+## The sql database file must be in the PWD in which this serf is run
+
+# How to use:
+## ./mysqlvappout [vapp.config.file]
+
+# Eg:
+## ./mysqlvappout vapp.wp.inkisaverb.com
+
+
+VAPPCONF=$1
+
+# Include the vapp.config.file
+. /opt/verb/conf/${VAPPCONF}
+
+# Export the database
+/usr/bin/mysqldump --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf ${APPDBASE} > ${APPDBASE}.sql
+

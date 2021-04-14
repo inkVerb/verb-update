@@ -1,0 +1,436 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This installs Postfix as the email server wtih Dovecot and OpenDKIM
+## Prerequisite: sertupverb
+## This only performs basic back-end server setup and creates no mail accounts
+## Once this is done it is set for the server permanently.
+
+# How to use:
+## ./installpostfixvmail
+
+
+# Include the config files
+. /opt/verb/conf/servertype
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+. /opt/verb/conf/sitemailpath
+
+# Check to see if already installed
+if [ ${SITEMAILSTATUS} = "VMAIL_SERVER" ]; then
+/bin/echo "
+Email server already installed.
+"
+exit 0; fi
+if [ ${SITEMAILSTATUS} = "EMAIL_BACKUP_MX" ]; then
+/bin/echo "
+Email server is already a backup server.
+"
+exit 0; fi
+if [ ${SITEMAILSTATUS} = "PMAIL_SERVER" ]; then
+/bin/echo "
+Email server is already installed.
+"
+exit 0; fi
+if /bin/grep -Fq "Webmail Defaults" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}; then
+/bin/echo "
+Webmail Defaults already declared in the DNS zone file. This won't work.
+"
+exit 7; fi
+
+# Generate the mailpassword appendage
+MAILPASSGEN="$(/usr/bin/pwgen -s -1 5)"
+## Create the MySQL login .cnf
+echo "[client]
+user = mail
+password = mailpass${MAILPASSGEN}
+database = mail
+host = localhost
+" > /opt/verb/conf/mysqldb.vmail.cnf
+## Set the config for backup
+/bin/sed -i "s/SITEMAILPASSAPG.*/SITEMAILPASSAPG=\"${MAILPASSGEN}\"/g" /opt/verb/conf/sitemailpass
+
+# Install
+/usr/bin/pacman -S --noconfirm postfix dovecot roundcubemail spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor msmtp
+
+# From Ubuntu
+#/usr/bin/pacman -S --noconfirm \
+#  postfix-mysql \
+#  dovecot-mysql \
+#  amavis \
+#  clamav \
+#  clamav-daemon \
+#  spamassassin \
+#  libdbi-perl \
+#  libdbd-mysql-perl \
+#  php-imap
+#/usr/bin/apachectl graceful
+
+# Add other tools for spam and antivirus
+#/usr/bin/pacman -S --noconfirm \
+#  pyzor \
+#  razor \
+#  arj \
+#  cabextract \
+#  lzop \
+#  nomarch \
+#  p7zip-full \
+#  ripole \
+#  rpm2cpio \
+#  tnef \
+#  unzip \
+#  unrar-free \
+#  zip
+
+# Virtual mail user
+/usr/bin/groupadd -g 5000 vmail
+/usr/bin/useradd -u 5000 -g vmail -s /usr/bin/nologin -d /var/vmail -m vmail
+/bin/mkdir -p /var/vmail
+/bin/chmod 770 /var/vmail
+/bin/chown -R vmail:vmail /var/vmail
+## Old
+# Add the virtual user to handle mail
+#/usr/sbin/useradd -r -u 150 -g mail -d /var/vmail -s /sbin/nologin -c "Virtual maildir handler" vmail
+#/bin/mkdir -p /var/vmail
+#/bin/chmod 770 /var/vmail
+#/bin/chown -R vmail:mail /var/vmail
+
+# Postfix
+## Copy configs
+/bin/cp /opt/verb/conf/lab/vmail/postfix/main.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/vmail/postfix/master.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_alias_domains.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_alias_domains_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_alias_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_mailbox_domains.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_mailbox_domainaliases_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_mailbox_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_sender_login_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/vmail/postfix/header_checks /etc/postfix/
+/bin/cp /opt/verb/conf/lab/vmail/postfix/smtp_header_checks /etc/postfix/
+## Replace configs
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/virtual_alias_domains.cf
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/virtual_alias_domains_maps.cf
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/virtual_alias_maps.cf
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/virtual_mailbox_domains.cf
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/virtual_mailbox_domainaliases_maps.cf
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/virtual_mailbox_maps.cf
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/virtual_sender_login_maps.cf
+/bin/sed -i "s/hostURI286/${hostURI}/g" /etc/postfix/main.cf
+## Add an important setting
+echo "smtps 465/tcp # inkVerb
+smtps 465/udp # inkVerb" >> /etc/services
+
+## Dovecot
+/usr/bin/mkdir -p /etc/dovecot/sieve.before.d /etc/dovecot/sieve-filter
+/bin/cp -r /usr/share/doc/dovecot/example-config/conf.d /etc/dovecot
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/dovecot.conf /etc/dovecot/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/10-mail.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/10-master.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/10-ssl.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/15-lda.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/15-mailboxes.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/20-lmtp.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/20-lmtp.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/20-managesieve.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/90-plugin.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/90-sieve.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/dovecot-sql.conf /etc/dovecot/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/dovecot.conf /etc/dovecot/
+### Diffie-Helman Group file (unique & extra large for email server)
+/usr/bin/rm -f /etc/dovecot/dh.pem
+/usr/bin/openssl dhparam -out /etc/dovecot/dh.pem 4096
+/bin/chmod 600 /etc/dovecot/dh.pem
+## Replace configs
+/bin/sed  -i "s/nameURI286/${nameURI}/g" /etc/dovecot/conf.d/10-ssl.conf
+/bin/sed  -i "s/nameURI286/${nameURI}/g" /etc/dovecot/conf.d/15-lda.conf
+/bin/sed  -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/dovecot/dovecot-sql.conf
+## Own
+/bin/chown -R vmail:dovecot /etc/dovecot
+/bin/chmod -R o-rwx /etc/dovecot
+
+## SpamAssassin
+/usr/bin/mkdir -p /var/lib/dovecot/sieve/global_sieves /etc/mail/sa-update-keys
+/usr/bin/chown spamd:spamd /etc/mail/sa-update-keys
+/usr/bin/sudo -u spamd /usr/bin/vendor_perl/sa-update
+/usr/bin/sudo -u spamd /usr/bin/vendor_perl/sa-compile
+/usr/bin/cat <<EOF > /var/lib/dovecot/sieve/global_sieves/move_to_spam_folder.sieve
+require "spamtestplus";
+require "fileinto";
+require "relational";
+require "comparator-i;ascii-numeric";
+
+if spamtest :value "ge" :comparator "i;ascii-numeric" "5" {
+  fileinto "Junk";
+}
+EOF
+/usr/bin/ln -s /usr/bin/vendor_perl/spamc /etc/dovecot/sieve-filter/spamc
+/usr/bin/cat <<EOF > /etc/dovecot/sieve.before.d/spamassassin.sieve
+  require [ "vnd.dovecot.filter" ];
+  filter "spamc" [ "-d", "127.0.0.1", "--no-safe-fallback" ];
+EOF
+### Compile the rules
+/usr/bin/sievec /etc/dovecot/sieve.before.d/spamassassin.sieve
+### SpamAssassin service & timer
+/usr/bin/cat <<EOF > /etc/systemd/system/spamassassin-update.service
+[Unit]
+Description=spamassassin housekeeping stuff
+After=network.target
+
+[Service]
+Type=oneshot
+
+ExecStart=sudo -u spamd /usr/bin/vendor_perl/sa-update --allowplugins
+SuccessExitStatus=1
+ExecStart=sudo -u spamd /usr/bin/vendor_perl/sa-compile
+ExecStart=/usr/bin/systemctl -q --no-block try-restart spamassassin.service
+EOF
+/usr/bin/cat <<EOF > /etc/systemd/system/spamassassin-update.timer
+[Unit]
+Description=spamassassin house keeping
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+/usr/bin/systemctl enable spamassassin.service
+/usr/bin/systemctl start spamassassin.service
+/usr/bin/systemctl enable spamassassin-update.timer
+/usr/bin/systemctl start spamassassin-update.timer
+### Old
+# Spamassassin likes to be finickey. Sometimes it needs this on update or whenever...
+#sa-update -v
+
+## ClamAV
+### DEV This is broken, figure out a way to fix it
+# Install ClamAV (after installing perl-cpanplus-dist-arch, which we did)
+/usr/bin/freshclam
+/usr/bin/vendor_perl/cpanp -i File::Scan::ClamAV; wait
+/bin/cp /opt/verb/conf/lab/vmail/clamav/clamav.cf /etc/mail/spamassassin/
+/bin/cp /opt/verb/conf/lab/vmail/clamav/clamav.pm /etc/mail/spamassassin/
+/usr/bin/systemctl enable clamav-daemon.service
+/usr/bin/systemctl start clamav-daemon.service
+### Old
+#killall freshclam 2>/dev/null
+#freshclam
+
+## Razor
+/usr/bin/mkdir -p /etc/mail/spamassassin/razor
+/usr/bin/chown spamd:spamd /etc/mail/spamassassin/razor
+cd /etc/mail/spamassassin/razor
+/usr/bin/sudo -u spamd razor-admin -home=/etc/mail/spamassassin/razor -register
+/usr/bin/sudo -u spamd razor-admin -home=/etc/mail/spamassassin/razor -create
+/usr/bin/sudo -u spamd razor-admin -home=/etc/mail/spamassassin/razor -discover
+cd $OLDPWD
+
+# Removed when moving to Arch
+# Amavis, ClamAV, and SpamAssassin
+#/usr/sbin/adduser clamav amavis
+#/usr/sbin/adduser amavis clamav
+### Copy config files
+#/bin/cp -R /opt/verb/conf/lab/vmail/amavis/conf.d/15-content_filter_mode /etc/amavis/conf.d/
+#/bin/cp -R /opt/verb/conf/lab/vmail/amavis/conf.d/50-user /etc/amavis/conf.d/
+#/bin/cp -R /opt/verb/conf/lab/vmail/clamav/clamd.conf /etc/clamav/
+#/bin/cp /opt/verb/conf/lab/vmail/default/spamassassin /etc/default/
+## Replace configs
+#/bin/sed  -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/amavis/conf.d/50-user
+
+# Virtual mail SQL database
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
+CREATE DATABASE mail;
+GRANT ALL PRIVILEGES ON mail.* TO 'mail'@'localhost' IDENTIFIED BY 'mailpass${MAILPASSGEN}';
+FLUSH PRIVILEGES;"
+# OR try:
+#/opt/verb/serfs/newmysqldb mail mail mailpass${MAILPASSGEN}
+
+# SSL certs
+## Directory
+/usr/bin/mkdir -p /etc/inkcert/mail
+## Snakeoil
+if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${nameURI}; then
+  /usr/bin/ln -sfn /etc/ssl/server/server.crt /etc/inkcert/mail/vmail.crt
+  /usr/bin/ln -sfn /etc/ssl/server/server.key /etc/inkcert/mail/vmail.key
+## inkCert
+else
+  /opt/verb/serfs/setinkcertmailcerts
+fi
+
+# Create the mailbox table
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "CREATE TABLE IF NOT EXISTS mailbox (
+    username varchar(255) NOT NULL,
+    password varchar(255) NOT NULL,
+    name varchar(255) CHARACTER SET utf8 NOT NULL,
+    maildir varchar(255) NOT NULL,
+    quota bigint(20) NOT NULL DEFAULT '0',
+    local_part varchar(255) NOT NULL,
+    domain varchar(255) NOT NULL,
+    created datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+    modified datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+    active tinyint(1) NOT NULL DEFAULT '1',
+    phone varchar(30) CHARACTER SET utf8 NOT NULL,
+    email_other varchar(255) CHARACTER SET utf8 NOT NULL,
+    token varchar(255) CHARACTER SET utf8 NOT NULL,
+    token_validity datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+    PRIMARY KEY (username),
+    KEY domain (domain)
+  ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Vmail - Virtual Mailboxes';
+  CREATE TABLE IF NOT EXISTS alias (
+    address varchar(255) NOT NULL,
+    goto text NOT NULL,
+    domain varchar(255) NOT NULL,
+    created DATETIME,
+    modified DATETIME,
+    active tinyint(1) NOT NULL default '1',
+    PRIMARY KEY  (address),
+    KEY domain (domain)
+  ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Vmail - Virtual Aliases';
+  CREATE TABLE IF NOT EXISTS domain (
+    domain varchar(255) NOT NULL,
+    description varchar(255) NOT NULL,
+    aliases int(10) NOT NULL default '0',
+    mailboxes int(10) NOT NULL default '0',
+    maxquota bigint(20) NOT NULL default '0',
+    quota bigint(20) NOT NULL default '0',
+    transport varchar(255) default NULL,
+    backupmx tinyint(1) NOT NULL default '0',
+    created DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
+    modified DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
+    active tinyint(1) NOT NULL default '1',
+    PRIMARY KEY (domain)
+  ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Vmail - Virtual Domains';
+  CREATE TABLE alias_domain (
+    alias_domain varchar(255) NOT NULL DEFAULT '',
+    target_domain varchar(255) NOT NULL DEFAULT '',
+    created datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+    modified datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+    active tinyint(1) NOT NULL DEFAULT '1',
+    PRIMARY KEY (alias_domain),
+    KEY active (active),
+    KEY target_domain (target_domain)
+  ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Admin - Domain Aliases';
+  CREATE TABLE IF NOT EXISTS admin (
+    username varchar(255) NOT NULL,
+    password varchar(255) NOT NULL,
+    superadmin tinyint(1) NOT NULL default '0',
+    created DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
+    modified DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
+    active tinyint(1) NOT NULL DEFAULT '1',
+    phone varchar(30) CHARACTER SET utf8 NOT NULL DEFAULT '',
+    email_other varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
+    token varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
+    token_validity datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+    PRIMARY KEY (username)
+  ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Vmail - Virtual Admins';
+  CREATE TABLE IF NOT EXISTS domain_admins (
+    username varchar(255) NOT NULL,
+    domain varchar(255) NOT NULL,
+    created DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
+    active tinyint(1) NOT NULL default '1',
+    KEY username (username)
+  ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Vmail - Domain Admins';"
+
+# Add base domains & addresse
+verberdomain="$nameURI"
+PASSWORD=$(/usr/bin/pwgen -s -1 20)
+password="$(/bin/echo $PASSWORD | /usr/bin/openssl passwd -1 -stdin)"
+username="verberadmin@$nameURI"
+NAME="Change Me Dont Delete Me"
+vmaildirectory="$nameURI/verberadmin/"
+mailboxsize="524288000" # 0.5GB, 2GB=2097152000, 1GB=1048576000, 5GB=5242880000
+
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "INSERT INTO domain (domain, description, aliases, mailboxes, maxquota, quota, transport, backupmx, created, modified, active) VALUES ('$verberdomain', '$verberdomain', '1000', '1000', '10000', '2048', 'virtual', '0', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+INSERT INTO mailbox (username, password, name, maildir, quota, local_part, domain, created, modified, active) VALUES ('$username', '$password', '$NAME', '$vmaildirectory', '$mailboxsize', 'verberadmin', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('$username', '$username', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('abuse@$nameURI', 'verberadmin@$nameURI', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('hostmaster@$nameURI', 'verberadmin@$nameURI', '$nameURI', CURRENT_T3zxCqQ4dXMoiYMvpCvv1IMESTAMP, CURRENT_TIMESTAMP, 1);
+INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('postmaster@$nameURI', 'verberadmin@$nameURI', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('webmaster@$nameURI', 'verberadmin@$nameURI', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);"
+
+# UFW (services and ports below them if known)
+#/usr/bin/ufw allow postfix
+#/usr/bin/ufw allow smtp
+#/usr/bin/ufw allow 25
+/usr/bin/ufw allow 587
+/usr/bin/ufw allow smtps
+/usr/bin/ufw allow 465
+/usr/bin/ufw allow pop3
+/usr/bin/ufw allow 110
+/usr/bin/ufw allow pop3s
+/usr/bin/ufw allow 995
+/usr/bin/ufw allow imap
+/usr/bin/ufw allow 143
+/usr/bin/ufw allow imaps
+/usr/bin/ufw allow 993
+# for OpenDKIM
+/usr/bin/ufw allow 8891
+/usr/bin/ufw allow 12301
+
+# OpenDKIM
+## Create/reset OpenDKIM files
+/usr/bin/pacman -S --noconfirm opendkim
+/bin/mkdir -p /etc/opendkim/keys
+/bin/cp /opt/verb/conf/lab/vmail/default/opendkim /etc/default/
+/bin/cp /opt/verb/conf/lab/vmail/opendkim.conf /etc/opendkim/
+/bin/echo "127.0.0.1
+localhost
+${SITEIP}
+${hostURI}" > /etc/opendkim/TrustedHosts
+/bin/echo "inkdkim._domainkey.${nameURI} ${nameURI}:inkdkim:/etc/opendkim/keys/${nameURI}/inkdkim.private" > /etc/opendkim/KeyTable
+/bin/echo "${nameURI} inkdkim._domainkey.${nameURI}" > /etc/opendkim/SigningTable
+## OpenDKIM Key for initial site
+/bin/mkdir -p /etc/opendkim/keys/${nameURI}
+/usr/bin/opendkim-genkey -r -S -s inkdkim -d /etc/opendkim/keys/${nameURI}
+/bin/chmod 660 /etc/opendkim/keys/${nameURI}/inkdkim.private
+/bin/chown -R opendkim:opendkim /etc/opendkim
+## Start
+/usr/bin/systemctl enable opendkim
+/usr/bin/systemctl start opendkim
+
+# DNS MX and TXT mail records for this server
+/opt/verb/serfs/inkdnsaddmail ${nameURI} verber; wait
+## Keep the zone file clean & let the server know "I was here."
+/bin/echo ";" >> /opt/verb/conf/inkdns/inkzones/db.${nameURI}
+/opt/verb/serfs/addinkdkim ${nameURI}; wait
+/opt/verb/serfs/inkdnsaddinkdkim ${nameURI} verber; wait
+## Webmail TLD prep
+/bin/echo "; Webmail Defaults
+" >> /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}
+
+# Monit
+#/bin/cp /opt/verb/conf/lab/vmail/monit/monitrc.d/amavis /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/vmail/monit/monitrc.d/dovecot /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/vmail/monit/monitrc.d/opendkim /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/vmail/monit/monitrc.d/postfix /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/vmail/monit/monitrc.d/spamassassin /etc/monit/monitrc.d/
+/bin/systemctl enable monit
+/bin/systemctl start monit
+
+# Config settings to "EMAIL_INSTALLED"
+/bin/sed -i "s/SITEMAILSTATUS=.*/SITEMAILSTATUS=\"VMAIL_SERVER\"/g" /opt/verb/conf/sitemailpath
+
+# Use msmtp for a real SMTP address to send system mail, such as in php
+/opt/verb/serfs/vmailsysmailbox
+
+# Grand Restart
+if [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/systemctl restart nginx; wait
+  /usr/bin/systemctl restart httpd; wait
+elif [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx; wait
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd; wait
+fi
+/usr/bin/systemctl restart postfix
+/usr/bin/systemctl restart spamassassin
+/usr/bin/systemctl restart clamav-daemon
+/usr/bin/systemctl restart dovecot
+#/usr/bin/systemctl restart amavis
+
+# Finish
+/bin/echo "Postfix and friends for inkVerb has been installed.
+The email server is https://${emailTLDURI}
+"

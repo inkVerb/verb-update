@@ -1,0 +1,43 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This removes the inkDKIM key from an existing DNS TXT record in the inkDNS zone file on this Verber
+
+# How to use:
+## ./inkdnskillinkdkim [domain]
+## ./inkdnskillinkdkim [domain] verber
+
+
+DNSDOMAIN="$1"
+if [ -n $2 ] && [ "$2" = "verber" ]; then
+  ZONEDIR="inkzones"
+else
+  ZONEDIR="zones"
+fi
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+
+# Check if already added
+if /bin/grep -Fq "; inkDKIM key" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}; then
+/bin/echo "The inkDKIM key for ${DNSDOMAIN} has not been added. Use inkdnsaddinkdkim to add it."
+exit 0; fi
+
+# Remove the key
+/bin/sed -i "/; inkDKIM key ${DNSDOMAIN}/,/;; End inkDKIM key ${DNSDOMAIN}/d" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
+
+# Set the Serial No
+if [ "${ZONEDIR}" = "inkzones" ]; then
+  /opt/verb/serfs/inkdnsserial ${DNSDOMAIN} verber
+elif [ "${ZONEDIR}" = "zones" ]; then
+  /opt/verb/serfs/inkdnsserial ${DNSDOMAIN}
+fi
+
+# Refresh zones
+if [ -f "/opt/verb/conf/inkdns/inkdnsconf" ]; then
+  . /opt/verb/conf/inkdns/inkdnsconf
+  if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
+/opt/verb/serfs/inkdnsrefreshbind; fi; fi
+
+# Finish
+/bin/echo "The inkDKIM key has been removed from the ${DNSDOMAIN} DNS zone file."

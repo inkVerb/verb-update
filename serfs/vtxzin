@@ -1,0 +1,21 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This compresses a directory into a .tar.xz file, renamed as a .vtxz file, all in the PWD
+## The resulting .vtxz file can simply be renamed to .tar.xz and be used accordingly
+## This alternate extention name is intended to prevent tampering and to maintain consistency within inkVerb deployment
+
+# The directory MUST be in the PWD!
+# This will OVERWRITE any .vtxz destination file by the same name!
+
+# How to use:
+## ./vtxzin [directory]
+
+# Eg:
+## ./vtxzin mystuff
+
+
+DIR=$1
+
+/bin/tar -cf - ${DIR}/ | /usr/bin/xz -9 -c - > ${DIR}.tar.xz
+/bin/mv ${DIR}.tar.xz ${DIR}.vtxz

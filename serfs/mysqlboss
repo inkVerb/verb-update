@@ -1,0 +1,19 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This opens MySQL with root in the terminal without entering any password
+## You may specify a specific boss
+
+# How to use:
+## ./mysqlboss [ mysqlboss-name - optional ]
+
+
+if [ -n "${1}" ]; then
+  if [ -f "/opt/verb/conf/mysqlboss.${1}.cnf" ]; then
+    /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.${1}.cnf
+  else
+    echo "MySQL boss ${1} does not exist."; exit 0
+  fi
+else
+  /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf
+fi

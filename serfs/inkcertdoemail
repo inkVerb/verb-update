@@ -1,0 +1,17 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This script copies the postfix/dovecot configs to use inkCert SSL
+## This is experimental, may not work, and may not be necessary since inkCert does not currently make SSL certs for email use
+## The current inkCert SSL certs used for this are from the dummy site mail.name.verb.email (and email-mod thereof)
+
+# How to use:
+## ./inkcertdoemail 
+
+
+# Include the config file
+. /opt/verb/conf/sitenameip
+
+/bin/cp /opt/verb/conf/site-files/email/dovecot/conf.d/10-ssl-INKCERT.conf /etc/dovecot/conf.d/10-ssl.conf
+/bin/cp /opt/verb/conf/site-files/email/postfix/main-INKCERT.cf /etc/postfix/main.cf
+

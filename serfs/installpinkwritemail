@@ -1,0 +1,246 @@
+#
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This installs the PinkWrite email system
+## THIS IS A SHELL IN BETA and does not work!
+
+# How to use:
+## ./installpinkwritemail
+
+
+# Include the config files
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+. /opt/verb/conf/sitemailpath
+
+# Check to see if already installed
+if [ ${SITEMAILSTATUS} = "pmail_SERVER" ]; then
+/bin/echo "
+Email server already installed.
+"
+exit 0
+fi
+if [ ${SITEMAILSTATUS} = "EMAIL_BACKUP_MX" ]; then
+/bin/echo "
+Email server is already a backup server.
+"
+exit 0
+fi
+if [ ${SITEMAILSTATUS} = "PMAIL_SERVER" ]; then
+/bin/echo "
+Email server is already a backup server.
+"
+exit 0
+fi
+
+
+# Generate the mailpassword appendage (just a little more secure, wink)
+MAILPASSGEN=$(/usr/bin/pwgen -s -1 5)
+
+# Choose Internet Site options in advance
+/bin/echo "postfix postfix/mailname string ${hostURI}" | debconf-set-selections
+/bin/echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set-selections
+#/bin/echo "postfix postfix/relayhost string smtp.localdomain" | debconf-set-selections 
+/usr/bin/apt-get install -y mail-server^
+/usr/bin/apt-get install -y \
+  postfix-mysql \
+  dovecot-mysql \
+  postgrey \
+  amavis \
+  clamav \
+  clamav-daemon \
+  spamassassin \
+  libdbi-perl \
+  libdbd-mysql-perl \
+  php7.0-imap
+/usr/bin/apachectl graceful
+
+# Add other tools for spam and antivirus
+/usr/bin/apt-get install -y \
+  pyzor \
+  razor \
+  arj \
+  cabextract \
+  lzop \
+  nomarch \
+  p7zip-full \
+  ripole \
+  rpm2cpio \
+  tnef \
+  unzip \
+  unrar-free \
+  zip \
+  zoo
+# Create the MySQL database and user
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
+CREATE DATABASE mail;
+GRANT ALL PRIVILEGES ON mail.* TO 'mail'@'localhost' IDENTIFIED BY 'mailpass${MAILPASSGEN}';
+FLUSH PRIVILEGES;"
+# OR try:
+#/opt/verb/serfs/newmysqldb mail mail mailpass${MAILPASSGEN}
+
+# Add the virtual user to handle mail
+/usr/sbin/useradd -r -u 150 -g mail -d /var/pmail -s /sbin/nologin -c "Virtual maildir handler" pmail
+/bin/mkdir /var/pmail
+/bin/chmod 770 /var/pmail
+/bin/chown pmail:mail /var/pmail
+
+# Dovecot
+## Copy config files
+/bin/cp /opt/verb/conf/lab/pmail/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/pmail/dovecot/conf.d/10-mail.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/pmail/dovecot/conf.d/10-master.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/pmail/dovecot/conf.d/10-ssl.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/pmail/dovecot/conf.d/15-lda.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/pmail/dovecot/conf.d/15-mailboxes.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/pmail/dovecot/dovecot-sql.conf.ext /etc/dovecot/
+## Replace configs
+/bin/sed  -i "s/emailTLDURI286/${emailTLDURI}/g" /etc/dovecot/conf.d/10-ssl.conf
+/bin/sed  -i "s/emailTLDURI286/${emailTLDURI}/g" /opt/verb/conf/lab/pmail/dovecot/conf.d/10-ssl-SNAKEOIL.conf
+/bin/sed  -i "s/emailTLDURI286/${emailTLDURI}/g" /opt/verb/conf/lab/pmail/dovecot/conf.d/10-ssl-INKCERT.conf
+/bin/sed  -i "s/nameURI286/${nameURI}/g" /etc/dovecot/conf.d/15-lda.conf
+/bin/sed  -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/dovecot/dovecot-sql.conf.ext
+## Own
+/bin/chown -R pmail:dovecot /etc/dovecot
+/bin/chmod -R o-rwx /etc/dovecot
+
+# Amavis, ClamAV, and SpamAssassin
+/usr/sbin/adduser clamav amavis
+/usr/sbin/adduser amavis clamav
+## Copy config files
+/bin/cp -R /opt/verb/conf/lab/pmail/amavis/conf.d/15-content_filter_mode /etc/amavis/conf.d/
+/bin/cp -R /opt/verb/conf/lab/pmail/amavis/conf.d/50-user /etc/amavis/conf.d/
+/bin/cp -R /opt/verb/conf/lab/pmail/clamav/clamd.conf /etc/clamav/
+/bin/cp /opt/verb/conf/lab/pmail/default/spamassassin /etc/default/
+## Replace configs
+/bin/sed  -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/amavis/conf.d/50-user
+## Restart and stuff
+/bin/systemctl restart clamav-daemon
+/bin/systemctl restart amavis
+/bin/systemctl reload spamassassin
+### Sometimes freshclam is already running or its log file is locked
+killall freshclam 2>/dev/null
+freshclam
+
+# Postfix
+## Copy configs
+/bin/cp /opt/verb/conf/lab/pmail/postfix/mysql_virtual_alias_domainaliases_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/pmail/postfix/mysql_virtual_alias_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/pmail/postfix/mysql_virtual_domains_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/pmail/postfix/mysql_virtual_mailbox_domainaliases_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/pmail/postfix/mysql_virtual_mailbox_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/pmail/postfix/mysql_virtual_sender_login_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/pmail/postfix/main.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/pmail/postfix/master.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/pmail/postfix/header_checks /etc/postfix/
+/bin/cp /opt/verb/conf/lab/pmail/postfix/main_orig.cf /etc/postfix/
+## Replace configs
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/mysql_virtual_alias_domainaliases_maps.cf
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/mysql_virtual_alias_maps.cf
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/mysql_virtual_domains_maps.cf
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/mysql_virtual_mailbox_domainaliases_maps.cf
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/mysql_virtual_mailbox_maps.cf
+/bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/mysql_virtual_sender_login_maps.cf
+/bin/sed -i "s/hostURI286/${hostURI}/g" /etc/postfix/main.cf
+/bin/sed -i "s/emailTLDURI286/${emailTLDURI}/g" /etc/postfix/main.cf
+/bin/sed -i "s/emailTLDURI286/${emailTLDURI}/g" /opt/verb/conf/lab/pmail/postfix/main-SNAKEOIL.cf
+/bin/sed -i "s/emailTLDURI286/${emailTLDURI}/g" /opt/verb/conf/lab/pmail/postfix/main-INKCERT.cf
+/bin/sed -i "s/nameURI286/${nameURI}/g" /etc/postfix/main.cf
+/bin/sed -i "s/nameURI286/${nameURI}/g" /opt/verb/conf/lab/pmail/postfix/main-SNAKEOIL.cf
+/bin/sed -i "s/nameURI286/${nameURI}/g" /opt/verb/conf/lab/pmail/postfix/main-INKCERT.cf
+
+# Grand Restart
+/bin/systemctl reload postfix
+/bin/systemctl restart postfix
+/bin/systemctl reload spamassassin
+/bin/systemctl restart clamav-daemon
+/bin/systemctl restart amavis
+/bin/systemctl reload dovecot
+
+# Set the config for backup
+/bin/sed -i "s/SITEMAILPASSAPG.*/SITEMAILPASSAPG=\"${MAILPASSGEN}\"/g" /opt/verb/conf/sitemailpass
+
+# UFW (services and ports below them if known)
+/usr/bin/ufw allow postfix
+/usr/bin/ufw allow smtp
+/usr/bin/ufw allow 25
+/usr/bin/ufw allow 587
+/usr/bin/ufw allow smtps
+/usr/bin/ufw allow 465
+/usr/bin/ufw allow pop3
+/usr/bin/ufw allow 110
+/usr/bin/ufw allow pop3s
+/usr/bin/ufw allow 995
+/usr/bin/ufw allow pop2
+/usr/bin/ufw allow 109
+/usr/bin/ufw allow imap
+/usr/bin/ufw allow 143
+/usr/bin/ufw allow imaps
+/usr/bin/ufw allow 993
+# for OpenDKIM
+/usr/bin/ufw allow 8891
+/usr/bin/ufw allow 12301
+
+# OpenDKIM
+## Create/reset OpenDKIM files
+/usr/bin/apt-get install -y opendkim opendkim-tools
+/bin/cp /opt/verb/conf/lab/pmail/default/opendkim /etc/default/
+/bin/cp /opt/verb/conf/lab/pmail/opendkim.conf /etc/
+/bin/mkdir /etc/opendkim
+/bin/mkdir /etc/opendkim/keys
+/bin/echo "127.0.0.1
+localhost
+${SITEIP}
+${hostURI}" > /etc/opendkim/TrustedHosts
+/bin/echo "inkdkim._domainkey.${nameURI} ${nameURI}:inkdkim:/etc/opendkim/keys/${nameURI}/inkdkim.private" > /etc/opendkim/KeyTable
+/bin/echo "${nameURI} inkdkim._domainkey.${nameURI}" > /etc/opendkim/SigningTable
+## OpenDKIM Key for initial site
+/bin/mkdir -p /etc/opendkim/keys/${nameURI}
+cd /etc/opendkim/keys/${nameURI}
+/usr/bin/opendkim-genkey -r -S -s inkdkim -d ${nameURI}
+/bin/chmod 660 inkdkim.private
+/bin/chown root:opendkim inkdkim.private
+/bin/chown opendkim:opendkim inkdkim.private
+/bin/systemctl start opendkim
+
+# Postgres Whitelist
+/bin/cp /etc/postgrey/whitelist_clients /etc/postfix/postgrey_whitelist_clients
+/bin/cp /etc/postgrey/whitelist_recipients /etc/postfix/postgrey_whitelist_recipients
+
+# Set Apache subdomains
+/bin/cp -R /srv/www/html/0ne /srv/www/html/${SITEEMAILTLD}.boxes
+/bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.boxes
+/bin/echo "; Webmail Defaults
+boxes.${DNSDOMAIN}.	IN  A		${SITEIP}
+boxes.${DNSDOMAIN}.	IN  AAAA	${SITEIPV6}
+" >> /opt/verb/conf/inkdns/zones/db.${emailTLDURI}
+/opt/verb/serfs/ensiteapache boxes.${emailTLDURI}
+/usr/bin/apachectl graceful
+
+# DNS MX and TXT mail records for this server
+/opt/verb/serfs/inkdnsaddmail ${nameURI}
+## Keep the zone file clean & let the server know "I was here."
+/bin/echo ";" >> /opt/verb/conf/inkdns/zones/db.${nameURI}
+/opt/verb/serfs/addinkdkim ${nameURI}
+/opt/verb/serfs/inkdnsaddinkdkim ${nameURI}
+
+# inkCert
+## This adds the declared domain to the end of the "domains =" line
+/bin/sed -i "/^domains =/ s/$/, boxes.${emailTLDURI}/" /opt/verb/conf/inkcert/cli-ini/cli.${emailTLDURI}.ini
+
+# Monit
+/bin/cp /opt/verb/conf/lab/pmail/monit/monitrc.d/amavis /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/pmail/monit/monitrc.d/dovecot /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/pmail/monit/monitrc.d/opendkim /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/pmail/monit/monitrc.d/postfix /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/pmail/monit/monitrc.d/spamassassin /etc/monit/monitrc.d/
+/bin/systemctl reload monit
+
+# Config settings to "EMAIL_INSTALLED"
+/bin/sed -i "s/SITEMAILSTATUS=.*/SITEMAILSTATUS=\"pmail_SERVER\"/g" /opt/verb/conf/sitemailpath
+
+# Finish
+/bin/echo "Postfix and friends for inkVerb has been installed.
+
+The email server is https://${emailTLDURI}"

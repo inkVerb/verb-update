@@ -1,0 +1,30 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This adds a user (new or existing) to an existing MySQL database with a password
+
+# How to use:
+## ./mysqladdusrtodb [addtodbase] [dbuser - optional] [ dbpassword - optional]
+
+
+OLDDBASE="${1}"
+if [ -z "${2}" ]; then
+DBUSER=$(/usr/bin/pwgen -s -1 10)
+DBPASSWORD=$(/usr/bin/pwgen -s -1 10)
+echo "New User: ${DBUSER}"
+echo "New Password: ${DBPASSWORD}"
+elif [ -z "${3}" ]; then
+DBUSER="${2}"
+  if [ -f "/opt/verb/conf/mysqldb.${DBUSER}" ]; then
+  . /opt/verb/conf/mysqldb.${DBUSER}
+  else
+  DBPASSWORD=$(/usr/bin/pwgen -s -1 10)
+  echo "New Password: ${DBPASSWORD}"
+  fi
+else
+DBPASSWORD="${3}"
+fi
+
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
+GRANT ALL PRIVILEGES ON ${OLDDBASE}.* TO '${DBUSER}'@'localhost' IDENTIFIED BY '${DBPASSWORD}';
+FLUSH PRIVILEGES;"

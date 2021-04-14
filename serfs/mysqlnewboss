@@ -1,0 +1,29 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This creates a new MySQL database root user with password
+
+# How to use:
+## ./mysqlnewboss [dbruser] [dbpassword - optional]
+
+
+DBBUSER=$1
+if [ -z ${2} ]; then
+DBBPASSWORD=$(/usr/bin/pwgen -s -1 10)
+else
+DBBPASSWORD=$2
+fi
+
+if [ -f "/opt/verb/conf/mysqlnewboss.${DBBUSER}.cnf" ]; then
+  echo " already exists."; exit 0
+fi
+
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
+GRANT ALL PRIVILEGES ON *.* TO '${DBBUSER}'@'localhost' IDENTIFIED BY '${DBBPASSWORD}' WITH GRANT OPTION;
+FLUSH PRIVILEGES;"
+
+/bin/echo "[client]
+user = ${DBBUSER}
+password = ${DBBPASSWORD}
+host = localhost
+" > /opt/verb/conf/mysqlnewboss.${DBBUSER}.cnf

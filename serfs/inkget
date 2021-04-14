@@ -1,0 +1,62 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This downloads an app from the site-wide ink repo
+
+# How to use:
+## ./inkget [app repo name]
+
+# Eg:
+## ./inkget mediawiki
+## ./inkget nextcloud
+## ./inkget wpbb
+
+
+APPNAME=$1
+
+# Include the config files
+. /opt/verb/conf/siteinkget
+
+if [ "${INKGET_REPO}" = "NOT_SET" ]; then
+/bin/echo "inkNet is not setup, so no repo is available. Can't download the necessary package."
+exit 8
+fi
+
+# zjz
+if [ $INKGET_METHOD = "ZJZ" ]; then
+/opt/verb/donjon/repoupdate/${APPNAME}.updaterepo; wait
+## Check repo for failed DL
+ if [ "$2" = "check" ] && [ -f "/opt/verb/donjon/repoupdate/${APPNAME}.failed" ]; then
+ exit 4; fi
+## Continue
+/bin/cp /opt/verb/repo/${APPNAME}.vtxz .
+/bin/echo "Copied for install."
+ if [ $INKGET_REPO = "TEMP" ]; then
+/bin/rm /opt/verb/repo/${APPNAME}.vtxz
+/bin/echo "Temp repo files cleaned-up."
+ else
+/bin/echo "Repo files kept."
+ fi
+fi
+
+# wget
+if [ $INKGET_METHOD = "USE_WGET" ]; then
+/usr/bin/wget https://${INKGET_REPO}/repo/${APPNAME}.vtxz --no-check-certificate
+fi
+
+# inker
+if [ $INKGET_METHOD = "INKER_CP" ]; then
+/bin/cp /opt/ink/repo/${APPNAME}.vtxz .
+fi
+
+## DEV NOTE: Other secure methods are planned in the roadmap
+# SSH
+
+# SSL
+
+
+# Exit if failed
+if [ ! -f ${APPNAME}.vtxz ]; then
+/bin/echo "Couldn't get the file! I quit."
+exit 4; fi
+

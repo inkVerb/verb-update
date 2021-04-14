@@ -1,0 +1,43 @@
+#!/bin/bash
+#inkVerbSerf! verb.ink
+
+# This batch runs inkCert Proper request and install scripts for a given domain, including inkVerb namespace domains
+## Use this also to renew a cert since inkcertreq auto detects existing certs and retains the original csr to have it signed again
+## It applies only to one domain/subdomain at a time
+## Prereqesite: inkcertinstall, inkcertsetcsr, and inkcertaddkeypair and the cert from the CA
+
+# How to use:
+## ./inkcertdo [domain.tld or sub.domain.tld]
+
+#Eg:
+## ./inkcertdo inkisaverb.com
+## ./inkcertdo blog.inkisaverb.com
+## ./inkcertdo YOURNAME.verb.one
+## ./inkcertdo owncloud.YOURNAME.verb.blue
+## ./inkcertdo smtp.YOURNAME.verb.email
+
+
+DOMAIN=$1
+
+# Check variables
+if [ -z ${1} ]; then
+/bin/echo "You need to specify a domain. Read the instructions."; exit 0
+fi
+
+# Request and get the certs
+/opt/verb/serfs/inkcertreq ${DOMAIN}; wait
+
+# Install the certs
+if /bin/grep -q "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+  if [ -e /etc/inkcert/le/live/${DOMAIN} ]; then
+    /opt/verb/serfs/inkcertadd ${DOMAIN}; wait
+  fi
+fi
+
+# Finish
+/bin/echo "
+Excellent!
+Verify above exists - IMPORTANT NOTES: ...Congratulations!
+
+If so, then ${DOMAIN} and all subdomains are now live with inkCert certificates.
+"

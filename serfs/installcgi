@@ -1,0 +1,30 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This turns on the www/cgi folder and links it to cgi....verb.vip
+
+# How to use:
+## ./installcgi
+
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+
+# Prepare the directories
+/bin/mkdir /srv/vip/cgi
+/bin/rm -rf /srv/www/html/vip.cgi
+/bin/ln -s /srv/cgi /srv/www/html/vip.cgi
+/bin/chown -R www:www /srv/www
+/bin/chown -R www:www /srv/vip/cgi
+
+# Write the first file
+/bin/cp -f /opt/verb/site-files/cgi-fossil/helloworld.cgi /srv/www/vip/cgi/
+/bin/chmod 750 /srv/www/vip/cgi/helloworld.cgi
+
+/bin/echo "
+All done. Access CGI files in the cgi folder via ftp.
+And check out your first script at:
+
+http://cgi.${vipURI}/helloworld.cgi
+"

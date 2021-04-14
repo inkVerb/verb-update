@@ -1,0 +1,41 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This adds or appends forwarding addresses to an alias in vmail
+
+# How to use:
+## ./vmailalias [emailUser (no domain)] [domain] [forward email] [forward email] [forward email] [forward email] ...
+
+# Eg:
+## ./vmailalias james inkisaverb.com tommy@inkisaverb.com
+
+# Check to see if vmail is installed
+. /opt/verb/conf/sitemailpath
+if [ "$SITEMAILSTATUS" != "VMAIL_SERVER" ]; then
+  /bin/echo "Vmail not installed. Do that first."
+  exit 0; fi
+
+emailUser="${1}"
+domain="${2}"
+address="$emailUser@$domain"
+shift 2
+goto="$(echo "$@" | sed "s/ /,/g")"
+
+
+# Check for an existing entry
+email="${1}"
+query="$(/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "SELECT goto FROM alias WHERE address='$email' AND domain='$domain';")"
+if [ -n "${query}" ]; then
+  oldgoto="$(echo ${query} | sed "s/goto //")"
+  newgoto="${oldgoto},${goto}"
+  /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "UPDATE alias SET goto='$newgoto', modified=CURRENT_TIMESTAMP WHERE address='$email' AND domain='$domain';"
+else
+  newgoto=${goto}
+  # Make the database entry
+  /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('$email', '$newgoto', '$domain', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);"
+fi
+
+# Finish
+/bin/echo "Updated:
+Alias: ${email}
+Forarding to: ${newgoto}"

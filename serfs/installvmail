@@ -1,0 +1,67 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This runs installpostfix, installrc, and installpfa as one job
+## Prerequisite: setupverb of course, and verbemail if you wish an email tld other than .email
+## Check prerequisites for those
+
+# OPTIONAL Prerequesite:
+## If restoring from a backupvmail backup, the .vbak file must be in vip
+
+# How to use:
+## ./installvmail [RoundCube webmail path] [PostfixAdmin email pfa path - optional: if no other arguments and same as RoundCube] [PostfixAdmin setup secure option: "secure" otherwise use any other] [backup filename IF restoring from backupvmail backup, optional]
+
+# Eg:
+## ./installvmail roundcubesecretpath postfixadminsecretpath secure  # Secure, but no backup
+## ./installvmail rcbase pfabase secure myemailfile.vbak # Backup and secure
+## ./installvmail rcbase pfabase no myemailfile.vbak  # Backup, not secure
+## ./installvmail rciscool pfarocks # Not secure, no backup
+## ./installvmail vmailpath # Same path for RC and PFA, not secure, no backup
+
+
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+. /opt/verb/conf/sitemailpass
+. /opt/verb/conf/sitemailpath
+
+RC=$1
+if [ -z "$2" ]; then
+PFA=$1
+else
+PFA=$2
+EASYSECURE=$3
+BACKUPRESTORE=$4
+fi
+
+/opt/verb/serfs/installpostfixvmail; wait
+/opt/verb/serfs/installpfa ${PFA} ${EASYSECURE}; wait
+/opt/verb/serfs/installrc ${RC}; wait
+
+# Backup
+if [ -n "$4"]; then
+/opt/verb/serfs/backupvmailrestore ${BACKUPRESTORE}; wait
+fi
+
+# inkCert check and FYI
+if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${emailTLDURI}; then
+/bin/echo "Note: ${emailTLDURI} still doesn't have proper SSL certs. You can install, but will get SSL warnings due to \"self-signed\" or \"snakeoil\" certs.
+You may ignore these warnings if you choose. If you want proper SSL certs, you still need to run inkCert for them.
+"
+fi
+
+# Finished
+/bin/echo "
+You must restart the server in order for email boxes to send and receive.
+
+Postfix Admin:
+- https://pfa.${emailTLDURI}/${PFAFOLDER}/setup.php
+- Use the install password '${INSTPASS}'
+- Then run ./postinstallpfa
+
+Roundcube:
+- https://rc.${emailTLDURI}/${RCFOLDER}/installer
+- Then run ./postinstallrc
+"
+fi

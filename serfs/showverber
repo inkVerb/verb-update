@@ -1,0 +1,36 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This displays the settings and info for this Verber
+## This is useful for many things, including Clients that need name and IP to connect to it
+
+# How to use:
+## ./showverber
+
+
+# Include the config
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+. /opt/verb/conf/sitemailpath
+. /opt/verb/conf/inklists/verberverno
+
+# Display info
+/bin/echo "Here you go. This Verber's info...
+IP: ${SITEIP}
+Namespace: ${SITENAME}
+Primary TLD: ${SITETLD}
+Primary URI: ${nameURI}
+Host: ${SITEHOST}
+Timezone: ${SITETIMECITY}, ${SITETIMEREGION}
+Update channel: ${SITEUPDATEREPO}
+Version: ${VERNO}
+Type: ${VTYPE}
+
+Email main domain URI: ${emailURI}
+Email server URI: ${emailTLDURI}
+Email Status: ${SITEMAILSTATUS}
+Snail: ${SITESNAIL}
+RC path: ${SITERCPATH}
+PFA path: ${SITEPFAPATH}
+"
+

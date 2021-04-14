@@ -1,0 +1,67 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This sets up a new single default verb.ink subdomain Apache config file, standard http dir, and letsencrypt declaration in cli.inkverb.ini.
+## This is intended to be run as an appendage after setupverb has already set the server.
+## For pre-make creation, refer to makepreverbsub and make-apache in verb/verb-install
+
+# How to use:
+## ./newverbsub [TLD] [SUBDOMAIN]
+
+
+TLD=$1
+SUBDOMAIN=$2
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+
+## Domain Mod?
+if /bin/grep -Fq "SITENAME=DOMAIN_MOD-" /opt/verb/conf/sitenameip; then
+tldURI="${TLD}.${baseDOM}"
+else
+tldURI="${SITENAME}.verb.${TLD}"
+fi
+
+# Copy the file
+/bin/cp /opt/verb/conf/site-files/conf/sub286.tldURI286.conf /opt/verb/conf/webserver/httpd/sites-available/${SUBDOMAIN}.${tldURI}.conf
+
+# Replace
+/bin/sed -i "s/sub286/${SUBDOMAIN}/g" /opt/verb/conf/webserver/httpd/sites-available/${SUBDOMAIN}.${tldURI}.conf
+/bin/sed -i "s/tldURI286/${tldURI}/g" /opt/verb/conf/webserver/httpd/sites-available/${SUBDOMAIN}.${tldURI}.conf
+/bin/sed -i "s/tld286/${TLD}/g" /opt/verb/conf/webserver/httpd/sites-available/${SUBDOMAIN}.${tldURI}.conf
+
+# inkCert, at end of the "domains =" line
+/bin/sed -i "/^domains =/ s/$/, ${SUBDOMAIN}.${tldURI}/" /opt/verb/conf/inkcert/cli-ini/cli.${tldURI}.ini
+
+# Create the http dir
+cd /srv/www/html
+/bin/cp -R 0ne ${TLD}.${SUBDOMAIN}
+/bin/chown -R www:www /srv/www/html/${TLD}.${SUBDOMAIN}
+
+# Apache
+## If setupverb has already run
+if [ ! -f "/opt/verb/inst/setupverb" ]; then
+/bin/echo "...reloading Apache..."
+/opt/verb/serfs/ensiteapache ${SUBDOMAIN}.${tldURI}
+/usr/bin/apachectl graceful
+
+# inkCert
+## If inkCert has already run
+ if [ -f  "/opt/verb/conf/inkcert/cli-ini/siteinkcert.${tldURI}" ]; then
+ /bin/echo "Updating inkCert SSL certs to include ${SUBDOMAIN}.${tldURI}..."
+ /opt/verb/serfs/inkcertreqle ${tldURI} r
+ /opt/verb/serfs/inkcertaddallle ${tldURI}
+ else
+ /bin/echo "${SUBDOMAIN}.${tldURI} will get its SSL certs when you run inkCert for ${tldURI}."
+ fi
+else
+/bin/echo "${SUBDOMAIN}.${tldURI} will be activated with the crew when you run setupverb."
+fi
+
+# Finish
+/bin/echo "
+${SUBDOMAIN}.${tldURI} is all set to go.
+But, remember it is not part of the native Verber package. This is an aftermarket mod that inkVerb will not maintain.
+"
+

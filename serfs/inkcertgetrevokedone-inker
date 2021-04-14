@@ -1,0 +1,27 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This tells the Verber that cert has been revoked and to uninstall it
+## This is run remotely by the Inker server
+
+# Inker remote with special permissions
+## Make this file able to work, run as root who owns the file:
+# /bin/chown root inkcertgetrevokedone-inker
+# /bin/chmod u+s inkcertgetrevokedone-inker
+
+# How to use:
+## ./inkcertgetrevokedone-inker [domain]
+
+# Eg:
+## ./inkcertgetrevokedone-inker poetryiscode.com
+## ./inkcertgetrevokedone-inker mysub.inkisaverb.com
+
+
+DOMAIN=$1
+
+# Verify the file
+
+
+# Run the cert revoke serf
+
+

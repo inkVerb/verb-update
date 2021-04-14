@@ -1,0 +1,16 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This deletes an ftp vip and his vsftpd folder and home folder
+
+# How to use:
+## ./killftpvip [user]
+
+
+DELFTPGURU=$1
+
+# Delete the user
+userdel ${DELFTPGURU}
+
+# Remove directory
+/bin/rm -rf /home/${DELFTPGURU}

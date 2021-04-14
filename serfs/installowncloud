@@ -1,0 +1,97 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This downloads and installs ownCloud manually from inkisaverb.com/repo and linnks it to ....verb.blue
+
+# All options are optional, but must are sequential, omit last options first.
+
+# How to use:
+## ./installowncloud [dbase] [dbuser] [dbpassword]
+
+# Eg:
+## ./installowncloud
+## ./installowncloud bestdbase trump besteverpass
+
+
+
+CVAPPNAME=owncloud
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+
+DBASE=$1
+DBUSER=$2
+DBPASSWORD=$3
+CLEANNAME=$(/bin/echo $CVAPPNAME | sed -e 's/\.//g')
+
+# Check if already installed
+## Config
+if [ -f /opt/verb/conf/vapp.${CVAPPNAME} ]; then
+/bin/echo "This is already installed."
+exit 0; fi
+## Directory
+if [ -d /srv/www/vapps/${CVAPPNAME} ]; then
+/bin/echo "ownCloud already exists in the system. If it isn't working, look deeper on the server. For now, doing nothing."
+exit 8; fi
+
+# Do it
+cd /srv/www/vapps
+## Get and unpack
+/bin/echo "Getting ownCloud, this could take a minute or so..."
+/opt/verb/serfs/inkget ${CVAPPNAME}; wait
+### Check
+/opt/verb/serfs/inkget ${CVAPPNAME} check
+if [ "$?" = 4 ]; then
+/bin/echo "Repo failed to retrieve the file."
+exit 4; fi
+if [ ! -f ${CVAPPNAME}.vtxz ]; then
+/bin/echo "Failed to retrieve from the repo."
+exit 4; fi
+
+/bin/rm -rf owncloud; wait
+/opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
+## Install it
+/opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
+/bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
+/bin/chown -R www:www /srv/www/html/blue.owncloud; wait
+## Run the ownCloud script
+#/opt/verb/donjon/owncloudprep.sh; wait # May be unique to Nextcloud
+## Set up cron for updates
+/bin/echo '*/15  *  *  *  * www-data php -f /srv/www/vapps/owncloud/cron.php' > /etc/cron.d/owncloud
+/bin/chmod 0644 /etc/cron.d/owncloud
+
+# Auto database
+if [ -z ${3} ]; then
+DBPASSWORD=$(/usr/bin/pwgen -s -1 10); fi
+if [ -z ${1} ]; then
+DBASE=${CLEANNAME}$(/usr/bin/pwgen -s -1 6); fi
+if [ -z ${2} ]; then
+DBUSER=${DBASE}; fi
+
+# Create the database and credentials
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
+CREATE DATABASE  ${DBASE};
+GRANT ALL PRIVILEGES ON ${DBASE}.* TO '${DBUSER}'@'localhost' IDENTIFIED BY '${DBPASSWORD}';
+FLUSH PRIVILEGES;"
+
+# Write the config for backup
+/bin/echo "#!/bin/sh
+APPDBASE=${DBASE}
+APPDDBUSR=${DBUSER}
+APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}
+
+/bin/echo "These are setup:
+
+Database user: ${DBUSER}
+Database password: ${DBPASSWORD}
+Database name: ${DBASE}
+Host: localhost
+
+*Don't make any other changes during the install!
+
+Go to https://owncloud.${blueURI} to install.
+
+After, you may want to run setowncloudbfdoff to disable brute force detection in order to allow some client apps to work. You can always turn it on again with setowncloudbfdon
+"
+

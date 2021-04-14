@@ -1,0 +1,10 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This opens MySQL with a specific user/database in the terminal without entering any password
+
+# How to use:
+## ./mysqldbuser [ mysqldb-name ]
+
+
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.${1}.cnf

@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+#inkVerbSerf! verb.ink
+
+# This installs phpMyAdmin to a defiend directory, to become available at mysql.your-name.verb.vip/DEFINED-DIRECTORY
+
+# How to use:
+## ./installphpmyadmin [directory] [dbuser] [dbpassword]
+
+
+CVAPPNAME=phpmyadmin
+
+# Options
+if [ -z ${1} ]; then
+/bin/echo "You must designate a folder."
+exit 8; fi
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+
+# Download and establish Drupal in the server to pre-created domain
+cd /srv/www/vapps
+/opt/verb/serfs/inkget ${CVAPPNAME}; wait
+### Check
+/opt/verb/serfs/inkget ${CVAPPNAME} check
+if [ "$?" = 4 ]; then
+/bin/echo "Repo failed to retrieve the file."
+exit 4; fi
+if [ ! -f ${CVAPPNAME}.vtxz ]; then
+/bin/echo "Failed to retrieve from the repo."
+exit 4; fi
+
+/bin/rm -rf ${CVAPPNAME}
+/opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
+
+DIRECTRY=${1}
+
+# Auto database
+if [ -z ${3} ]; then
+DBPASSWORD=$(/usr/bin/pwgen -c -1 20); fi
+if [ -z ${2} ]; then
+DBUSER=phpmy$(/usr/bin/pwgen -s -1 15); fi
+
+# Create the boss user
+/opt/verb/serfs/mysqlnewboss "${DBUSER}" "${DBPASSWORD}"
+
+# Prepare the config and web directory
+/bin/cp /srv/www/vapps/${CVAPPNAME}/config.sample.inc.php /srv/www/vapps/${CVAPPNAME}/config.inc.php
+BLOWFISH=$(/usr/bin/pwgen -c -1 32)
+/bin/sed -i "s/cfg\['blowfish_secret'\] = '';/cfg\['blowfish_secret'\] = '$BLOWFISH';" /srv/www/vapps/${CVAPPNAME}/config.inc.php
+/bin/ln -sfn /srv/www/vapps/${CVAPPNAME} /srv/www/html/vip.sql/${DIRECTRY}; wait
+/bin/chown -R www:www /srv/www/html/vip.mysql; wait
+
+/usr/bin/apachectl graceful
+
+/bin/echo "
+PHP My Admin now active & this MySQL admin is setup:
+
+Username: ${DBUSER}
+Password: ${DBPASSWORD}
+
+Use these credentials to log in at https://sql.${vipURI}/${DIRECTRY}
+"

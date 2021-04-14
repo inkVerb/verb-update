@@ -1,0 +1,91 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This sets the symlink for a vapp from the html/ folder to the vapps/ folder
+
+# How to use:
+## ./setvapplinkon [vapp name]
+
+
+# Include the config file
+. /opt/verb/conf/siteport
+. /opt/verb/conf/siteurilist
+
+VAPPNAME=$1
+
+case ${VAPPNAME} in
+
+ampache)
+/bin/rm -rf /srv/www/html/kiwi.ampache
+/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/kiwi.ampache
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+fossil)
+/bin/rm -rf /srv/www/html/vip.fossil
+/bin/ln -sfn /srv/www/vip/${VAPPNAME} /srv/www/html/vip.fossil
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+mediawiki)
+/bin/rm -rf /srv/www/html/ink.wiki
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.wiki
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+net2ftp)
+/bin/rm -rf /srv/www/html/vip.net2ftp
+/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/vip.net2ftp
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+nextcloud)
+/bin/rm -rf /srv/www/html/blue.nc
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/blue.nc
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+orangehrm)
+/bin/rm -rf /srv/www/html/red.hrm
+/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/red.hrm
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+owa)
+/bin/rm -rf /srv/www/html/red.owa
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/red.owa
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+owncloud)
+/bin/rm -rf /srv/www/html/blue.owncloud
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/blue.owncloud
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+suitecrm)
+/bin/rm -rf red.crm
+/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/red.crm
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+october.inkblog)
+/bin/rm -rf /srv/www/html/ink.blog
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.blog
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+wp.inkbb)
+/bin/rm -rf /srv/www/html/ink.bb
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.bb
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+wp.inkblog)
+/bin/rm -rf /srv/www/html/ink.blog
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.blog
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+esac
+

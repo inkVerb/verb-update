@@ -1,0 +1,19 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This turns off a tld of the verb sites, such as verb.red, but not the other verb.tld sites, all are on before running this
+## This removes the symlink in httpd/sites-enabled
+
+# How to use:
+## ./verboff [tld]
+
+# Eg:
+## ./verboff kiwi
+
+
+SITEOFF=$1
+
+/bin/rm -f /etc/httpd/sites-enabled/*.verb.${SITEOFF}.conf
+/bin/sed -i "s/VERB${SITEOFF}=.*/VERB${SITEOFF}=false/g" /opt/verb/conf/sitetldstatus
+/usr/bin/apachectl graceful
+
