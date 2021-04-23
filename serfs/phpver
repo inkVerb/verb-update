@@ -1,7 +1,0 @@
-#! /bin/bash
-#inkVerbSerf! verb.ink
-
-phpDir=$(ls /etc/php)
-phpVers=(${phpDir})
-IFS=$'\n'
-/bin/echo "${phpVers[*]}" | sort -nr | head -n1

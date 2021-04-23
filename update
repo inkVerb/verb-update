@@ -97,187 +97,40 @@ fi
 # Run version-by-version updates
 
 
-UPGRADE_PATCH_VERNO=0.87.00
-if [ $(/bin/echo ${UPGRADE_PATCH_VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
-CLEAN_PATCH_VERNO=$(/bin/echo $UPGRADE_PATCH_VERNO | /bin/sed -e "s/\.//g")
-PCLdoc="$(/bin/cat <<UPCL
-Patch ${UPGRADE_PATCH_VERNO} Changelog:
-- New spinup framework
-UPCL
-)"
-/bin/echo "$PCLdoc"
-# So we can call a specific version later if needed
-eval "v$CLEAN_PATCH_VERNO='$(/bin/echo "$PCLdoc")'"
-
-# Move to working directory of the patch
-if [ -d "/opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/" ]; then
-cd /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/; fi
-
-# Run the update scripts for this patch
-
-##### SCRIPTS GO HERE #####
-# NOTE: PWD is /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/
-
-
-##### END SCRIPTS #########
-# Set and refresh the current version into inklists
-/bin/sed -i "s/VERNO=.*/VERNO=\"${UPGRADE_PATCH_VERNO}\"/g" /opt/verb/conf/inklists/verberverno
-. /opt/verb/conf/inklists/verberverno
-/bin/echo "Verber upgraded to v${VERNO}"
-else
-/bin/echo "${UPGRADE_PATCH_VERNO} patch not necessary..."
-fi
-
-##############END#UPGRADE#PATCH#
-
-UPGRADE_PATCH_VERNO=0.87.01
-if [ $(/bin/echo ${UPGRADE_PATCH_VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
-CLEAN_PATCH_VERNO=$(/bin/echo $UPGRADE_PATCH_VERNO | /bin/sed -e "s/\.//g")
-PCLdoc="$(/bin/cat <<UPCL
-Patch ${UPGRADE_PATCH_VERNO} Changelog:
-- inkCert tweaks & bug fixes
-UPCL
-)"
-/bin/echo "$PCLdoc"
-# So we can call a specific version later if needed
-eval "v$CLEAN_PATCH_VERNO='$(/bin/echo "$PCLdoc")'"
-
-# Move to working directory of the patch
-if [ -d "/opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/" ]; then
-cd /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/; fi
-
-# Run the update scripts for this patch
-
-##### SCRIPTS GO HERE #####
-# inkCert cron updates
-/bin/cp inkcertcb-renew-all.sh /opt/verb/donjon/
-/bin/cp inkcertle-renew-all.sh /opt/verb/donjon/
-/bin/cp inkcert-renew-all.sh /opt/verb/donjon/
-/bin/rm /etc/cron.d/inkcertrenewcbcron
-/bin/rm /etc/cron.d/inkcertrenewlecron.v
-/bin/echo '3 3 * * * root /opt/verb/donjon/inkcertcb-renew-all.sh' > /etc/cron.d/inkcertrenewcbcron
-/bin/echo '3 3 * * * root /opt/verb/donjon/inkcertle-renew-all.sh' > /etc/cron.d/inkcertrenewlecron
-/bin/chmod 0644 /etc/cron.d/inkcertrenewcbcron
-/bin/chmod 0644 /etc/cron.d/inkcertrenewlecron
-/bin/mkdir -p /var/log/inkcert/
-/usr/bin/touch /var/log/inkcert/inkcertle.log
-
-
-##### END SCRIPTS #########
-# Set and refresh the current version into inklists
-/bin/sed -i "s/VERNO=.*/VERNO=\"${UPGRADE_PATCH_VERNO}\"/g" /opt/verb/conf/inklists/verberverno
-. /opt/verb/conf/inklists/verberverno
-/bin/echo "Verber upgraded to v${VERNO}"
-else
-/bin/echo "${UPGRADE_PATCH_VERNO} patch not necessary..."
-fi
-
-##############END#UPGRADE#PATCH#
-
-UPGRADE_PATCH_VERNO=0.87.02
-if [ $(/bin/echo ${UPGRADE_PATCH_VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
-CLEAN_PATCH_VERNO=$(/bin/echo $UPGRADE_PATCH_VERNO | /bin/sed -e "s/\.//g")
-PCLdoc="$(/bin/cat <<UPCL
-Patch ${UPGRADE_PATCH_VERNO} Changelog:
-- Full paths, adding secapache
-UPCL
-)"
-/bin/echo "$PCLdoc"
-# So we can call a specific version later if needed
-eval "v$CLEAN_PATCH_VERNO='$(/bin/echo "$PCLdoc")'"
-
-# Move to working directory of the patch
-if [ -d "/opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/" ]; then
-cd /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/; fi
-
-# Run the update scripts for this patch
-
-##### SCRIPTS GO HERE #####
-# donjon updates
-/bin/cp repoupdate/* /opt/verb/donjon/repoupdate/
-/bin/cp wpaddsites/* /opt/verb/donjon/wpaddsites/
-/bin/cp donjon/* /opt/verb/donjon/
-
-
-##### END SCRIPTS #########
-# Set and refresh the current version into inklists
-/bin/sed -i "s/VERNO=.*/VERNO=\"${UPGRADE_PATCH_VERNO}\"/g" /opt/verb/conf/inklists/verberverno
-. /opt/verb/conf/inklists/verberverno
-/bin/echo "Verber upgraded to v${VERNO}"
-else
-/bin/echo "${UPGRADE_PATCH_VERNO} patch not necessary..."
-fi
-
-##############END#UPGRADE#PATCH#
-
-UPGRADE_PATCH_VERNO=0.87.03
-if [ $(/bin/echo ${UPGRADE_PATCH_VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
-CLEAN_PATCH_VERNO=$(/bin/echo $UPGRADE_PATCH_VERNO | /bin/sed -e "s/\.//g")
-PCLdoc="$(/bin/cat <<UPCL
-Patch ${UPGRADE_PATCH_VERNO} Changelog:
-- Removing old verb domains
-- Updates to Certbot
-UPCL
-)"
-/bin/echo "$PCLdoc"
-# So we can call a specific version later if needed
-eval "v$CLEAN_PATCH_VERNO='$(/bin/echo "$PCLdoc")'"
-
-# Move to working directory of the patch
-if [ -d "/opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/" ]; then
-cd /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/; fi
-
-# Run the update scripts for this patch
-
-##### SCRIPTS GO HERE #####
-# Remove .pink & .city
-if [ -d "/etc/inkcert/le/live/${pinkURI}" ]; then
-/bin/rm -rf /etc/inkcert/le/live/${pinkURI}
-/bin/rm -rf /etc/inkcert/le/archive/${pinkURI}
-/bin/rm -f /etc/inkcert/le/renewal/${pinkURI}.conf
-/bin/rm -f /etc/apache2/sites-available/*${pinkURI}.conf
-/bin/rm -f /etc/apache2/sites-enabled/*${pinkURI}.conf
-/bin/rm -f /opt/verb/conf/inkcert/cli-ini/cli.${pinkURI}.ink
-/bin/rm -f /opt/verb/conf/inkcert/cli-ini/siteinkcert.*${pinkURI}
-/bin/rm -rf /var/www/html/pink
-/bin/rm -rf /var/www/html/pink.pink
-/bin/sed -i "/pinkURI/d" /opt/verb/conf/siteurilist
-fi
-if [ -d "/etc/inkcert/le/live/${cityURI}" ]; then
-/bin/rm -rf /etc/inkcert/le/live/${cityURI}
-/bin/rm -rf /etc/inkcert/le/archive/${cityURI}
-/bin/rm -f /etc/inkcert/le/renewal/${cityURI}.conf
-/bin/rm -f /etc/apache2/sites-available/*${cityURI}.conf
-/bin/rm -f /etc/apache2/sites-enabled/*${cityURI}.conf
-/bin/rm -f /opt/verb/conf/inkcert/cli-ini/cli.${cityURI}.ink
-/bin/rm -f /opt/verb/conf/inkcert/cli-ini/siteinkcert.*${cityURI}
-/bin/rm -rf /var/www/html/city
-/bin/rm -rf /var/www/html/city.city
-/bin/sed -i "/cityURI/d" /opt/verb/conf/siteurilist
-fi
-
-# Fix a bug
-/bin/sed -i "s/inkserve/ink, serve/" /opt/verb/conf/inkcert/cli-ini/*.ini
-
-# inkCert
-/bin/cp donjon/* /opt/verb/donjon/
-
-# cron timing
-if [ -f "/etc/cron.d/inkcertrenewcbcron" ]; then
-  /bin/echo '4 4 * * * root /opt/verb/donjon/inkcertcb-renew-all.sh' > /etc/cron.d/inkcertrenewcbcron
-  /bin/chmod 0644 /etc/cron.d/inkcertrenewcbcron
-fi
-
-##### END SCRIPTS #########
-# Set and refresh the current version into inklists
-/bin/sed -i "s/VERNO=.*/VERNO=\"${UPGRADE_PATCH_VERNO}\"/g" /opt/verb/conf/inklists/verberverno
-. /opt/verb/conf/inklists/verberverno
-/bin/echo "Verber upgraded to v${VERNO}"
-else
-/bin/echo "${UPGRADE_PATCH_VERNO} patch not necessary..."
-fi
-
-##############END#UPGRADE#PATCH#
+#UPGRADE_PATCH_VERNO=0.88.02
+#if [ $(/bin/echo ${UPGRADE_PATCH_VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
+#CLEAN_PATCH_VERNO=$(/bin/echo $UPGRADE_PATCH_VERNO | /bin/sed -e "s/\.//g")
+#PCLdoc="$(/bin/cat <<UPCL
+#Patch ${UPGRADE_PATCH_VERNO} Changelog:
+### Patch Notes Here...
+#UPCL
+#)"
+#/bin/echo "$PCLdoc"
+## So we can call a specific version later if needed
+#eval "v$CLEAN_PATCH_VERNO='$(/bin/echo "$PCLdoc")'"
+#
+## Move to working directory of the patch
+#if [ -d "/opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/" ]; then
+#cd /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/; fi
+#
+## Run the update scripts for this patch
+#
+###### SCRIPTS GO HERE #####
+## NOTE: PWD is /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/
+#
+## eg: /bin/echo "I would update the serfs here, but that happens automatically."
+#
+#
+#
+###### END SCRIPTS #########
+## Set and refresh the current version into inklists
+#/bin/sed -i "s/VERNO=.*/VERNO=\"${UPGRADE_PATCH_VERNO}\"/g" /opt/verb/conf/inklists/verberverno
+#. /opt/verb/conf/inklists/verberverno
+#/bin/echo "Verber upgraded to v${VERNO}"
+#else
+#/bin/echo "${UPGRADE_PATCH_VERNO} patch not necessary..."
+#fi
+###############END#UPGRADE#PATCH#
 
 
 # Security check
