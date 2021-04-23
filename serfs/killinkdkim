@@ -1,0 +1,22 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This removes all inkDKIM (OpenDKIM) records for a specific domain
+
+# How to use:
+## ./killinkdkim [domain.tld or subdomain.domain.tld etc]
+
+
+KILLDKIMDOMAIN=$1
+
+# Add the new domain key to the config files
+/bin/sed -i "/inkdkim\._domainkey\.${KILLDKIMDOMAIN} ${KILLDKIMDOMAIN}:inkdkim:\/etc\/opendkim\/keys\/${KILLDKIMDOMAIN}\/inkdkim\.private/d" /etc/opendkim/KeyTable
+/bin/sed -i "/${KILLDKIMDOMAIN} inkdkim\._domainkey\.${KILLDKIMDOMAIN}/d" /etc/opendkim/SigningTable
+/bin/sed -i "/${KILLDKIMDOMAIN}/d" /etc/opendkim/TrustedHosts
+/etc/init.d/opendkim restart
+/etc/init.d/postfix reload
+/etc/init.d/postfix restart
+
+# Create the declared domain key
+/bin/rm -rf /etc/opendkim/keys/${KILLDKIMDOMAIN}
+

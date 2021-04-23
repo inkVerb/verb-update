@@ -1,0 +1,13 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This adds an existing domain to vip/_domains
+
+# How to use:
+## ./adddomainvip [olddomain.tld]
+
+
+OLDDOMAIN=$1
+
+/bin/ln -s /srv/www/domains/${OLDDOMAIN} /srv/vip/_domains/${OLDDOMAIN}
+

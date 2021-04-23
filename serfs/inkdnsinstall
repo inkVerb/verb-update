@@ -1,0 +1,79 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This installs Bind DNS for managing DNS records in the inkDNS zone file on this Verber
+## This makes the server itself tha authoritative DNS server with a default/optional backup serfer
+## If the backup server is not specified, the default will be used, which should be used unless this is a domain mod
+
+# How to use:
+## ./inkdnsinstall
+
+
+# Check if installed
+. /opt/verb/conf/inkdns/inkdnsconf
+if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
+  /bin/echo "inkDNS already installed."
+  exit 0
+fi
+
+# Set the Inkers
+/opt/verb/serfs/inkdnssetinker
+/opt/verb/serfs/inkdnssetinker2
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+
+# Install Bind
+/usr/bin/pacman -S --noconfirm bind certbot-dns-rfc2136
+
+# Config
+/bin/cp -f /etc/named.conf /etc/named.conf.original
+/bin/cp -f /opt/verb/conf/inkdns/named.conf /etc/
+/usr/bin/chown root:named /etc/named.conf
+/usr/bin/chown 644 /etc/named.conf
+## Make sure our included files exist
+/usr/bin/touch /var/named/named.conf.rdns
+/usr/bin/touch /var/named/named.conf.verb
+## Add the Certbot key to the named config
+/usr/bin/echo $(tsig-keygen -a HMAC-SHA512 inkCertbotKey) >> /etc/named.conf
+
+# Set the NS domains
+## Verber Domains
+/bin/sed -i "s/ns2\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/inkzones/db.*
+/bin/sed -i "s/ns3\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/inkzones/db.*
+## Hosted domain template
+/bin/sed -i "s/ns1\.DNSDOMAIN286/${hostURI}/g" /opt/verb/conf/inkdns/db.dnsdomain
+/bin/sed -i "s/ns2\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/db.dnsdomain
+/bin/sed -i "s/ns3\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/db.dnsdomain
+## Any hosted domains
+if [ -f "/opt/verb/conf/inkdns/zones/db.*" ]; then
+  /bin/sed -i "s/ns1\.DNSDOMAIN286/${hostURI}/g" /opt/verb/conf/inkdns/zones/db.*
+  /bin/sed -i "s/ns2\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/zones/db.*
+  /bin/sed -i "s/ns3\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/zones/db.*
+fi
+
+## DEV: FYI apparmor permissions are here: /etc/apparmor.d/usr.sbin.named
+
+# DNS serial number
+/bin/echo '0 0 * * * root /opt/verb/donjon/rmserial.sh > /dev/null 2>&1' > /etc/cron.d/dnsserial
+/bin/chmod 0644 /etc/cron.d/dnsserial
+/bin/echo '#!/bin/sh
+/bin/rm -f /opt/verb/conf/inkdns/serial' > /opt/verb/donjon/rmserial.sh
+/bin/chmod 750 /opt/verb/donjon/rmserial.sh
+
+# Allow the port
+/usr/bin/ufw allow 53
+
+# Restart
+/bin/systemctl enable named
+/bin/systemctl start named
+
+# Config
+/bin/sed -i "s/INKDNSSTAT=.*/INKDNSSTAT=\"INSTALLED\"/" /opt/verb/conf/inkdns/inkdnsconf
+
+# Refresh all records
+/opt/verb/serfs/inkdnsrefreshbind
+
+# Finish
+/bin/echo "inkDNS installed."

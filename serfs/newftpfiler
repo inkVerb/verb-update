@@ -1,0 +1,34 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This creates a user with more powers than a normal ftp user, owning a unique ftp folder containing a symlink to the global vip/_filecabinet and the "files.vip" web accessible folder available at files.NAME.verb.vip/FTPFILERUSERNAME
+## Requires installvsftpd
+
+# How to use:
+## ./newftpfiler [new user] [new user password]
+
+
+NEWFTPFILER=$1
+NEWUSERPASS=$2
+
+# Create the user with password
+/usr/sbin/adduser ${NEWFTPFILER} --gecos ",,," --disabled-password
+/bin/echo "${NEWFTPFILER}:${NEWUSERPASS}" | chpasswd
+
+# Change the user's directory to the vsftpd filers directory
+/bin/mkdir /srv/vip/filers/${NEWFTPFILER}
+usermod -d /srv/vip/filers/${NEWFTPFILER} ${NEWFTPFILER}
+
+# Create the domains folder for the user
+/bin/mkdir /srv/vip/filers/${NEWFTPFILER}/_domains
+
+# Let the filer have a vip/_filecabinet link
+/bin/ln -s /srv/vip/_filecabinet /srv/vip/filers/${NEWFTPFILER}/
+
+# Create the link to access the folder via web
+/bin/mkdir /srv/vip/filers/${NEWFTPFILER}/files.vip
+/bin/ln -s /srv/vip/filers/${NEWFTPFILER}/files.vip /srv/www/vip/files/${NEWFTPFILER}
+
+# Own the user's web accessible symlink folder
+/bin/chown -R www:www /srv/vip/filers/${NEWFTPFILER}/files.vip
+/bin/chown -R www:www /srv/www/vip/files/${NEWFTPFILER}

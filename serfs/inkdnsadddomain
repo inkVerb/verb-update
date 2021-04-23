@@ -1,0 +1,39 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This creates a domain inkDNS zone file on this Verber
+
+# How to use:
+## ./inkdnsadddomain [domain]
+
+
+DNSDOMAIN="$1"
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+
+# Check if already added
+if [ -e "/opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}" ]; then
+/bin/echo "The domain ${DNSDOMAIN} zone file has already been created. Use inkdnskilldomain to remove it."
+exit 0; fi
+
+# DNS zone file
+/bin/cp /opt/verb/conf/inkdns/db.dnsdomain /opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}
+/bin/sed -i "s/hostdomain286/${DNSDOMAIN}/g" /opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}
+
+# rDNS zone file
+/bin/echo "; PTR Domain
+${SITEARPAIP4}		IN  PTR  ${DNSDOMAIN}.
+${SITEARPAIP6}		IN  PTR  ${DNSDOMAIN}." > /opt/verb/conf/inkdns/zones/nv.${DNSDOMAIN}
+
+# Set the Serial No
+/opt/verb/serfs/inkdnsserial ${DNSDOMAIN}
+
+# Refresh zones
+if [ -f "/opt/verb/conf/inkdns/inkdnsconf" ]; then
+  . /opt/verb/conf/inkdns/inkdnsconf
+  if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
+/opt/verb/serfs/inkdnsrefreshbind; fi; fi
+
+# Finish
+/bin/echo "${DNSDOMAIN} DNS zone file created."

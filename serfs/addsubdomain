@@ -1,0 +1,123 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This adds a subdomain to an existing domain's inkCert certificate with OpenDKIM profiles and keys after everything in the inkVerb server is already setup via setupverb.
+## Neither the domain nor the domain shell need to be installed already. This can be run first, all by itself.
+
+# How to use:
+## ./addsubdomain [subdomain-only] [olddomain.tld]
+
+
+SUBDOMAIN=$1
+OLDDOMAIN=$2
+
+# Include the config
+. /opt/verb/conf/servertype
+
+# Check the domain shell
+if [ ! -f /opt/verb/conf/inkcert/cli-ini/siteinkcert.${OLDDOMAIN} ]; then
+/bin/echo "The shell for ${OLDDOMAIN} does not exist yet. Creating it..."
+/opt/verb/serfs/newdomainshell ${OLDDOMAIN}
+wait
+fi
+
+# Check if it already exists
+if [ -f /opt/verb/conf/webserver/httpd/sites-available/${SUBDOMAIN}.${OLDDOMAIN}.conf ]; then
+ if [ -f /etc/httpd/sites-enabled/${SUBDOMAIN}.${OLDDOMAIN}.conf ]; then
+ /bin/echo "That subdomain already exists."
+ exit 7
+ else
+ /bin/echo "That site's config exists, but it doesn't seem to be active on Apache. Something's not right."
+ exit 8
+ fi
+fi
+
+# Server config files
+## Web directory
+if [ ! -d /srv/www/domains/${SUBDOMAIN}.${OLDDOMAIN} ]; then
+  /bin/cp -rf /opt/verb/conf/site-files/newdomain.tld /srv/www/domains/${SUBDOMAIN}.${OLDDOMAIN}
+fi
+/bin/ln -s /srv/www/domains/${SUBDOMAIN}.${OLDDOMAIN} /srv/www/html/
+/bin/chown -R www:www /srv/www/html/${SUBDOMAIN}.${OLDDOMAIN}
+/bin/chown -R www:www /srv/www/domains/${SUBDOMAIN}.${OLDDOMAIN}
+/bin/chmod -R 750 /srv/www/domains/${SUBDOMAIN}.${OLDDOMAIN}
+## Copy
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/cp /opt/verb/conf/site-files/conf/newnginxdomain.tld.conf /opt/verb/conf/webserver/nginx/sites-available/${SUBDOMAIN}.${OLDDOMAIN}.conf
+  /bin/sed -i "s/newdomain.tld/${SUBDOMAIN}.${OLDDOMAIN}/g" /opt/verb/conf/webserver/nginx/sites-available/${SUBDOMAIN}.${OLDDOMAIN}.conf
+  ## Server
+  /opt/verb/serfs/ensitenginx -r ${SUBDOMAIN}.${OLDDOMAIN}
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/cp /opt/verb/conf/site-files/conf/newdomain.tld.conf /opt/verb/conf/webserver/httpd/sites-available/${SUBDOMAIN}.${OLDDOMAIN}.conf
+  /bin/sed -i "s/newdomain.tld/${SUBDOMAIN}.${OLDDOMAIN}/g" /opt/verb/conf/webserver/httpd/sites-available/${SUBDOMAIN}.${OLDDOMAIN}.conf
+  ## Server
+  /opt/verb/serfs/ensiteapache -r ${SUBDOMAIN}.${OLDDOMAIN}
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/cp /opt/verb/conf/site-files/conf/newdomain.tld.conf /opt/verb/conf/webserver/httpd/sites-available/${SUBDOMAIN}.${OLDDOMAIN}.conf
+  /usr/bin/cp /opt/verb/conf/site-files/conf/newrpnginxdomain.tld.conf /opt/verb/conf/webserver/nginx/sites-available/${SUBDOMAIN}.${OLDDOMAIN}.conf
+  /bin/sed -i "s/newdomain.tld/${SUBDOMAIN}.${OLDDOMAIN}/g" /opt/verb/conf/webserver/httpd/sites-available/${SUBDOMAIN}.${OLDDOMAIN}.conf
+  /bin/sed -i "s/newdomain.tld/${SUBDOMAIN}.${OLDDOMAIN}/g" /opt/verb/conf/webserver/nginx/sites-available/${SUBDOMAIN}.${OLDDOMAIN}.conf
+  ## Server
+  /opt/verb/serfs/ensiteapache -r ${SUBDOMAIN}.${OLDDOMAIN}
+  /opt/verb/serfs/ensitenginx -r ${SUBDOMAIN}.${OLDDOMAIN}
+fi
+
+# inkDNS
+/opt/verb/serfs/inkdnsaddsub ${SUBDOMAIN} ${OLDDOMAIN}
+wait
+
+# inkCert
+## This adds the declared domain to the end of the "domains =" line
+/bin/sed -i "s/, ${SUBDOMAIN}.${OLDDOMAIN}//g" /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
+/bin/sed -i "/^domains =/ s/$/, ${SUBDOMAIN}.${OLDDOMAIN}/" /opt/verb/conf/inkcert/cli-ini/cli.${OLDDOMAIN}.ini
+
+# inkCert status
+## Not setup
+if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${OLDDOMAIN}; then
+/bin/echo "FYI: inkCert hasn't been setup for this domain.
+You are ready to run inkCert for ${OLDDOMAIN}, if you haven't already or unless you want to add more subdomains first."
+fi
+## inkCert-LE DONE
+if /bin/grep -Fq "INKCERTED=DONE_LE" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${OLDDOMAIN}; then
+/bin/echo "FYI: inkCert has already been setup for this domain with Letsencrypt. So, your other certs will need inkCert-LE certs also.
+The Letsencrypt certs will include this subdomain next time your Letsencrypt certs renew. But, that hasn't happened yet.
+To refresh and thus get certs for this subdomain, run inkcertreqle for ${OLDDOMAIN} with the \"r\" option, unless you want to add more subdomains first.
+Note: Don't get Letsencrypt certs for the same core domain.tld too often or Letsencrypt will make you wait to get more.
+
+In summary: ${SUBDOMAIN}.${OLDDOMAIN} will not have SSL certs until you run:
+  inkcertremovele ${OLDDOMAIN}
+   ...then...
+  inkcertdole ${OLDDOMAIN}
+"
+fi
+## inkCert-CB DONE
+if /bin/grep -Fq "INKCERTED=DONE_CB" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${OLDDOMAIN}; then
+/bin/echo "FYI: inkCert has already been setup for this domain with Certbot. So, your other certs will need inkCert-LE certs also.
+The Certbot certs will include this subdomain next time your Certbot certs renew. But, that hasn't happened yet.
+To refresh and thus get certs for this subdomain, run inkcertreqle for ${OLDDOMAIN} with the \"r\" option, unless you want to add more subdomains first.
+Note: Don't get Certbot certs for the same core domain.tld too often or Certbot will make you wait to get more.
+
+In summary: ${SUBDOMAIN}.${OLDDOMAIN} will not have SSL certs until you run:
+  inkcertremovecb ${OLDDOMAIN}
+   ...then...
+  inkcertdocb ${OLDDOMAIN}
+"
+fi
+## inkCert-IC DONE
+if /bin/grep -Fq "INKCERTED=DONE_IC" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${OLDDOMAIN}; then
+/bin/echo "FYI: inkCert has already been setup for this domain from inkCert Proper. So, your other certs will need inkCert Proper certs also.
+To refresh and thus get certs for this subdomain, run inkcertreq for ${OLDDOMAIN} with the \"r\" option, unless you want to add more subdomains first.
+Note: Don't get inkCert certs for the same core domain.tld too often or inkCert will make you wait to get more.
+
+In summary: ${SUBDOMAIN}.${OLDDOMAIN} will not have SSL certs under the domain until you run:
+either...
+ inkcertreq ${OLDDOMAIN} r
+or...
+ inkcertreq ${SUBDOMAIN}.${OLDDOMAIN}
+"
+fi
+
+# Finish
+/bin/echo "There is no inkDKIM email record for this specific subdomain, unless you want to add one with addinkdkim. That's if you want your subdomain in an email address.
+
+So, ${SUBDOMAIN}.${OLDDOMAIN} is good to go!"

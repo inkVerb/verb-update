@@ -1,0 +1,11 @@
+#!/bin/bash
+#inkVerbSerf! verb.ink
+
+
+# This runs the delete of the "serve" download directory rather than waiting for the 30 minute cron
+
+# How to use:
+## ./serveclear
+
+
+/opt/verb/donjon/rmdldirs.sh

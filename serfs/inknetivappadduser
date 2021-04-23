@@ -1,0 +1,32 @@
+#!/bin/sh
+#IVapp installer! verb.ink
+
+# This adds an IVapp user with settings for inkNet
+
+# Usertype options are: sail vrb vrk
+
+# How to use:
+## ./inknetivappadduser [user] [password] [usertype]
+
+
+ADDINIVUSER=$1
+ADDINIVPASS=$2
+ADDINIVCONF=$3
+
+# Check if installed
+if [ ! -d "/opt/ivapp/inknet" ]; then
+/bin/echo "ivApp is not instlled yet. I quit."; exit 8; fi
+
+# Add the user
+/opt/verb/donjon/ivapp/ivappadduser ${ADDINIVUSER} ${ADDINIVPASS} /opt/verb/conf/inknet/ivinknet-${ADDINIVCONF}.conf
+wait
+
+# Include the user type config
+. /opt/verb/conf/inknet/ivinknet-${ADDINIVCONF}.conf
+
+# Create the inkNet Client tool links
+/bin/rm -rf /opt/ivapp/inknet/${IVAPPGROUPDIR}/${ADDINIVUSER}/tools
+/bin/ln -sfn /opt/verb/tools/${IVAPPGROUPDIR} /opt/ivapp/inknet/${IVAPPGROUPDIR}/${ADDINIVUSER}/tools
+/bin/mkdir -p /opt/ivapp/inknet/${IVAPPGROUPDIR}/${ADDINIVUSER}/.ssh
+/bin/chown -R ${ADDINIVUSER}:${ADDINIVUSER} /opt/ivapp/inknet/${IVAPPGROUPDIR}/${ADDINIVUSER}
+

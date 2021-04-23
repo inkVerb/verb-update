@@ -1,0 +1,30 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This adds a new subdomain to become newsub.your-name.verb.vip, accessible in the _subs.vip folder, and enables CGI.
+# Prereq: vsftpd and ftpvip or ftpfiler
+
+# How to use:
+## ./newvipsubcgi [newsub only]
+
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+
+NEWVIPSUB=$1
+
+# Copy and prepare Apache server config files
+/bin/cp /opt/verb/conf/site-files/conf/newvipsubcgi.conf /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf 
+/bin/sed -i "s/newvipsub/${NEWVIPSUB}/g" /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf
+/bin/sed -i "s/vipURI286/${vipURI}/g" /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf
+/bin/cp -R /opt/verb/conf/site-files/newvipsubdir /srv/www/vip/_subs.vip/${NEWVIPSUB}
+/bin/chown -R www:www /srv/www/vip/_subs.vip/${NEWVIPSUB}
+/opt/verb/serfs/ensiteapache ${NEWVIPSUB}.${vipURI}
+/usr/bin/apachectl graceful
+/bin/cp /srv/www/html/vip/index-newvipsub.php /srv/www/html/vip/index-${NEWVIPSUB}.php
+/bin/chown -R www:www /srv/www/html/vip
+
+# inkCert, at end of the "domains =" line
+/bin/sed -i "/^domains =/ s/$/, ${NEWVIPSUB}.${vipURI}/" /opt/verb/conf/inkcert/cli-ini/cli.${vipURI}.ini
+

@@ -1,0 +1,126 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This script removes the server credentials and certificates for inkCert-Letsencrypt certs for a domain and replaces the Snakeoil certificate
+## It also applies to all subdomains for that domain
+## Prerequesite: inkcertrevokele
+## This is intended as a subscript of inkcertundole
+
+# How to use:
+## ./inkcertremovele [domain.tld OR subdomain.domain.tld]
+
+#Eg:
+## ./inkcertremovele inkisaverb.com
+## ./inkcertremovele YOURNAME.verb.blue
+
+
+DOMAIN=$1
+
+# Include the config
+. /opt/verb/conf/servertype
+
+if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
+  ## Check Nginx config status
+  if /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
+  /bin/echo "Removing inkCert-LE configs from ${DOMAIN}..."
+  else
+   if /bin/grep -Fq "#INKVERB-INKCERT=DONE_IC" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "Server configs use inkCert Proper. Use: inkcertremove"
+    exit 8
+   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "Server configs use inkCert-Certbot. Use: inkcertremovecb"
+    exit 8
+   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBDIGOC" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "Server configs use inkCert Proper. Use: inkcertremovecbdigoc"
+    exit 8
+   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_SC" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "Server configs use inkCert Self-Cert. Use: inkcertremovesc"
+    exit 8
+   elif /bin/grep -Fq "#INKVERB-INKCERT=NO" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "inkCert certs aren't setup. Nothing to do."
+    exit 0
+   else
+    /bin/echo "Something's really wrong. No inkCert, no non-inkCert either. I quit."
+    exit 6
+   fi
+  fi
+
+  ## Check that the certs are no longer live
+  if [ ! -d /etc/inkcert/le/live/${DOMAIN} ]; then
+
+  ## Uncomment the Snakeoil cert configs
+  /bin/sed -i "s/#INKVERB-INKCERT-COMMENT-ssl_certificate/ssl_certificate/g" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf
+
+  ## Remove the inkCert cert liness
+  /bin/sed -i '/#INKVERB-INKCERT=DONE_LE/,/#INKVERB-INKCERT-stop/{/#INKVERB-INKCERT=DONE_LE/!{/#INKVERB-INKCERT-stop/!d}}' /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf
+  /bin/sed -i 's/#INKVERB-INKCERT=DONE_LE/#INKVERB-INKCERT=INK_NO_REMOVED/' /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf
+  /bin/sed -i '/#INKVERB-INKCERT-stop/d' /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf
+  /bin/systemctl reloat nginx; wait
+
+  ## Note to the config
+  /bin/sed -i "s/INKCERTED=DONE_LE/INKCERTED=NO_REMOVED_LE/" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}
+
+  ## Finish
+  /bin/echo "inkCert has been uninstalled from ${DOMAIN}. Using Snakeoil certs."
+  exit 0
+  else
+
+  ## If they are live
+  /bin/echo "Something's wrong...
+
+The certs still seem to be live. Did you first run inkcertrevokele or simply run inkcertundole?
+"
+  fi
+
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  ## Check Apache config status
+  if /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
+  /bin/echo "Removing inkCert-LE configs from ${DOMAIN}..."
+  else
+   if /bin/grep -Fq "#INKVERB-INKCERT=DONE_IC" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "Server configs use inkCert Proper. Use: inkcertremove"
+    exit 8
+   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "Server configs use inkCert-Certbot. Use: inkcertremovecb"
+    exit 8
+   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBDIGOC" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "Server configs use inkCert Proper. Use: inkcertremovecbdigoc"
+    exit 8
+   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_SC" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "Server configs use inkCert Self-Cert. Use: inkcertremovesc"
+    exit 8
+   elif /bin/grep -Fq "#INKVERB-INKCERT=NO" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "inkCert certs aren't setup. Nothing to do."
+    exit 0
+   else
+    /bin/echo "Something's really wrong. No inkCert, no non-inkCert either. I quit."
+    exit 6
+   fi
+  fi
+
+  ## Check that the certs are no longer live
+  if [ ! -d /etc/inkcert/le/live/${DOMAIN} ]; then
+  ## Uncomment the Snakeoil cert configs
+  /bin/sed -i "s/#INKVERB-INKCERT-COMMENT-SSLCertificateFile/SSLCertificateFile/g" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+  /bin/sed -i "s/#INKVERB-INKCERT-COMMENT-SSLCertificateKeyFile/SSLCertificateKeyFile/g" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+  ## Remove the inkCert cert liness
+  /bin/sed -i '/#INKVERB-INKCERT=DONE_LE/,/#INKVERB-INKCERT-stop/{/#INKVERB-INKCERT=DONE_LE/!{/#INKVERB-INKCERT-stop/!d}}' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+  /bin/sed -i 's/#INKVERB-INKCERT=DONE_LE/#INKVERB-INKCERT=INK_NO_REMOVED/' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+  /bin/sed -i '/#INKVERB-INKCERT-stop/d' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+  /usr/bin/apachectl graceful
+  ## Note to the config
+  /bin/sed -i "s/INKCERTED=DONE_LE/INKCERTED=NO_REMOVED_LE/" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}
+
+  ## Finish
+  /bin/echo "inkCert has been uninstalled from ${DOMAIN}. Using Snakeoil certs."
+  exit 0
+  else
+
+  ## If they are live
+  /bin/echo "Something's wrong...
+
+The certs still seem to be live. Did you first run inkcertrevokele or simply run inkcertundole?
+"
+  fi
+
+fi

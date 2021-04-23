@@ -1,0 +1,10 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This displays a list of all installed Vapps on this Verber
+
+# How to use:
+## ./showvapps
+
+
+ls -1 /srv/www/vapps/

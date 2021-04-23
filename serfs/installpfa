@@ -1,0 +1,127 @@
+#!/bin/bash
+#inkVerbSerf! verb.ink
+
+# This installs postfix admin
+## PostfixAdmin setup secure option: use "secure" for a password required, otherwise anything else including empty
+## If using 'secure', you must set the hash via setpfapass
+## Prerequisite: verbemail IF using a verb domain other than verb.email
+## Prerequisite: installpostfixvmail, installrc
+
+# How to use:
+## ./installpfa [path folder] [setup password option]
+
+# Eg: (To use at pfa.NAME.verb.email/mysecretpath do:)
+## ./installpfa mysecretpath
+## ./installpfa mysecretpath somepassword
+
+
+CVAPPNAME=postfixadmin
+# Include the config files
+. /opt/verb/conf/servertype
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+. /opt/verb/conf/sitemailpass
+. /opt/verb/conf/sitemailpath
+
+# Check dependencies and to see if already installed
+if [ ${SITEMAILSTATUS} != "VMAIL_SERVER" ]; then
+/bin/echo "
+The email server must be installed first. Run: installpostfix
+"
+exit 8; fi
+if [ ${SITEPFAPATH} = "PFA_NOT_ALLOWED" ]; then
+/bin/echo "
+This is a backup email server and PostfixAdmin is not allowed.
+"
+exit 0; fi
+if [ ${SITEPFAPATH} != "PFA_NOT_INSTALLED" ]; then
+/bin/echo "
+PostfixAdmin is already installed.
+"
+exit 0; fi
+if /bin/grep -Fq "Webmail Defaults" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}; then
+/bin/echo "Proceeding..."; else
+/bin/echo "
+Webmail Defaults not declared in the DNS zone file. This won't work.
+"
+exit 8; fi
+
+# Options & secure path
+if [ -n "$1" ]; then
+  export PFAFOLDER=$1 # We need this variable in our Finish echo statement when running via installvmail
+else
+  export PFAFOLDER="$(/usr/bin/pwgen -0 5 1)" # We need this variable in our Finish echo statement when running via installvmail
+fi
+if [ -n "$2" ]; then
+  export PFAPASS=$2 # We need this variable in our Finish echo statement when running via installvmail
+else
+  export PFAPASS="$(pwgen -1Bcn 10)" # We need this variable in our Finish echo statement when running via installvmail
+fi
+
+# Download from repo
+cd /srv/www/email
+/opt/verb/serfs/inkget ${CVAPPNAME}; wait
+### Check
+/opt/verb/serfs/inkget ${CVAPPNAME} check
+if [ "$?" = 4 ]; then
+/bin/echo "Repo failed to retrieve the file."
+exit 4; fi
+if [ ! -f ${CVAPPNAME}.vtxz ]; then
+/bin/echo "Failed to retrieve from the repo."
+exit 4; fi
+
+/bin/rm -rf ${CVAPPNAME}
+/opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
+## Fix a bug
+/bin/mkdir -p /srv/www/email/postfixadmin/templates_c
+
+# Settings
+/bin/sed -i "s/emailTLDURI286/${emailTLDURI}/g" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "s/nameURI286/${nameURI}/g" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "s/mailpassword/mailpass${SITEMAILPASSAPG}/g" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "s/rcfolder286/${SITERCPATH}/g" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "s/pfafolder286/${PFAFOLDER}/g" /srv/www/email/postfixadmin/config.local.php
+
+# Copy the branding files
+/bin/cp /opt/verb/conf/lab/vmail/postfixadmin/pfapics/images/logo-ink.png /srv/www/email/postfixadmin/public/images/
+
+# Settings
+/usr/bin/cp /opt/verb/conf/lab/vmail/postfixadmin/postfixadmin286-config.inc.php /srv/www/email/postfixadmin/config.local.php
+## Whether web-generated (secure) or auto-generated password
+INSTHASH="$(php -r "echo password_hash('${PFAPASS}', PASSWORD_DEFAULT);")"
+/bin/sed -i "s/\$CONF\['configured'\] = .*/\$CONF\['configured'\] = true;/g" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "s/^\$CONF\['setup_password'\] = /#\$CONF\['setup_password'\] = /g" /srv/www/email/postfixadmin/config.local.php
+/usr/bin/cat <<EOF >> /srv/www/email/postfixadmin/config.local.php
+\$CONF['setup_password'] = '${INSTHASH}';
+EOF
+
+# Replace
+/bin/sed -i "s/emailTLDURI286/${emailTLDURI}/g" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "s/nameURI286/${nameURI}/g" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "s/mailpassword/mailpass${SITEMAILPASSAPG}/g" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "s/rcfolder286/${SITERCPATH}/g" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "s/pfafolder286/${PFAFOLDER}/g" /srv/www/email/postfixadmin/config.local.php
+
+# Copy the branding files
+/bin/cp /opt/verb/conf/lab/vmail/postfixadmin/pfapics/images/logo-ink.png /srv/www/email/postfixadmin/public/images/
+
+# Webserver
+/bin/ln -sfn /srv/www/email/postfixadmin/public /srv/www/html/${SITEEMAILTLD}.pfa/${PFAFOLDER}; wait
+/bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.pfa; wait
+/bin/chown -R www:www /srv/www/email/postfixadmin; wait
+/bin/sed -i "s/; Webmail Defaults/; Webmail Defaults\npfa\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\npfa\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/zones/db.${emailTLDURI}
+
+# Write the config
+/bin/sed -i "s/SITEPFAPATH.*/SITEPFAPATH=\"${PFAFOLDER}\"/g" /opt/verb/conf/sitemailpath
+
+# Finish
+/bin/echo "
+Postfix Admin is installed and ready to be set up.
+
+For setup, note:
+- Use the install password '${PFAPASS}'
+
+Set up all this at:
+ https://pfa.${emailTLDURI}/${PFAFOLDER}/setup.php
+- Then run ./postinstallpfa
+"

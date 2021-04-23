@@ -1,0 +1,23 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This purges (deletes) the vmail directory of an email domain from the server
+
+# How to use:
+## ./vmailpurgedomain [domain]
+
+
+# Check to see if vmail is installed
+. /opt/verb/conf/sitemailpath
+if [ "$SITEMAILSTATUS" != "VMAIL_SERVER" ]; then
+  /bin/echo "Vmail not installed. Do that first."
+  exit 0; fi
+
+# Variable
+domain="$1"
+
+# Delete
+/bin/rm -rf /var/vmail/$domain
+
+# Finish
+/bin/echo "Email domain $domain purged from server"

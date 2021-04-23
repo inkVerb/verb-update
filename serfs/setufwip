@@ -1,0 +1,16 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This sets the firewall allowed IP address using ufw
+
+## THIS IS EXPIRIMENTAL. A restart may be required.
+
+# How to use:
+## ./setufwip [IP address]
+
+
+IP_ADDRESS=$1
+
+/usr/bin/ufw allow from ${IP_ADDRESS}
+/bin/sed -i "s/SITEUFWIP.*/SITEUFWIP=\"${IP_ADDRESS}\"/g" /opt/verb/conf/siteufwip
+

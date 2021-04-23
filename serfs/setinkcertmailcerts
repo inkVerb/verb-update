@@ -1,0 +1,21 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This links the mail certs defined by setinkcertmail to the location used by the mail server
+## This is run automatically by installpostfixvmail and normally should not be run independently
+## The only purpose for running this independently is if inkCert was not installed for the main Verber before running installpostfixvmail and this is run after the fact
+
+# How to use:
+## ./setinkcertmailcerts
+
+
+# Include the config
+. /opt/verb/conf/siteurilist
+
+# Link the certs if they exist
+if [ -f "/etc/inkcert/le/live/${nameURI}/fullchain.pem" ]; then
+  /usr/bin/ln -sfn /etc/inkcert/le/live/${nameURI}/fullchain.pem /etc/inkcert/mail/vmail.crt
+fi
+if [ -f "/etc/inkcert/le/live/${nameURI}/privkey.pem" ]; then
+  /usr/bin/ln -sfn /etc/inkcert/le/live/${nameURI}/privkey.pem /etc/inkcert/mail/vmail.key
+fi

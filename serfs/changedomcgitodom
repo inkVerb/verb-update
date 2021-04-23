@@ -1,0 +1,20 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This script changes the Apache config file for a domain or subdomain from a cgi config to a regular config without changing the web folder contents
+## This only changes contents of httpd/sites-available
+## This may also be used for sub.NAME.verb.vip sites or any full, public URI hosted on the server
+
+# How to use:
+## ./changedomcgitodom [domain.tld or subdomain.domain.tld]
+
+
+# Include the config file
+. /opt/verb/conf/sitenameip
+
+DOMAIN=$1
+
+/bin/rm -f /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+/bin/cp /opt/verb/conf/site-files/conf/newdomaincgi.tld.conf /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+/bin/sed -i "s/newdomain.tld/${DOMAIN}/g" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+/usr/bin/apachectl graceful

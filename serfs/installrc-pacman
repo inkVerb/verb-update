@@ -1,0 +1,234 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This installs roundcube
+## Prerequisite: verbemail IF using a verb domain other than verb.email
+
+# Auxiliary Prereqs...
+## Prerequisite: installpostfix (so that the installer can work)
+## Prerequisite: installpfa (to create the email inbox so the installer can work)
+## Prerequisite: * installpostfix and installpfa and this script are included in installemail. Run installemail to meet these auxiliary prerequisites
+
+#DEV This is broken, if deleted, also delete:
+#inst/webserver/laemp-conf/rc-nginx.conf
+#inst/webserver/laemp-conf/rc-httpd.conf
+#inst/webserver/lamp-conf/rc-httpd.conf
+#inst/webserver/lemp-conf/rc-nginx.conf
+
+# How to use:
+## ./installrc [path folder]
+
+# Eg:
+## (To use at rc.NAME.verb.email/mysecretpath do:)
+## ./installrc mysecretpath
+
+
+CVAPPNAME=roundcube
+# Include the config files
+. /opt/verb/conf/servertype
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+. /opt/verb/conf/sitemailpass
+. /opt/verb/conf/sitemailpath
+
+# Check dependencies and to see if already installed
+if [ ${SITEMAILSTATUS} != "VMAIL_SERVER" ]; then
+/bin/echo "
+The email server must be installed first. Run: installpostfix
+"
+exit 8; fi
+if [ ${SITERCPATH} = "RC_NOT_ALLOWED" ]; then
+/bin/echo "
+This is a backup email server and Roundcube is not allowed.
+"
+exit 0; fi
+if [ ${SITERCPATH} != "RC_NOT_INSTALLED" ]; then
+/bin/echo "
+Roundcube is already installed.
+"
+exit 0; fi
+if [ ${SITEMAILSTATUS} = "EMAIL_NOT_INSTALLED" ]; then
+/bin/echo "
+This is a backup email server and Roundcube is not allowed.
+"
+exit 8; fi
+if /bin/grep -Fq "Webmail Defaults" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}; then
+/bin/echo "Proceeding..."; else
+/bin/echo "
+Webmail Defaults not declared in the DNS zone file. This won't work.
+"
+exit 8; fi
+
+# Security & path
+if [ -n "$1" ]; then
+RCFOLDER=$1
+else
+RCFOLDER="$(/usr/bin/pwgen -0 5 1)"
+fi
+RCPASSGEN=$(/usr/bin/pwgen -s -1 5)
+DESSALTGEN=$(/usr/bin/pwgen -s -1 24)
+
+# Install package
+/usr/bin/pacman -S --noconfirm roundcubemail
+
+# Directories
+## Generate a symlink for the Verber
+/usr/bin/ln -sfn /etc/webapps/roundcubemail /srv/www/email/roundcube
+
+# Create the MySQL database and user
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
+CREATE DATABASE rcmail DEFAULT CHARACTER SET utf8mb4 COLLATE utf8_unicode_ci;
+GRANT ALL PRIVILEGES ON rcmail.* TO 'rcmailusr'@'localhost' IDENTIFIED BY 'rcpass${RCPASSGEN}';
+FLUSH PRIVILEGES;"
+## Initialize the database before the installer page
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf roundcube < /usr/share/webapps/roundcubemail/SQL/mysql.initial.sql
+
+# Settings
+/bin/cp /opt/verb/conf/lab/vmail/roundcube/mime.types /srv/www/email/roundcube/
+#cp /etc/httpd/conf/mime.types /srv/www/email/roundcube/mime.types # If getting mime types from server
+/bin/cp /opt/verb/conf/lab/vmail/roundcube/config/roundcube286-config.inc.php /srv/www/email/roundcube/config/config.inc.php
+/bin/cp /opt/verb/conf/lab/vmail/roundcube/config/roundcube286-defaults.inc.php /srv/www/email/roundcube/config/defaults.inc.php
+/bin/sed -i "s/emailTLDURI286/${emailTLDURI}/g" /srv/www/email/roundcube/config/config.inc.php
+/bin/sed -i "s/emailTLDURI286/${emailTLDURI}/g" /srv/www/email/roundcube/config/defaults.inc.php
+/bin/sed -i "s/nameURI286/${nameURI}/g" /srv/www/email/roundcube/config/config.inc.php
+/bin/sed -i "s/nameURI286/${nameURI}/g" /srv/www/email/roundcube/config/defaults.inc.php
+/bin/sed -i "s/rcpass286/rcpass${RCPASSGEN}/g" /srv/www/email/roundcube/config/config.inc.php
+/bin/sed -i "s/rcpass286/rcpass${RCPASSGEN}/g" /srv/www/email/roundcube/config/defaults.inc.php
+/bin/sed -i "s/rcemailconfdeskeysalt286/${DESSALTGEN}/g" /srv/www/email/roundcube/config/config.inc.php
+# In the event that installpfa was run first
+if [ -e "/srv/www/email/postfixadmin/config.inc.php" ]; then
+/bin/sed  -i "s/rcfolder286/${RCFOLDER}/g" /srv/www/email/postfixadmin/config.inc.php
+fi
+
+# Webserver
+## Web directories
+/bin/cp -R /srv/www/html/0ne /srv/www/html/${SITEEMAILTLD}.rc
+/bin/ln -sfn /usr/share/webapps/roundcubemail /srv/www/html/${SITEEMAILTLD}.rc/${RCFOLDER}
+/bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.rc
+## DNS
+/bin/sed -i "s/; Webmail Defaults/; Webmail Defaults\nrc\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\nrc\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}
+## Server type
+if [ ${SERVERTYPE} = "laemp" ] || [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/mv /opt/verb/conf/webserver/httpd/sites-available/pfa.${emailTLDURI}.conf /opt/verb/conf/webserver/httpd/sites-available/pfa.${emailTLDURI}.conf.old
+  /usr/bin/cp /opt/verb/conf/site-files/conf/rc.conf /opt/verb/conf/webserver/httpd/sites-available/rc.${emailTLDURI}.conf
+  /opt/verb/serfs/ensiteapache rc.${emailTLDURI}
+elif [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/mv /opt/verb/conf/webserver/nginx/sites-available/pfa.${emailTLDURI}.conf /opt/verb/conf/webserver/nginx/sites-available/pfa.${emailTLDURI}.conf.old
+  /usr/bin/cp /opt/verb/conf/site-files/conf/rc.conf /opt/verb/conf/webserver/nginx/sites-available/rc.${emailTLDURI}.conf
+  /opt/verb/serfs/ensitenginx rc.${emailTLDURI}
+fi
+
+# Write the config
+/bin/sed -i "s/SITEPFAPATH.*/SITEPFAPATH=\"${PFAFOLDER}\"/g" /opt/verb/conf/sitemailpath
+
+# Setup for inkCert
+. /opt/verb/conf/inkcert/cli-ini/siteinkcert.${emailTLDURI}
+case ${INKCERTED} in
+  DONE_SC)
+  /opt/verb/serfs/inkcertaddsc rc.${emailTLDURI} ${emailTLDURI}
+  ;;
+  DONE_IC)
+  /opt/verb/serfs/inkcertadd rc.${emailTLDURI} ${emailTLDURI}
+  ;;
+  DONE_LE)
+  /opt/verb/serfs/inkcertaddle rc.${emailTLDURI} ${emailTLDURI}
+  ;;
+  DONE_CB)
+  /opt/verb/serfs/inkcertaddcb rc.${emailTLDURI} ${emailTLDURI}
+  ;;
+  NO|NOT_YET)
+    /bin/echo "Nextcloud is currently using Snakeoil certs, ready for inkCert"
+  ;;
+  *)
+    if ! /bin/grep -q "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+      /bin/echo "Something's wrong with the inkCert siteinkcert configs! Aborting"
+      exit 6
+    else
+      /bin/echo "Nextcloud is currently using Snakeoil certs, ready for inkCert"
+    fi
+  ;;
+esac
+
+# Webserver restart
+if [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/systemctl restart nginx; wait
+  /usr/bin/systemctl restart httpd; wait
+elif [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx; wait
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd; wait
+fi
+
+# Copy the branding files
+/bin/cp /opt/verb/conf/lab/vmail/roundcube/roundcubepics/verbink_logo.png /usr/share/webapps/roundcubemail/
+/bin/cp /opt/verb/conf/lab/vmail/roundcube/roundcubepics/skins/elastic/images/logo.svg /usr/share/webapps/roundcubemail/skins/elastic/images/
+/bin/cp /opt/verb/conf/lab/vmail/roundcube/roundcubepics/skins/elastic/images/favicon.ico /usr/share/webapps/roundcubemail/skins/elastic/images/
+/bin/cp /opt/verb/conf/lab/vmail/roundcube/roundcubepics/skins/larry/images/verbink_logo.png /usr/share/webapps/roundcubemail/skins/larry/images/
+/bin/cp /opt/verb/conf/lab/vmail/roundcube/roundcubepics/skins/larry/images/watermark.jpg /usr/share/webapps/roundcubemail/skins/larry/images/
+/bin/cp /opt/verb/conf/lab/vmail/roundcube/roundcubepics/skins/larry/images/favicon.ico /usr/share/webapps/roundcubemail/skins/larry/images/
+
+# Own again
+/bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.rc
+
+# Set the config for backup
+/bin/sed -i "s/SITERCPASSAPG.*/SITERCPASSAPG=\"${RCPASSGEN}\"/g" /opt/verb/conf/sitemailpass
+/bin/sed -i "s/SITERCPATH.*/SITERCPATH=\"${RCFOLDER}\"/g" /opt/verb/conf/sitemailpath
+
+#DEV This may not be necessary
+# Set up plugins that Composer broke
+#cd /srv/www/email/roundcube/plugins/
+#if [ ! -d "/srv/www/email/roundcube/plugins/authres_status" ]; then
+#/bin/cp /opt/verb/conf/lab/vmail/roundcube/authres_status.vtxz .
+#/opt/verb/serfs/vtxzout authres_status; wait; fi
+#if [ ! -d "/srv/www/email/roundcube/plugins/contextmenu" ]; then
+#/bin/cp /opt/verb/conf/lab/vmail/roundcube/contextmenu.vtxz .
+#/opt/verb/serfs/vtxzout contextmenu; wait; fi
+
+## Sledgehammertime (Composer Plugins)
+### This is excerpted from installrcinkplugins
+#cd /srv/www/email/roundcube
+#/usr/bin/curl -s https://getcomposer.org/installer | php
+#/bin/cp composer.json-dist composer.json
+### Plugins
+#### Unfortuntately, I only know how to sed this one line at a time.
+## Causing problems, reactivate when they decide on a minimum version number that doesn't exist in the future
+##sed -i '/\"require\": {/ a\
+##        \"johndoh\/contextmenu\": \"dev-master\",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"pear-pear.php.net\/net_ldap2\": \"dev-master\",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"kolab\/Net_LDAP3\": \"dev-master\",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"angrychimp\/php-dkim\": \"dev-master\",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"roundcube\/authres_status\": \"dev-master",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"cor\/keyboard_shortcuts\": \"dev-master\",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"johndoh\/markasjunk2\": \"dev-master\",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"kitist\/html5_notifier\": \"dev-master\",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"roundcube\/chbox\": \"dev-master\",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"roundcube\/custom-from\": \"dev-master\",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"elm\/identity_smtp\": \"dev-master\",' composer.json
+## Now finish the composer installation
+### First, update just in case, if you want
+#php composer.phar update -n
+### Then, run install ( -n / --no-interaction = no interaction)
+#php composer.phar install -n # Composer doesn't like this run from root
+#/usr/bin/su slave -c 'php composer.phar install -n'
+
+# Finished
+/bin/echo "
+Roundcube is installed ready to be set up.
+
+For setup, note:
+- You will need one email inbox created in Postfix Admin.
+
+Set up all this at:
+ https://rc.${emailTLDURI}/${RCFOLDER}/installer
+- Then run ./postinstallrc
+"

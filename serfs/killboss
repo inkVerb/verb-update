@@ -1,0 +1,17 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This deletes a boss and its home folder.
+
+# How to use:
+## ./killboss [user]
+
+
+DELBOSSUSER=$1
+
+# Delete the user
+userdel ${DELBOSSUSER}
+
+# Remove directories and web symlink
+/bin/rm -rf /home/${DELBOSSUSER}
+

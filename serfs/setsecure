@@ -1,0 +1,12 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This changes ownership of the configs directory
+
+# How to use:
+## ./setsecure
+
+
+# File permissions for configs
+/bin/chmod 660 -R /opt/verb/conf
+

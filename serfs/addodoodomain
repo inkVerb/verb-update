@@ -1,0 +1,87 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This adds a domain to point to the main Odoo port, after Odoo has been installed at odoo.NAME.verb.red
+## Domain: can be any long URI string ending with the tld, including subdomains.
+## The domain will automatically be added with DKIM credentials if it has not been already
+## This will NOT run inkCert for the domain, but inkCert will be prepped at least and used if inkCert certs already exist.
+
+#DEV: This still needs a tld status check to see if red is on
+
+# How to use:
+## ./addodoodomain [domain]
+
+
+CVAPPNAME=odoo
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+. /opt/verb/conf/sitetldstatus
+
+DOMAIN=$1
+
+# Basic credential check
+if [ -z ${1} ]; then
+/bin/echo "You must designate a domain. Read the How to use. Can't continue."
+exit 8; fi
+
+# Check if already installed
+if [-f /opt/verb/conf/vapp.${CVAPPNAME}.${DOMAIN} ]; then
+/bin/echo "Odoo is already set for that domain. I quit."
+exit 0; fi
+
+# Check tld status for red
+if [ "${VERBred}" != "true" ]; then
+/bin/echo "The \"red\" tld is not active on this server. Doing nothing."
+exit 0; fi
+
+# Check for existing Odoo
+. /opt/verb/conf/siteinstallstatus
+## red.odoo
+if [ "${REDodoo}" = "NOT_YET" ]; then
+/bin/echo "Odoo must first be installed at odoo.${redURI}.
+Run installodoo10 or a later version if it exists.
+"
+exit 0; fi
+
+# Domain presence check
+if [ ! -d "/srv/www/domains/${DOMAIN}" ]; then
+/opt/verb/serfs/adddomain ${DOMAIN}
+wait
+fi
+
+# Apache
+## Remove static-Apache newdomain config & html folder
+/bin/rm -f /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+/bin/rm -f /srv/www/html/${DOMAIN}
+/bin/echo "Odoo Site" > /srv/www/html/${DOMAIN}
+## Add the Apache config
+/bin/cp /opt/verb/conf/site-files/conf/newodoosite.conf /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+/bin/sed -i "s/odoosite286/${DOMAIN}/g" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+/bin/sed -i "s/ip286/${SITEIP}/g" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+/usr/bin/apachectl graceful
+## inkCert SSL certs
+### Not setup
+if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+/bin/echo "FYI: inkCert is not yet setup for ${DOMAIN}."
+fi
+### inkCert-LE DONE
+if /bin/grep -Fq "INKCERTED=DONE_LE" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+/bin/echo "inkCert-LE is already setup for ${DOMAIN}. Updating the Apache configs..."
+/opt/verb/serfs/inkcertaddle ${DOMAIN}
+fi
+### inkCert-IC DONE
+if /bin/grep -Fq "INKCERTED=DONE_IC" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+/bin/echo "inkCert-IC is already setup for ${DOMAIN}. Updating the Apache configs..."
+/opt/verb/serfs/inkcertadd ${DOMAIN}
+fi
+
+# Write the config for backup
+/bin/echo "#!/bin/sh
+ODOODOMAIN=\"${DOMAIN}\"
+ODOOPORT=\"${NEWPORT}\"" > /opt/verb/conf/vapp.${CVAPPNAME}.${DOMAIN}
+
+# Finish
+/bin/echo "${DOMAIN} now points to your Odoo installation."
+

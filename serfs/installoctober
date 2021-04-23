@@ -1,0 +1,176 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This downloads and installs OctoberCMS as a vapp with www/html/DOMAIN.TLD link from newdomain
+## October actually resides in www/vapps/october.DOMAIN.TLD
+## This progression is necessary to: 1. keep track of domain contents in www/domains and 2. use standard structure for backups
+## This does not remove any files an ftpvip may have uploaded to the domain's folder
+## Any files conflicting with OctoberCMS will be replaced by the new OctoberCMS installation created by this script
+## Because OctoberCMS is high-maintenance on the developer end, the domain becomes a vip domain and is linked for ftp access in vip/_domains
+
+# All options after the domain are optional, but are sequential
+
+# How to use:
+## ./installoctober [domain.tld] [dbase] [dbuser] [dbpassword]
+
+
+CVAPPNAME=october
+
+DOMAIN=$1
+DBASE=$2
+DBUSER=$3
+DBPASSWORD=$4
+CLEANNAME=$(/bin/echo $DOMAIN | sed -e 's/\.//g')
+
+# Check if already installed
+## Config
+if [ -f /opt/verb/conf/vapp.${CVAPPNAME}.${DOMAIN} ]; then
+/bin/echo "This is already installed."
+exit 0; fi
+## Directory
+if [ -d /srv/www/vapps/${CVAPPNAME}.${DOMAIN} ]; then
+/bin/echo "That October site already exists in the system. If it isn't working, look deeper on the server. For now, doing nothing."
+exit 8; fi
+
+
+# Options
+if [ -z ${1} ]; then
+/bin/echo "You must designate a domain."
+exit 8; fi
+
+# Include the config file
+. /opt/verb/conf/sitenameip
+
+# Download and establish October in the server to pre-created domain
+cd /srv/www/vapps
+git clone https://github.com/octobercms/install
+if [ ! -d install ]; then
+/bin/echo "Can't download OctoberCMS. I quit."
+exit 4; fi
+
+# Auto database
+if [ -z ${4} ]; then
+DBPASSWORD=$(/usr/bin/pwgen -s -1 10); fi
+if [ -z ${2} ]; then
+DBASE=oct$(/bin/echo $CLEANNAME | cut -c1-23)$(/usr/bin/pwgen -s -1 6); fi
+if [ -z ${3} ]; then
+DBUSER=${DBASE}; fi
+
+/bin/mv install ${CVAPPNAME}.${DOMAIN}
+
+## Install main themes and plugins
+### Plugins
+cd ${DOMAIN}/plugins
+/usr/bin/wget https://github.com/rainlab/user-plugin/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/rainlab/pages-plugin/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/anand-patel/oc-wysiwyg-editors/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/gergo85/oc-backend-plus/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/rainlab/blog-plugin/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/vojtasvoboda/oc-userbanned-plugin/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/gergo85/oc-devtools/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/theone74/oc-telegram-plugin/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/rainlab/googleanalytics-plugin/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/rainlab/location-plugin/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/rainlab/user-plugin/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/rainlab/builder-plugin/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+### Themes
+cd ../themes
+/usr/bin/wget https://github.com/octobercms/october/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/goeroe/semantic-october-sass/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/rustytheitgod/Rusty-OctoberCMS-Bootstrap4-Blank/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/Hambern/octobercms.blank-bootstrap-4/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/laratify/laratify-octobercms-octaskin/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/rainlab/vanilla-theme/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/responsiv/flat-theme/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/jtherczeg/multi-theme/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/ChadStrat/travu-theme/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/jtherczeg/corlate-theme/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/jacoweb/freelanceTheme/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+/usr/bin/wget https://github.com/jacoweb/AgencyTheme/archive/master.zip
+/usr/bin/unzip master.zip
+/bin/rm -f master.zip
+## Setup links
+/bin/rm -f /srv/www/html/${DOMAIN}; wait
+/bin/ln -s /srv/www/vapps/${CVAPPNAME}.${DOMAIN} /srv/www/html/${DOMAIN}; wait
+/bin/ln -s /srv/www/vapps/${CVAPPNAME}.${DOMAIN} /srv/vip/_webapps/; wait
+/bin/chown -R www:www /srv/www/html/${DOMAIN}; wait
+/bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}.${DOMAIN}; wait
+
+# Create the database and credentials
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
+CREATE DATABASE  ${DBASE};
+GRANT ALL PRIVILEGES ON ${DBASE}.* TO '${DBUSER}'@'localhost' IDENTIFIED BY '${DBPASSWORD}';
+FLUSH PRIVILEGES;"
+## MySQL port (may not be necessary, so commented)
+#/usr/bin/ufw allow 3306
+
+# Write the config for backup
+/bin/echo "#!/bin/sh
+APPDBASE=${DBASE}
+APPDDBUSR=${DBUSER}
+APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}.${DOMAIN}
+
+# Reset all permissions
+/bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}.${DOMAIN}
+
+/bin/echo "These are setup for OctoberCMS:
+
+Database Type: MySQL
+MySQL Host: localhost
+MySQL Port: 3306
+
+Database Name: ${DBASE}
+MySQL Login: ${DBUSER}
+MySQL Password: ${DBPASSWORD}
+
+You also have ftp access to the folder in: vip/_domains/${DOMAIN}
+
+Go to http://${DOMAIN}/index.php to install.
+"
+

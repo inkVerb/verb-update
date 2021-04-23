@@ -1,0 +1,175 @@
+#!/bin/bash
+#inkVerbSerf! verb.ink
+
+# This requests and gets certs via inkCert Proper for a given domain, including inkVerb namespace domains
+## It applies only to one domain/subdomain at a time
+## Prereq: inkcertinstall, inkcertsetcsr
+## This is intended as a subscript of inkcertdo
+## Use the "r" option at the end to bypass the normal check for already-done inkCert Proper certs and refresh the cert, such as to include recently added subdomains.
+
+# DEV: This is not finished, it will use inkNet and inkcertgetcert-verber
+## See the area below for adding code
+
+# How to use:
+## ./inkcertreq [domain.tld or sub.domain.tld] [r (optional)]
+
+#Eg:
+## ./inkcertreq inkisaverb.com
+## ./inkcertreq blog.inkisaverb.com
+## ./inkcertreq YOURNAME.verb.one
+## ./inkcertreq owncloud.YOURNAME.verb.blue
+## ./inkcertreq smtp.YOURNAME.verb.email
+## ./inkcertreq inkisaverb.com r
+## ./inkcertreq YOURNAME.verb.pink r
+## ./inkcertreq smtp.YOURNAME.verb.email r
+
+
+DOMAIN=$1
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+. /opt/verb/conf/inkcert/inkcertstatus
+
+# Check inkCert installed
+if [ "${INKCERTINSTALLED}" = "NOT_YET" ]; then
+/bin/echo "inkCert not yet installed.
+
+First run inkcertinstall
+"
+exit 0
+fi
+
+# Verify that the domain is installed
+if [ ! -f /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN} ]; then
+/bin/echo "Sorry, Bucko. ${DOMAIN} is not installed yet.
+
+Do that first, then get back to me.
+"; exit 0
+fi
+
+# Include and check the inkCert domain config
+. /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}
+inkcertmsg="This sets up certs for inkCert Proper."
+case ${INKCERTED} in
+  DONE_SC)
+  /bin/echo $inkcertmsg
+  /bin/echo "inkCert self-cert is already setup for ${DOMAIN}.
+
+  To set up certs differently, first run: inkcertrevokesc ${DOMAIN}, then run this again.
+  "
+  exit 0
+  ;;
+  DONE_IC)
+  /bin/echo $inkcertmsg
+  /bin/echo "inkCert Proper is already setup for ${DOMAIN}.
+
+  To set up certs differently, first run: inkcertrevoke ${DOMAIN}, then run this again.
+  "
+  exit 0
+  ;;
+  DONE_LE)
+  /bin/echo $inkcertmsg
+  /bin/echo "inkCert Letsencrypt is already setup for ${DOMAIN}.
+
+  To set up certs differently, first run: inkcertrevokele ${DOMAIN}, then run this again.
+  "
+  exit 0
+  ;;
+  DONE_CB)
+  /bin/echo $inkcertmsg
+  /bin/echo "inkCert cert-bot is already setup for ${DOMAIN}.
+
+  To set up certs differently, first run: inkcertrevokecb ${DOMAIN}, then run this again.
+  "
+  exit 0
+  ;;
+  NO|NOT_YET)
+    /bin/echo "Ready to go..."
+  ;;
+  *)
+    if ! /bin/grep -q "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+      /bin/echo "Something's wrong with the inkCert siteinkcert configs! Aborting"
+      exit 6
+    else
+      /bin/echo "Ready to go..."
+    fi
+  ;;
+esac
+
+# Check for verb domain and status
+## If verb domain was spelled correctly
+if [[ "${DOMAIN}" =~ ".verb.email" ]] || [[ "${DOMAIN}" =~ ".verb.one" ]] || [[ "${DOMAIN}" =~ ".verb.ink" ]] || [[ "${DOMAIN}" =~ ".verb.blue" ]] || [[ "${DOMAIN}" =~ ".verb.vip" ]] || [[ "${DOMAIN}" =~ ".verb.kiwi" ]] || [[ "${DOMAIN}" =~ ".verb.red" ]] || [[ "${DOMAIN}" =~ ".verb.rocks" ]]; then
+ if [[ "${DOMAIN}" != *"${SITENAME}"* ]]; then
+/bin/echo "
+Problem: You might have spelled ${DOMAIN} wrong.
+  - Did you mean to include "${SITENAME}"?
+  - Are you an awesome person with multiple inkVerb namespaces, but you somehow have the wrong server?
+"
+exit 0
+ fi
+fi
+## Check specific verb domain tlds
+### Create the error message function
+verbtld_is_off() {
+/bin/echo "
+Problem: ${DOMAIN} is not active on this server...
+  1. It could be running on a different Verber server. If so, run inkCert on that server.
+  2. You could have planned it for this Verber server, but it's not on. Activate on this server with verbon
+  3. It's possible you haven't purchased an inkVerb namespace from inkisaverb.com. It's not that expensive.
+"; exit 0;
+}
+### Do the checks per each verb tld
+. /opt/verb/conf/sitetldstatus
+if [ "${DOMAIN}" = "${emailURI}" ]; then
+ if [[ "${VERBemail}" != true ]]; then
+  verbtld_is_off
+ fi
+fi
+if [ "${DOMAIN}" = "${oneURI}" ]; then
+ if [[ "${VERBone}" != true ]]; then
+  verbtld_is_off
+ fi
+fi
+if [ "${DOMAIN}" = "${inkURI}" ]; then
+ if [[ "${VERBink}" != true ]]; then
+  verbtld_is_off
+ fi
+fi
+if [ "${DOMAIN}" = "${blueURI}" ]; then
+ if [[ "${VERBblue}" != true ]]; then
+  verbtld_is_off
+ fi
+fi
+if [ "${DOMAIN}" = "${vipURI}" ]; then
+ if [[ "${VERBvip}" != true ]]; then
+  verbtld_is_off
+ fi
+fi
+if [ "${DOMAIN}" = "${kiwiURI}" ]; then
+ if [[ "${VERBkiwi}" != true ]]; then
+  verbtld_is_off
+ fi
+fi
+if [ "${DOMAIN}" = "${redURI}" ]; then
+ if [[ "${VERBred}" != true ]]; then
+  verbtld_is_off
+ fi
+fi
+
+# Get the certs
+## This is the place to request and/or install the certs with the automated inkCert Proper script.
+#inkcertmakecsr
+#inkcertgetcert-verber (push to CA Inker) inkNet Verber runs on Inker: verber-inkcertreceivecsr
+#inkNet Inker runs on this Verber: inkcertgetcertdone-inker - response from Inker
+#inkcertaddkeypair
+
+# Verify the certs
+if [ ! -d /etc/inkcert/live/${DOMAIN} ]; then
+/bin/echo "Big error! Unable to get the certs from the cert authority. Can't continue."; exit 4
+fi
+
+# Finish
+/bin/echo "
+Finished getting certs. Now to install them with inkcertadd...
+"
