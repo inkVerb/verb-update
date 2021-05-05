@@ -26,7 +26,7 @@ NEWARPAIP4=$(/bin/echo ${NEWIP4} | sed -r 's/^([0-9]{1,3}).([0-9]{1,3}).([0-9]{1
 /bin/sed -i "s:${SITEIP}:${NEWIP4}:" /etc/httpd/conf/rpaf.conf
 /bin/sed -i "s:${SITEIP}:${NEWIP4}:" /opt/verb/conf/inkdns/inkzones/db.*
 /bin/sed -i "s:${SITEIP}:${NEWIP4}:" /opt/verb/conf/inkdns/db.dnsdomain
-/opt/verb/serfs/inkdnsrefreshbind
 
 # Finish
+/opt/verb/serfs/inkdnsrefreshbind
 /bin/echo "IPv4 now set to: ${NEWIP4}"

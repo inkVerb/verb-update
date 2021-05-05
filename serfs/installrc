@@ -45,7 +45,7 @@ if [ ${SITEMAILSTATUS} = "EMAIL_NOT_INSTALLED" ]; then
 This is a backup email server and Roundcube is not allowed.
 "
 exit 8; fi
-if /bin/grep -Fq "Webmail Defaults" /opt/verb/conf/inkdns/zones/db.${emailTLDURI}; then
+if /bin/grep -Fq "Webmail Defaults" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}; then
 /bin/echo "Proceeding..."; else
 /bin/echo "
 Webmail Defaults not declared in the DNS zone file. This won't work.
@@ -96,41 +96,24 @@ FLUSH PRIVILEGES;"
 ## DNS
 /bin/sed -i "s/; Webmail Defaults/; Webmail Defaults\nrc\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\nrc\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}
 
+rcpass5wwCF
 # Create the MySQL database and user
 /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
 CREATE DATABASE rcmail DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 GRANT ALL PRIVILEGES ON rcmail.* TO 'rcmailusr'@'localhost' IDENTIFIED BY 'rcpass${RCPASSGEN}';
 FLUSH PRIVILEGES;"
+## Initiate the database
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf rcmail < /srv/www/email/roundcube/SQL/mysql.initial.sql
 
 # Set Apache
 /bin/cp -R /srv/www/html/0ne /srv/www/html/${SITEEMAILTLD}.rc
 /bin/ln -sfn /srv/www/email/roundcube /srv/www/html/${SITEEMAILTLD}.rc/${RCFOLDER}
-/bin/chown -R www-data:www-data /srv/www/html/${SITEEMAILTLD}.rc
+/bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.rc
 /bin/sed -i "s/; Webmail Defaults/; Webmail Defaults\nrc\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\nrc\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/zones/db.${emailTLDURI}
 
 # inkCert
 ## This adds the declared domain to the end of the "domains =" line
 /bin/sed -i "/^domains =/ s/$/, rc.${emailTLDURI}/" /opt/verb/conf/inkcert/cli-ini/cli.${emailTLDURI}.ini
-
-# Roundcube system apps
-/usr/bin/apt-get install -y \
-  php-mail \
-  php-mail-mimedecode \
-  php-mime-type \
-  php-mail-mime \
-  php-ldap \
-  libpspell-dev
-## The following dependencies often want to be installed after libpspell-dev, so do it differently
-wait
-/usr/bin/apt-get install -y \
-  php-pspell \
-  aspell-en  \
-## Install this silently so it doesn't get errors
-pear install -f Net_IDNA2-0.1.1
-## Should already be enabled, but enable just in case, Ex Ratione had some problems
-phpenmod intl zip
-/usr/sbin/apache2ctl graceful
-wait
 
 # Settings
 /bin/cp /opt/verb/conf/lab/vmail/roundcube/mime.types /srv/www/email/roundcube/
@@ -159,7 +142,7 @@ fi
 /bin/cp /opt/verb/conf/lab/vmail/roundcube/roundcubepics/skins/larry/images/favicon.ico /srv/www/email/roundcube/skins/larry/images/
 
 # Own
-/bin/chown -R www-data:www-data /srv/www/email/roundcube
+/bin/chown -R www:www /srv/www/email/roundcube
 
 # Set the config for backup
 /bin/sed -i "s/SITERCPASSAPG.*/SITERCPASSAPG=\"${RCPASSGEN}\"/g" /opt/verb/conf/sitemailpass
@@ -187,7 +170,7 @@ cd /srv/www/email/roundcube
 /bin/sed -i '/\"require\": {/ a\
         \"pear-pear.php.net\/net_ldap2\": \"dev-master\",' composer.json
 /bin/sed -i '/\"require\": {/ a\
-        \"kolab\/Net_LDAP3\": \"dev-master\",' composer.json
+        \"kolab\/net_ldap3\": \"dev-master\",' composer.json
 /bin/sed -i '/\"require\": {/ a\
         \"angrychimp\/php-dkim\": \"dev-master\",' composer.json
 /bin/sed -i '/\"require\": {/ a\
@@ -209,6 +192,12 @@ cd /srv/www/email/roundcube
 #php composer.phar update -n
 ### Then, run install ( -n / --no-interaction = no interaction)
 /usr/bin/su slave -c 'php composer.phar install -n'
+
+# Fool RoundCube into accepting current versions of PHP
+/bin/sed -i "s/if (PHP_VERSION_ID >= .*/if (PHP_VERSION_ID >= 90000) {/" /srv/www/email/roundcube/program/include/iniset.php
+
+# Remove the installer so it is ready to go
+#/bin/rm -f /srv/www/email/roundcube/installer
 
 # Finished
 /bin/echo "

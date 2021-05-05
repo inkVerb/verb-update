@@ -52,7 +52,7 @@ host = localhost
 
 # Install
 /usr/bin/pacman -Syyu --noconfirm
-/usr/bin/pacman -S --noconfirm postfix dovecot roundcubemail spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor msmtp
+/usr/bin/pacman -S --noconfirm postfix postfix-mysql dovecot roundcubemail spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor msmtp cyrus-sasl
 
 # From Ubuntu
 #/usr/bin/pacman -S --noconfirm \
@@ -118,13 +118,42 @@ host = localhost
 /bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/virtual_mailbox_maps.cf
 /bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/virtual_sender_login_maps.cf
 /bin/sed -i "s/hostURI286/${hostURI}/g" /etc/postfix/main.cf
+## Permissions
+/usr/bin/chmod 644 /etc/postfix/virtual_alias_domains.cf
+/usr/bin/chmod 644 /etc/postfix/virtual_alias_domains_maps.cf
+/usr/bin/chmod 644 /etc/postfix/virtual_alias_maps.cf
+/usr/bin/chmod 644 /etc/postfix/virtual_mailbox_domains.cf
+/usr/bin/chmod 644 /etc/postfix/virtual_mailbox_domainaliases_maps.cf
+/usr/bin/chmod 644 /etc/postfix/virtual_mailbox_maps.cf
+/usr/bin/chmod 644 /etc/postfix/virtual_sender_login_maps.cf
 ## Add an important setting
 /usr/bin/cat <<EOF >> /etc/services
 smtps 465/tcp # inkVerb
 smtps 465/udp # inkVerb
 EOF
+/usr/bin/postmap /etc/postfix/transport
+## Service
+/usr/bin/systemctl enable postfix
+/usr/bin/systemctl start postfix
 
-## Dovecot
+# SASL
+/usr/bin/mkdir -p /etc/sasl2
+/usr/bin/cat <<EOF > /etc/sasl2/smtpd.conf
+pwcheck_method: saslauthd
+mech_list: PLAIN LOGIN
+log_level: 7
+EOF
+/usr/bin/mkdir -p /etc/pam.d
+/usr/bin/cat <<EOF > /etc/pam.d/smtp
+#%PAM-1.0
+auth            required        pam_unix.so
+account         required        pam_unix.so
+EOF
+## Service
+/usr/bin/systemctl enable saslauthd
+/usr/bin/systemctl start saslauthd
+
+# Dovecot
 /usr/bin/mkdir -p /etc/dovecot/sieve.before.d /etc/dovecot/sieve-filter
 /bin/cp -r /usr/share/doc/dovecot/example-config/conf.d /etc/dovecot
 /bin/cp /opt/verb/conf/lab/vmail/dovecot/dovecot.conf /etc/dovecot/
@@ -153,6 +182,9 @@ EOF
 ## Own
 /bin/chown -R vmail:dovecot /etc/dovecot
 /bin/chmod -R o-rwx /etc/dovecot
+## Service
+/usr/bin/systemctl enable dovecot
+/usr/bin/systemctl start dovecot
 
 ## SpamAssassin
 /usr/bin/mkdir -p /var/lib/dovecot/sieve/global_sieves /etc/mail/sa-update-keys
@@ -354,25 +386,6 @@ INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('ho
 INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('postmaster@$nameURI', 'verberadmin@$nameURI', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('webmaster@$nameURI', 'verberadmin@$nameURI', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);"
 
-# UFW (services and ports below them if known)
-#/usr/bin/ufw allow postfix
-#/usr/bin/ufw allow smtp
-#/usr/bin/ufw allow 25
-/usr/bin/ufw allow 587
-/usr/bin/ufw allow smtps
-/usr/bin/ufw allow 465
-/usr/bin/ufw allow pop3
-/usr/bin/ufw allow 110
-/usr/bin/ufw allow pop3s
-/usr/bin/ufw allow 995
-/usr/bin/ufw allow imap
-/usr/bin/ufw allow 143
-/usr/bin/ufw allow imaps
-/usr/bin/ufw allow 993
-# for OpenDKIM
-/usr/bin/ufw allow 8891
-/usr/bin/ufw allow 12301
-
 # OpenDKIM
 ## Create/reset OpenDKIM files
 /usr/bin/pacman -S --noconfirm opendkim
@@ -405,6 +418,25 @@ cd $OLDPWD
 ## Webmail TLD prep
 /bin/echo "; Webmail Defaults
 " >> /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}
+
+# UFW (services and ports below them if known)
+#/usr/bin/ufw allow postfix
+#/usr/bin/ufw allow smtp
+#/usr/bin/ufw allow 25
+/usr/bin/ufw allow 587
+/usr/bin/ufw allow smtps
+/usr/bin/ufw allow 465
+/usr/bin/ufw allow pop3
+/usr/bin/ufw allow 110
+/usr/bin/ufw allow pop3s
+/usr/bin/ufw allow 995
+/usr/bin/ufw allow imap
+/usr/bin/ufw allow 143
+/usr/bin/ufw allow imaps
+/usr/bin/ufw allow 993
+# for OpenDKIM
+/usr/bin/ufw allow 8891
+/usr/bin/ufw allow 12301
 
 # Monit
 #/bin/cp /opt/verb/conf/lab/vmail/monit/monitrc.d/amavis /etc/monit/monitrc.d/

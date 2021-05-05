@@ -112,13 +112,15 @@ NEWRARPA6=$(rarpa_ipv6 ${NEWEXPIP6})
 /bin/sed -i "s/SITEIPV6=.*/SITEIPV6=\"${NEWCMPIP6}\"/" /opt/verb/conf/sitenameip
 /bin/sed -i "s/SITEEXPIPV6.*/SITEEXPIPV6=\"${NEWEXPIP6}\"/" /opt/verb/conf/sitenameip
 /bin/sed -i "s/${SITEIPV6}/${NEWCMPIP6}/" /etc/hosts
-/bin/echo "IPv6 now set to: ${NEWCMPIP6}"
 
 # Update other files
 /bin/sed -i "s/${SITEIPV6}/${NEWCMPIP6}/" /etc/httpd/conf/rpaf.conf
 /bin/sed -i "s/${SITEIPV6}/${NEWCMPIP6}/" /opt/verb/conf/inkdns/inkzones/db.*
 /bin/sed -i "s/${SITEIPV6}/${NEWCMPIP6}/" /opt/verb/conf/inkdns/db.dnsdomain
-/opt/verb/serfs/inkdnsrefreshbind
 
 # ARPA & inverse IP
 /bin/sed -i "s/SITEARPAIP6.*/SITEARPAIP6=\"${NEWRARPA6}\"/" /opt/verb/conf/sitenameip
+
+# Finish
+/opt/verb/serfs/inkdnsrefreshbind
+/bin/echo "IPv6 now set to: ${NEWCMPIP6}"

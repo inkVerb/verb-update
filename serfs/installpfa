@@ -60,9 +60,7 @@ fi
 
 # Download from repo
 cd /srv/www/email
-/opt/verb/serfs/inkget ${CVAPPNAME}; wait
-### Check
-/opt/verb/serfs/inkget ${CVAPPNAME} check
+/opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
@@ -91,6 +89,7 @@ exit 4; fi
 INSTHASH="$(php -r "echo password_hash('${PFAPASS}', PASSWORD_DEFAULT);")"
 /bin/sed -i "s/\$CONF\['configured'\] = .*/\$CONF\['configured'\] = true;/g" /srv/www/email/postfixadmin/config.local.php
 /bin/sed -i "s/^\$CONF\['setup_password'\] = /#\$CONF\['setup_password'\] = /g" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "s/^\$CONF\['setup_password'\] = /#\$CONF\['setup_password'\] = /g" /srv/www/email/postfixadmin/config.inc.php
 /usr/bin/cat <<EOF >> /srv/www/email/postfixadmin/config.local.php
 \$CONF['setup_password'] = '${INSTHASH}';
 EOF

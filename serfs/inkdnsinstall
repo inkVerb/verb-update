@@ -66,8 +66,8 @@ fi
 /usr/bin/ufw allow 53
 
 # Restart
-/bin/systemctl enable named
-/bin/systemctl start named
+/bin/systemctl enable named; wait
+/bin/systemctl start named; wait
 
 # Config
 /bin/sed -i "s/INKDNSSTAT=.*/INKDNSSTAT=\"INSTALLED\"/" /opt/verb/conf/inkdns/inkdnsconf

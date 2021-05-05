@@ -19,3 +19,7 @@ fi
 if [ -f "/etc/inkcert/le/live/${nameURI}/privkey.pem" ]; then
   /usr/bin/ln -sfn /etc/inkcert/le/live/${nameURI}/privkey.pem /etc/inkcert/mail/vmail.key
 fi
+
+# Permissions
+/usr/bin/chmod 0444 /etc/inkcert/mail/vmail.crt
+/usr/bin/chmod 0400 /etc/inkcert/mail/vmail.key
