@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This runs installpostfix, installrc, and installpfa as one job
@@ -12,13 +12,12 @@
 ## ./installvmail [RoundCube webmail path] [PostfixAdmin email pfa path - optional: if no other arguments and same as RoundCube] [PostfixAdmin setup password option] [backup filename IF restoring from backupvmail backup, optional]
 
 # Eg:
-## ./installvmail roundcubesecretpath postfixadminsecretpath setup password  # Secure, but no backup
-## ./installvmail rcbase pfabase setup password myemailfile.vbak # Backup and setup password
+## ./installvmail # Auto-generated secure paths (different for PFA and RC), no setup password nor backup
+## ./installvmail roundcubesecretpath postfixadminsecretpath setup-password  # Setup password given, but no backup
+## ./installvmail rcbase pfabase setup-password myemailfile.vbak # Backup and setup password
 ## ./installvmail rcbase pfabase no myemailfile.vbak  # Backup, not setup password
-## ./installvmail rciscool pfarocks # Not setup password, no backup
-## ./installvmail vmailpath # Same path for RC and PFA, not setup password, no backup
-
-
+## ./installvmail rciscool pfarocks # No setup password, no backup
+## ./installvmail vmailpath # Same path for RC and PFA, no setup password, no backup
 
 # Include the configs
 . /opt/verb/conf/sitenameip
@@ -26,22 +25,40 @@
 . /opt/verb/conf/sitemailpass
 . /opt/verb/conf/sitemailpath
 
-RC=$1
-if [ -z "$2" ]; then
-PFA=$1
+# RC folder
+if [ -n "$1" ]; then
+  RCFOLDER=$1
 else
-PFA=$2
-SECUREPASS=$3
-BACKUPRESTORE=$4
+  RCFOLDER="$(/usr/bin/pwgen -0 5 1)"
 fi
 
+# PFA folder
+if [ -n "$2" ]; then
+  PFAFOLDER=$2
+else
+  PFAFOLDER="$(/usr/bin/pwgen -0 5 1)"
+fi
+
+# PFA install password
+if [ -n "$3" ]; then
+  PFAPASS=$3
+else
+  PFAPASS="$(pwgen -1Bcn 10)"
+fi
+
+# Postfix
 /opt/verb/serfs/installpostfixvmail; wait
-/opt/verb/serfs/installpfa ${PFA} ${SECUREPASS}; wait
-/opt/verb/serfs/installrc ${RC}; wait
+
+# PostfixAdmin
+/opt/verb/serfs/installpfa ${PFAFOLDER} ${PFAPASS}; wait
+
+# Roundcube
+/opt/verb/serfs/installrc ${RCFOLDER}; wait
 
 # Backup
 if [ -n "$4"]; then
-/opt/verb/serfs/backupvmailrestore ${BACKUPRESTORE}; wait
+  BACKUPRESTORE=$4
+  /opt/verb/serfs/backupvmailrestore ${BACKUPRESTORE}; wait
 fi
 
 # inkCert check and FYI
@@ -64,4 +81,3 @@ Roundcube:
 - https://rc.${emailTLDURI}/${RCFOLDER}/installer
 - Then run ./postinstallrc
 "
-fi

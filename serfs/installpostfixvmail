@@ -52,7 +52,7 @@ host = localhost
 
 # Install
 /usr/bin/pacman -Syyu --noconfirm
-/usr/bin/pacman -S --noconfirm postfix postfix-mysql dovecot roundcubemail spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor msmtp cyrus-sasl
+/usr/bin/pacman -S --noconfirm postfix postfix-mysql dovecot php-imap roundcubemail spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor msmtp cyrus-sasl
 
 # From Ubuntu
 #/usr/bin/pacman -S --noconfirm \
@@ -98,6 +98,7 @@ host = localhost
 
 # Postfix
 ## Copy configs
+/usr/bin/touch /etc/postfix/virtual_ssl.map
 /bin/cp /opt/verb/conf/lab/vmail/postfix/main.cf /etc/postfix/
 /bin/cp /opt/verb/conf/lab/vmail/postfix/master.cf /etc/postfix/
 /bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_alias_domains.cf /etc/postfix/
@@ -154,7 +155,7 @@ EOF
 /usr/bin/systemctl start saslauthd
 
 # Dovecot
-/usr/bin/mkdir -p /etc/dovecot/sieve.before.d /etc/dovecot/sieve-filter
+/usr/bin/mkdir -p /etc/dovecot/sieve.before.d /etc/dovecot/sieve-filter /etc/dovecot/crt.d
 /bin/cp -r /usr/share/doc/dovecot/example-config/conf.d /etc/dovecot
 /bin/cp /opt/verb/conf/lab/vmail/dovecot/dovecot.conf /etc/dovecot/
 /bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/
@@ -168,7 +169,7 @@ EOF
 /bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/20-managesieve.conf /etc/dovecot/conf.d/
 /bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/90-plugin.conf /etc/dovecot/conf.d/
 /bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/90-sieve.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/dovecot-sql.conf /etc/dovecot/
+/bin/cp /opt/verb/conf/lab/vmail/dovecot/dovecot-sql.conf.ext /etc/dovecot/
 /bin/cp /opt/verb/conf/lab/vmail/dovecot/dovecot.conf /etc/dovecot/
 ### Diffie-Helman Group file (unique & extra large for email server)
 /usr/bin/rm -f /etc/dovecot/dh.pem

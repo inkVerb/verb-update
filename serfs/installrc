@@ -54,9 +54,9 @@ exit 8; fi
 
 # Security & path
 if [ -n "$1" ]; then
-RCFOLDER=$1
+  export RCFOLDER=$1
 else
-RCFOLDER="$(/usr/bin/pwgen -0 5 1)"
+  export RCFOLDER="$(/usr/bin/pwgen -0 5 1)"
 fi
 RCPASSGEN=$(/usr/bin/pwgen -s -1 5)
 DESSALTGEN=$(/usr/bin/pwgen -s -1 24)

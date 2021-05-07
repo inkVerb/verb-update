@@ -12,12 +12,16 @@
 # Include the config
 . /opt/verb/conf/siteurilist
 
-# Link the certs if they exist
+# Link the inkCert-LE certs if they exist, otherwise use Snakeoil
 if [ -f "/etc/inkcert/le/live/${nameURI}/fullchain.pem" ]; then
   /usr/bin/ln -sfn /etc/inkcert/le/live/${nameURI}/fullchain.pem /etc/inkcert/mail/vmail.crt
+else
+  /usr/bin/ln -sfn /etc/ssl/server/server.crt /etc/inkcert/mail/vmail.crt
 fi
 if [ -f "/etc/inkcert/le/live/${nameURI}/privkey.pem" ]; then
   /usr/bin/ln -sfn /etc/inkcert/le/live/${nameURI}/privkey.pem /etc/inkcert/mail/vmail.key
+else
+  /usr/bin/ln -sfn /etc/ssl/server/server.key /etc/inkcert/mail/vmail.key
 fi
 
 # Permissions

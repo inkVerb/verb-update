@@ -36,6 +36,38 @@ DOMAIN="$1"
 EOF
 /usr/bin/chown -R www:www /srv/www/mailcatch
 
+# Link the inkCert-LE certs if they exist, otherwise use Snakeoil
+if [ -f "/etc/inkcert/le/live/${nameURI}/fullchain.pem" ]; then
+  /usr/bin/ln -sfn /etc/inkcert/le/live/${DOMAIN}/fullchain.pem /etc/inkcert/mail/${DOMAIN}.crt
+else
+  /usr/bin/ln -sfn /etc/ssl/server/server.crt /etc/inkcert/mail/${DOMAIN}.crt
+fi
+if [ -f "/etc/inkcert/le/live/${nameURI}/privkey.pem" ]; then
+  /usr/bin/ln -sfn /etc/inkcert/le/live/${DOMAIN}/privkey.pem /etc/inkcert/mail/${DOMAIN}.key
+else
+  /usr/bin/ln -sfn /etc/ssl/server/server.key /etc/inkcert/mail/${DOMAIN}.key
+fi
+## Permissions
+/usr/bin/chmod 0444 /etc/inkcert/mail/${DOMAIN}.crt
+/usr/bin/chmod 0400 /etc/inkcert/mail/${DOMAIN}.key
+
+# Dovecot
+/usr/bin/cat <<EOF > /etc/dovecot/crt.d/${DOMAIN}.conf
+local_name imap.${DOMAIN} {
+  ssl_cert = </etc/inkcert/mail/${DOMAIN}.crt
+  ssl_key = </etc/inkcert/mail/${DOMAIN}.key
+}
+EOF
+## Own
+/bin/chown vmail:dovecot /etc/dovecot/crt.d/name.verb.ink.conf
+/bin/chmod o-rwx /etc/dovecot/crt.d/name.verb.ink.conf
+
+# Postfix
+/usr/bin/cat <<EOF >> /etc/postfix/virtual_ssl.map
+mail.${DOMAIN} /etc/inkcert/mail/${DOMAIN}.key /etc/inkcert/mail/${DOMAIN}.crt
+EOF
+/usr/bin/postmap -F hash:/etc/postfix/virtual_ssl.map
+
 # Webserver files so Letsencrypt checks work
 if [ ${SERVERTYPE} = "laemp" ] || [ ${SERVERTYPE} = "lemp" ]; then
 
