@@ -179,7 +179,7 @@ EOF
 ## Replace configs
 /bin/sed  -i "s/nameURI286/${nameURI}/g" /etc/dovecot/conf.d/10-ssl.conf
 /bin/sed  -i "s/nameURI286/${nameURI}/g" /etc/dovecot/conf.d/15-lda.conf
-/bin/sed  -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/dovecot/dovecot-sql.conf
+/bin/sed  -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/dovecot/dovecot-sql.conf.ext
 ## Own
 /bin/chown -R vmail:dovecot /etc/dovecot
 /bin/chmod -R o-rwx /etc/dovecot
