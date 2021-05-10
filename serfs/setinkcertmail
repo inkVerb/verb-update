@@ -1,12 +1,12 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This sets up basic mail DNS and inkCert entries
-## This is run automatically by setupverb and newdomainshell and normally should not be run independently
+# This sets up basic mail certificates and subdomain dummy sites for inkCert-LE
+## This is run automatically by setupverb, installpostfixvmail, and newdomainshell, and normally should not be run independently
 
 # How to use:
 ## ./setinkcertmail somedomain.tld
-
+## ./setinkcertmail name.verb.ink verber (skip inkCert cli.ini, used by installpostfixvmail)
 
 DOMAIN="$1"
 
@@ -15,17 +15,11 @@ DOMAIN="$1"
 . /opt/verb/conf/servertype
 
 # inkCert
-## Ensure that you don't get double entries
-/bin/sed -i "s/, mail.${DOMAIN}//g" /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
-/bin/sed -i "s/, smtp.${DOMAIN}//g" /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
-/bin/sed -i "s/, imap.${DOMAIN}//g" /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
-/bin/sed -i "s/, pop3.${DOMAIN}//g" /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
-/bin/sed -i "s/, pop2.${DOMAIN}//g" /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
-/bin/sed -i "s/, pop.${DOMAIN}//g" /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
-## Add it to the cli-ini
-/bin/sed -i "/^domains =/ s/$/, mail.${DOMAIN}, smtp.${DOMAIN}, imap.${DOMAIN}, pop3.${DOMAIN}, pop2.${DOMAIN}, pop.${DOMAIN}/" /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
+if [ "$2" != "verber" ]; then
+  /opt/verb/serfs/setinkcertmailsubdomains ${nameURI}
+fi
 
-# Webserver directory (make it anyway)
+# Webserver directory (remake it everytime)
 /usr/bin/mkdir -p /srv/www/mailcatch
 /usr/bin/cat <<'EOF' > /srv/www/mailcatch/index.htm
 <!DOCTYPE html>
@@ -68,7 +62,7 @@ mail.${DOMAIN} /etc/inkcert/mail/${DOMAIN}.key /etc/inkcert/mail/${DOMAIN}.crt
 EOF
 /usr/bin/postmap -F hash:/etc/postfix/virtual_ssl.map
 
-# Webserver files so Letsencrypt checks work
+# Webserver files so inkCert-LE checks work
 if [ ${SERVERTYPE} = "laemp" ] || [ ${SERVERTYPE} = "lemp" ]; then
 
   /usr/bin/cp /opt/verb/conf/site-files/conf/newnginxmailcatch.conf /opt/verb/conf/webserver/nginx/sites-available/mail.${DOMAIN}.conf

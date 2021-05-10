@@ -77,7 +77,7 @@ DESSALTGEN=$(/usr/bin/pwgen -s -1 24)
 
 # Create the MySQL database and user
 /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
-CREATE DATABASE rcmail DEFAULT CHARACTER SET utf8mb4 COLLATE utf8_unicode_ci;
+CREATE DATABASE rcmail DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 GRANT ALL PRIVILEGES ON rcmail.* TO 'rcmailusr'@'localhost' IDENTIFIED BY 'rcpass${RCPASSGEN}';
 FLUSH PRIVILEGES;"
 ## Initialize the database before the installer page

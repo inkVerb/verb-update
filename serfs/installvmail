@@ -56,14 +56,14 @@ fi
 /opt/verb/serfs/installrc ${RCFOLDER}; wait
 
 # Backup
-if [ -n "$4"]; then
+if [ -n "$4" ]; then
   BACKUPRESTORE=$4
   /opt/verb/serfs/backupvmailrestore ${BACKUPRESTORE}; wait
 fi
 
 # inkCert check and FYI
 if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${emailTLDURI}; then
-/bin/echo "Note: ${emailTLDURI} still doesn't have proper SSL certs. You can install, but will get SSL warnings due to \"self-signed\" or \"snakeoil\" certs.
+  /bin/echo "Note: ${emailTLDURI} still doesn't have proper SSL certs. You can install, but will get SSL warnings due to \"self-signed\" or \"snakeoil\" certs.
 You may ignore these warnings if you choose. If you want proper SSL certs, you still need to run inkCert for them.
 "
 fi

@@ -17,7 +17,7 @@
 ## ./installrc mysecretpath
 
 
-CVAPPNAME=roundcube
+CVAPPNAME="roundcube"
 # Include the config files
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
@@ -63,9 +63,8 @@ DESSALTGEN=$(/usr/bin/pwgen -s -1 24)
 
 # Get inkVerb's latest and install
 cd /srv/www/email
-/opt/verb/serfs/inkget ${CVAPPNAME}; wait
+/opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 ### Check
-/opt/verb/serfs/inkget ${CVAPPNAME} check
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
@@ -76,27 +75,6 @@ exit 4; fi
 /bin/rm -rf ${CVAPPNAME}
 /opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
 
-# Directories
-## Generate a symlink for the Verber
-/usr/bin/ln -sfn /etc/webapps/roundcubemail /srv/www/email/roundcube
-
-# Create the MySQL database and user
-/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
-CREATE DATABASE rcmail DEFAULT CHARACTER SET utf8mb4 COLLATE utf8_unicode_ci;
-GRANT ALL PRIVILEGES ON rcmail.* TO 'rcmailusr'@'localhost' IDENTIFIED BY 'rcpass${RCPASSGEN}';
-FLUSH PRIVILEGES;"
-## Initialize the database before the installer page
-/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf roundcube < /usr/share/webapps/roundcubemail/SQL/mysql.initial.sql
-
-# Webserver
-## Web directories
-/bin/cp -R /srv/www/html/0ne /srv/www/html/${SITEEMAILTLD}.rc
-/bin/ln -sfn /usr/share/webapps/roundcubemail /srv/www/html/${SITEEMAILTLD}.rc/${RCFOLDER}
-/bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.rc
-## DNS
-/bin/sed -i "s/; Webmail Defaults/; Webmail Defaults\nrc\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\nrc\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}
-
-rcpass5wwCF
 # Create the MySQL database and user
 /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
 CREATE DATABASE rcmail DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -105,11 +83,13 @@ FLUSH PRIVILEGES;"
 ## Initiate the database
 /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf rcmail < /srv/www/email/roundcube/SQL/mysql.initial.sql
 
-# Set Apache
+# Webserver
+## Web directories
 /bin/cp -R /srv/www/html/0ne /srv/www/html/${SITEEMAILTLD}.rc
 /bin/ln -sfn /srv/www/email/roundcube /srv/www/html/${SITEEMAILTLD}.rc/${RCFOLDER}
 /bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.rc
-/bin/sed -i "s/; Webmail Defaults/; Webmail Defaults\nrc\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\nrc\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/zones/db.${emailTLDURI}
+## DNS
+/bin/sed -i "s/; Webmail Defaults/; Webmail Defaults\nrc\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\nrc\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}
 
 # inkCert
 ## This adds the declared domain to the end of the "domains =" line
@@ -167,10 +147,10 @@ cd /srv/www/email/roundcube
 # Causing problems, reactivate when they decide on a minimum version number that doesn't exist in the future
 #sed -i '/\"require\": {/ a\
 #        \"johndoh\/contextmenu\": \"dev-master\",' composer.json
-/bin/sed -i '/\"require\": {/ a\
-        \"pear-pear.php.net\/net_ldap2\": \"dev-master\",' composer.json
-/bin/sed -i '/\"require\": {/ a\
-        \"kolab\/net_ldap3\": \"dev-master\",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"pear-pear.php.net\/net_ldap2\": \"dev-master\",' composer.json
+#/bin/sed -i '/\"require\": {/ a\
+#        \"kolab\/net_ldap3\": \"dev-master\",' composer.json
 /bin/sed -i '/\"require\": {/ a\
         \"angrychimp\/php-dkim\": \"dev-master\",' composer.json
 /bin/sed -i '/\"require\": {/ a\
@@ -187,6 +167,9 @@ cd /srv/www/email/roundcube
         \"roundcube\/custom-from\": \"dev-master\",' composer.json
 /bin/sed -i '/\"require\": {/ a\
         \"elm\/identity_smtp\": \"dev-master\",' composer.json
+## Remove PHP max limit
+/bin/sed -i 's/"php": ">=5.4.0 <8"/"php": ">=5.4.0"/' composer.json
+/bin/sed -i 's/"php": ">=5.4.0 <8"/"php": ">=5.4.0"/' composer.lock
 ## Now finish the composer installation
 ### First, update just in case, if you want
 #php composer.phar update -n

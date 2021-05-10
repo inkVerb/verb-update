@@ -52,7 +52,7 @@ host = localhost
 
 # Install
 /usr/bin/pacman -Syyu --noconfirm
-/usr/bin/pacman -S --noconfirm postfix postfix-mysql dovecot php-imap roundcubemail spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor msmtp cyrus-sasl
+/usr/bin/pacman -S --noconfirm postfix postfix-mysql dovecot php-imap spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor msmtp cyrus-sasl
 
 # From Ubuntu
 #/usr/bin/pacman -S --noconfirm \
@@ -294,6 +294,7 @@ if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${nam
 ## inkCert
 else
   /opt/verb/serfs/setinkcertmailcerts
+  /opt/verb/serfs/setinkcertmail ${nameURI} server
 fi
 
 # Create the mailbox table
@@ -430,11 +431,11 @@ cd $OLDPWD
 /usr/bin/ufw allow pop3
 /usr/bin/ufw allow 110
 /usr/bin/ufw allow pop3s
-/usr/bin/ufw allow 995
+#/usr/bin/ufw allow 995
 /usr/bin/ufw allow imap
 /usr/bin/ufw allow 143
 /usr/bin/ufw allow imaps
-/usr/bin/ufw allow 993
+#/usr/bin/ufw allow 993
 # for OpenDKIM
 /usr/bin/ufw allow 8891
 /usr/bin/ufw allow 12301
