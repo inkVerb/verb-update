@@ -137,20 +137,12 @@ if [ ! -d "/srv/www/email/roundcube/plugins/contextmenu" ]; then
 /bin/cp /opt/verb/conf/lab/vmail/roundcube/contextmenu.vtxz .
 /opt/verb/serfs/vtxzout contextmenu; wait; fi
 
-# Sledgehammertime (Composer Plugins)
-## This is excerpted from installrcinkplugins
+# Sledgehammertime (Composer plugins)
+## Download Composer
 cd /srv/www/email/roundcube
 /usr/bin/curl -s https://getcomposer.org/installer | php
 /bin/cp composer.json-dist composer.json
 ## Plugins
-### Unfortuntately, I only know how to sed this one line at a time.
-# Causing problems, reactivate when they decide on a minimum version number that doesn't exist in the future
-#sed -i '/\"require\": {/ a\
-#        \"johndoh\/contextmenu\": \"dev-master\",' composer.json
-#/bin/sed -i '/\"require\": {/ a\
-#        \"pear-pear.php.net\/net_ldap2\": \"dev-master\",' composer.json
-#/bin/sed -i '/\"require\": {/ a\
-#        \"kolab\/net_ldap3\": \"dev-master\",' composer.json
 /bin/sed -i '/\"require\": {/ a\
         \"angrychimp\/php-dkim\": \"dev-master\",' composer.json
 /bin/sed -i '/\"require\": {/ a\
@@ -162,19 +154,11 @@ cd /srv/www/email/roundcube
 /bin/sed -i '/\"require\": {/ a\
         \"kitist\/html5_notifier\": \"dev-master\",' composer.json
 /bin/sed -i '/\"require\": {/ a\
-        \"roundcube\/chbox\": \"dev-master\",' composer.json
-/bin/sed -i '/\"require\": {/ a\
-        \"roundcube\/custom-from\": \"dev-master\",' composer.json
-/bin/sed -i '/\"require\": {/ a\
         \"elm\/identity_smtp\": \"dev-master\",' composer.json
-## Remove PHP max limit
-/bin/sed -i 's/"php": ">=5.4.0 <8"/"php": ">=5.4.0"/' composer.json
-/bin/sed -i 's/"php": ">=5.4.0 <8"/"php": ">=5.4.0"/' composer.lock
-## Now finish the composer installation
-### First, update just in case, if you want
-#php composer.phar update -n
-### Then, run install ( -n / --no-interaction = no interaction)
-/usr/bin/su slave -c 'php composer.phar install -n'
+## Run the Composer installation
+### Ignore requirements that trip false warnings: --ignore-platform-req=
+### Use the www user so changes can be made to the web directory
+/usr/bin/su www -c 'php composer.phar install -n --ignore-platform-req=php --ignore-platform-req=ext-gd --ignore-platform-req=ext-ldap'
 
 # Fool RoundCube into accepting current versions of PHP
 /bin/sed -i "s/if (PHP_VERSION_ID >= .*/if (PHP_VERSION_ID >= 90000) {/" /srv/www/email/roundcube/program/include/iniset.php

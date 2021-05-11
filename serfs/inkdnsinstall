@@ -24,8 +24,9 @@ fi
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
 
+# Already done in make-verber-*
 # Install Bind
-/usr/bin/pacman -S --noconfirm bind certbot-dns-rfc2136
+#/usr/bin/pacman -S --noconfirm bind certbot-dns-rfc2136
 
 # Config
 /bin/cp -f /etc/named.conf /etc/named.conf.original

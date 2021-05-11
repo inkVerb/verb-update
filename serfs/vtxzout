@@ -26,7 +26,9 @@ exit 7; fi
 /bin/mv ${FIL}.vtxz ${FIL}.tar.xz
 
 # Extract
-/usr/bin/tar xvf ${FIL}.tar.xz
+/usr/bin/echo "Quietly extracting ${FIL}.tar.xz..."
+/usr/bin/tar xf ${FIL}.tar.xz
+/usr/bin/echo "Done."
 
 # Remove
 /usr/bin/rm ${FIL}.tar.xz

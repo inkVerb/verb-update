@@ -50,9 +50,10 @@ host = localhost
 ## Set the config for backup
 /bin/sed -i "s/SITEMAILPASSAPG.*/SITEMAILPASSAPG=\"${MAILPASSGEN}\"/g" /opt/verb/conf/sitemailpass
 
+# Already done in make-verber-*
 # Install
-/usr/bin/pacman -Syyu --noconfirm
-/usr/bin/pacman -S --noconfirm postfix postfix-mysql dovecot php-imap spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor msmtp cyrus-sasl
+#/usr/bin/pacman -Syyu --noconfirm
+#/usr/bin/pacman -S --noconfirm postfix postfix-mysql dovecot php-imap spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor msmtp cyrus-sasl opendkim
 
 # From Ubuntu
 #/usr/bin/pacman -S --noconfirm \
@@ -187,94 +188,8 @@ EOF
 /usr/bin/systemctl enable dovecot
 /usr/bin/systemctl start dovecot
 
-## SpamAssassin
-/usr/bin/mkdir -p /var/lib/dovecot/sieve/global_sieves /etc/mail/sa-update-keys
-/usr/bin/chown spamd:spamd /etc/mail/sa-update-keys
-/usr/bin/sudo -u spamd /usr/bin/vendor_perl/sa-update
-/usr/bin/sudo -u spamd /usr/bin/vendor_perl/sa-compile
-/usr/bin/cat <<EOF > /var/lib/dovecot/sieve/global_sieves/move_to_spam_folder.sieve
-require "spamtestplus";
-require "fileinto";
-require "relational";
-require "comparator-i;ascii-numeric";
-
-if spamtest :value "ge" :comparator "i;ascii-numeric" "5" {
-  fileinto "Junk";
-}
-EOF
-/usr/bin/ln -s /usr/bin/vendor_perl/spamc /etc/dovecot/sieve-filter/spamc
-/usr/bin/cat <<EOF > /etc/dovecot/sieve.before.d/spamassassin.sieve
-  require [ "vnd.dovecot.filter" ];
-  filter "spamc" [ "-d", "127.0.0.1", "--no-safe-fallback" ];
-EOF
-### Compile the rules
-/usr/bin/sievec /etc/dovecot/sieve.before.d/spamassassin.sieve
-### SpamAssassin service & timer
-/usr/bin/cat <<EOF > /etc/systemd/system/spamassassin-update.service
-[Unit]
-Description=spamassassin housekeeping stuff
-After=network.target
-
-[Service]
-Type=oneshot
-
-ExecStart=sudo -u spamd /usr/bin/vendor_perl/sa-update --allowplugins
-SuccessExitStatus=1
-ExecStart=sudo -u spamd /usr/bin/vendor_perl/sa-compile
-ExecStart=/usr/bin/systemctl -q --no-block try-restart spamassassin.service
-EOF
-/usr/bin/cat <<EOF > /etc/systemd/system/spamassassin-update.timer
-[Unit]
-Description=spamassassin house keeping
-
-[Timer]
-OnCalendar=daily
-Persistent=true
-
-[Install]
-WantedBy=timers.target
-EOF
-/usr/bin/systemctl enable spamassassin.service
-/usr/bin/systemctl start spamassassin.service
-/usr/bin/systemctl enable spamassassin-update.timer
-/usr/bin/systemctl start spamassassin-update.timer
-### Old
-# Spamassassin likes to be finickey. Sometimes it needs this on update or whenever...
-#sa-update -v
-
-## ClamAV
-### DEV This is broken, figure out a way to fix it
-# Install ClamAV (after installing perl-cpanplus-dist-arch, which we did)
-/usr/bin/freshclam
-/usr/bin/vendor_perl/cpanp -i File::Scan::ClamAV; wait
-/bin/cp /opt/verb/conf/lab/vmail/clamav/clamav.cf /etc/mail/spamassassin/
-/bin/cp /opt/verb/conf/lab/vmail/clamav/clamav.pm /etc/mail/spamassassin/
-/usr/bin/systemctl enable clamav-daemon.service
-/usr/bin/systemctl start clamav-daemon.service
-### Old
-#killall freshclam 2>/dev/null
-#freshclam
-
-## Razor
-/usr/bin/mkdir -p /etc/mail/spamassassin/razor
-/usr/bin/chown spamd:spamd /etc/mail/spamassassin/razor
-cd /etc/mail/spamassassin/razor
-/usr/bin/sudo -u spamd razor-admin -home=/etc/mail/spamassassin/razor -register
-/usr/bin/sudo -u spamd razor-admin -home=/etc/mail/spamassassin/razor -create
-/usr/bin/sudo -u spamd razor-admin -home=/etc/mail/spamassassin/razor -discover
-cd $OLDPWD
-
-# Removed when moving to Arch
-# Amavis, ClamAV, and SpamAssassin
-#/usr/sbin/adduser clamav amavis
-#/usr/sbin/adduser amavis clamav
-### Copy config files
-#/bin/cp -R /opt/verb/conf/lab/vmail/amavis/conf.d/15-content_filter_mode /etc/amavis/conf.d/
-#/bin/cp -R /opt/verb/conf/lab/vmail/amavis/conf.d/50-user /etc/amavis/conf.d/
-#/bin/cp -R /opt/verb/conf/lab/vmail/clamav/clamd.conf /etc/clamav/
-#/bin/cp /opt/verb/conf/lab/vmail/default/spamassassin /etc/default/
-## Replace configs
-#/bin/sed  -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/amavis/conf.d/50-user
+# SpamAssassin
+#/opt/verb/serfs/installspamassassin
 
 # Virtual mail SQL database
 /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
@@ -390,7 +305,6 @@ INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('we
 
 # OpenDKIM
 ## Create/reset OpenDKIM files
-/usr/bin/pacman -S --noconfirm opendkim
 /bin/mkdir -p /etc/opendkim/keys
 /bin/cp /opt/verb/conf/lab/vmail/default/opendkim /etc/default/
 /bin/cp /opt/verb/conf/lab/vmail/opendkim.conf /etc/opendkim/
@@ -468,7 +382,7 @@ fi
 /usr/bin/systemctl restart spamassassin
 /usr/bin/systemctl restart clamav-daemon
 /usr/bin/systemctl restart dovecot
-#/usr/bin/systemctl restart amavis
+/usr/bin/systemctl daemon-reload
 
 # Finish
 /bin/echo "Postfix and friends for inkVerb has been installed.

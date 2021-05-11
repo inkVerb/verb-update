@@ -27,21 +27,23 @@
 
 # RC folder
 if [ -n "$1" ]; then
-  RCFOLDER=$1
+  RCFOLDER="$1"
 else
   RCFOLDER="$(/usr/bin/pwgen -0 5 1)"
 fi
 
 # PFA folder
 if [ -n "$2" ]; then
-  PFAFOLDER=$2
+  PFAFOLDER="$2"
+elif [ -n "$1" ]; then
+  PFAFOLDER="$1"
 else
   PFAFOLDER="$(/usr/bin/pwgen -0 5 1)"
 fi
 
 # PFA install password
 if [ -n "$3" ]; then
-  PFAPASS=$3
+  PFAPASS="$3"
 else
   PFAPASS="$(pwgen -1Bcn 10)"
 fi

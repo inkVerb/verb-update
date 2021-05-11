@@ -18,14 +18,15 @@ if [ "${INKCERTINSTALLED}" = "DONE" ]; then
 /bin/echo "inkCert already installed."
 exit 0; fi
 
+# Already done in make-verber-*
 # Install
 ## Certbot - Currently, inkCert is largely powered by Certbot/Letsencrypt, so it uses links. This may eventually change, but file paths won't.
-
-if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
-  /usr/bin/pacman -S --noconfirm certbot certbot-nginx
-elif [ ${SERVERTYPE} = "lamp" ]; then
-  /usr/bin/pacman -S --noconfirm certbot certbot-apache
-fi
+#
+#if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
+#  /usr/bin/pacman -S --noconfirm certbot certbot-nginx
+#elif [ ${SERVERTYPE} = "lamp" ]; then
+#  /usr/bin/pacman -S --noconfirm certbot certbot-apache
+#fi
 
 ## inkCert proper
 /bin/mkdir -p /etc/inkcert
