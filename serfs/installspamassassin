@@ -11,7 +11,7 @@
 
 # Only if this hasn't been run yet
 . /opt/verb/conf/sitemailpath
-if [ SASTATUS = "INSTALLED" ]; then
+if [ "${SASTATUS}" = "INSTALLED" ]; then
   /bin/echo "SpamAssassin already installed, doing nothing."
   exit 0
 fi
@@ -21,10 +21,8 @@ fi
 /usr/bin/mkdir -p /etc/mail/spamassassin
 /usr/bin/chmod 755 /etc/mail/spamassassin
 ## Other related files
-/usr/bin/mkdir -p /var/lib/dovecot/sieve/global_sieves /etc/mail/sa-update-keys
-/usr/bin/chown -R spamd:spamd /etc/mail/sa-update-keys
-/usr/bin/sudo -u spamd /usr/bin/vendor_perl/sa-update
-/usr/bin/sudo -u spamd /usr/bin/vendor_perl/sa-compile
+/usr/bin/mkdir -p /var/lib/dovecot/sieve/global_sieves /etc/mail/sa-update-keys /etc/mail/spamassassin/sa-update-keys
+/usr/bin/chown -R spamd:spamd /etc/mail/sa-update-keys /etc/mail/spamassassin/sa-update-keys
 ## Dovecot integration
 /usr/bin/cat <<EOF > /var/lib/dovecot/sieve/global_sieves/move_to_spam_folder.sieve
 require "spamtestplus";
@@ -79,6 +77,7 @@ EOF
 ## Config files
 /bin/cp /opt/verb/conf/lab/vmail/clamav/clamav.cf /etc/mail/spamassassin/
 /bin/cp /opt/verb/conf/lab/vmail/clamav/clamav.pm /etc/mail/spamassassin/
+/usr/bin/chown spamd:spamd /etc/mail/spamassassin/clamav.cf /etc/mail/spamassassin/clamav.pm
 /usr/bin/mkdir -p /var/lib/clamav
 /usr/bin/chmod 755 /var/lib/clamav
 . /opt/verb/donjon/clamav
@@ -111,13 +110,15 @@ cd $OLDPWD
 /usr/bin/chown -R clamav:clamav /var/lib/clamav
 /usr/bin/touch /run/clamav/clamd.ctl
 /usr/bin/chown clamav:clamav /run/clamav/clamd.ctl
-## freshclam
-/usr/bin/killall freshclam 2>/dev/null
-/usr/bin/freshclam
 ## Uses the package perl-cpanplus-dist-arch, which we installed
 #/usr/bin/vendor_perl/cpanp -i File::Scan::ClamAV; wait
 # echo "y" to ignore an error
 /usr/bin/echo "y" | /usr/bin/vendor_perl/cpanp -i File::Scan::ClamAV; wait
+/usr/bin/sudo -u spamd /usr/bin/vendor_perl/sa-update --nogpg
+/usr/bin/sudo -u spamd /usr/bin/vendor_perl/sa-compile
+## freshclam
+/usr/bin/killall freshclam 2>/dev/null
+/usr/bin/freshclam
 ## Service
 # Run by installpostfixvmail
 # /usr/bin/systemctl enable clamav-daemon.service; wait
