@@ -378,7 +378,7 @@ cd $OLDPWD
 # UFW (services and ports below them if known)
 #/usr/bin/ufw allow postfix
 #/usr/bin/ufw allow smtp
-#/usr/bin/ufw allow 25
+/usr/bin/ufw allow 25
 /usr/bin/ufw allow 587
 /usr/bin/ufw allow smtps
 /usr/bin/ufw allow 465
