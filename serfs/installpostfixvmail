@@ -198,6 +198,27 @@ else
 fi
 . /opt/verb/conf/sitemailpath
 if [ SASTATUS = "INSTALLED" ]; then
+  ## Dovecot integration
+  /usr/bin/mkdir -p /etc/dovecot/sieve-filter
+  /usr/bin/cat <<EOF > /var/lib/dovecot/sieve/global_sieves/move_to_spam_folder.sieve
+require "spamtestplus";
+require "fileinto";
+require "relational";
+require "comparator-i;ascii-numeric";
+
+if spamtest :value "ge" :comparator "i;ascii-numeric" "5" {
+  fileinto "Junk";
+}
+EOF
+  /usr/bin/ln -sfn /usr/bin/vendor_perl/spamc /etc/dovecot/sieve-filter/spamc
+  #DEV why is this EOFdoc here?
+  /usr/bin/cat <<EOF > /etc/dovecot/sieve.before.d/spamassassin.sieve
+require [ "vnd.dovecot.filter" ];
+filter "spamc" [ "-d", "127.0.0.1", "--no-safe-fallback" ];
+EOF
+  ## Compile the SpamAssassin Dovecot Sieve rules
+  /usr/bin/sievec /var/lib/dovecot/sieve/global_sieves
+  ## Services
   /usr/bin/systemctl enable spamassassin.service; wait
   /usr/bin/systemctl start spamassassin.service; wait
   /usr/bin/systemctl enable spamassassin-update.timer; wait
