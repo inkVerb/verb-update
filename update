@@ -98,7 +98,7 @@ fi
 /bin/chmod 640 /opt/verb/donjon/clamav
 /bin/echo "ClamAV definitions ready."
 . /opt/verb/conf/sitemailpath
-if [ "${SITEMAILSTATUS}" != "EMAIL_NOT_INSTALLED" ] && [ -d "/var/lib/clamav" ]; then
+if [ "${SITEMAILSTATUS}" != "EMAIL_NOT_INSTALLED" ] && [ -d "/var/lib/clamav" ] && [ "${SASTATUS}" = "INSTALLED" ]; then
   . /opt/verb/donjon/clamav
   /usr/bin/mv -f /var/lib/clamav/main.cvd /var/lib/clamav/main.cvd.bak 2>/dev/null
   /usr/bin/mv -f /var/lib/clamav/daily.cvd /var/lib/clamav/daily.cvd.bak 2>/dev/null
