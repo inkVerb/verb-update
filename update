@@ -106,6 +106,7 @@ if [ "${SITEMAILSTATUS}" != "EMAIL_NOT_INSTALLED" ] && [ -d "/var/lib/clamav" ];
   /usr/bin/wget https://inkisaverb.com/${CLAMDL}/main.cvd -P /var/lib/clamav/
   /usr/bin/wget https://inkisaverb.com/${CLAMDL}/daily.cvd -P /var/lib/clamav/
   /usr/bin/wget https://inkisaverb.com/${CLAMDL}/bytecode.cvd -P /var/lib/clamav/
+  cd /var/lib/clamav/
   if [ -f "/var/lib/clamav/main.cvd" ] && [ "$(/usr/bin/sha256sum main.cvd)" = "${SHAmain}" ]; then
     /usr/bin/rm /var/lib/clamav/main.cvd.bak
   else
@@ -124,6 +125,7 @@ if [ "${SITEMAILSTATUS}" != "EMAIL_NOT_INSTALLED" ] && [ -d "/var/lib/clamav" ];
     /usr/bin/rm -f /var/lib/clamav/bytecode.cvd
     /usr/bin/mv -f /var/lib/clamav/bytecode.cvd.bak /var/lib/clamav/bytecode.cvd 2>/dev/null
   fi
+  cd $OLDPWD
   /usr/bin/chown clamav:clamav /var/lib/clamav/main.cvd
   /usr/bin/chown clamav:clamav /var/lib/clamav/daily.cvd
   /usr/bin/chown clamav:clamav /var/lib/clamav/bytecode.cvd
