@@ -189,7 +189,26 @@ EOF
 /usr/bin/systemctl start dovecot
 
 # SpamAssassin
-#/opt/verb/serfs/installspamassassin
+. /opt/verb/conf/sitemailpath
+if [ SASTATUS != "INSTALLED" ]; then
+  /bin/echo "SpamAssassin..." # Be able to comment the line serf below without causing a logic error
+  /opt/verb/serfs/installspamassassin
+else
+  /bin/echo "SpamAssassin..." # Be able to comment the line serf above without causing a logic error
+fi
+. /opt/verb/conf/sitemailpath
+if [ SASTATUS = "INSTALLED" ]; then
+  /usr/bin/systemctl enable spamassassin.service; wait
+  /usr/bin/systemctl start spamassassin.service; wait
+  /usr/bin/systemctl enable spamassassin-update.timer; wait
+  /usr/bin/systemctl start spamassassin-update.timer; wait
+  /usr/bin/systemctl enable clamav-daemon.service; wait
+  /usr/bin/systemctl start clamav-daemon.service; wait
+  /usr/bin/systemctl restart spamassassin.service; wait
+  /bin/echo "installed and enabled."
+else
+  /bin/echo "not installed yet for dev reasons."
+fi
 
 # Virtual mail SQL database
 /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "

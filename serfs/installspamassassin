@@ -9,7 +9,18 @@
 ## ./installspamassassin
 
 
+# Only if this hasn't been run yet
+. /opt/verb/conf/sitemailpath
+if [ SASTATUS = "INSTALLED" ]; then
+  /bin/echo "SpamAssassin already installed, doing nothing."
+  exit 0
+fi
+
 # SpamAssassin
+## Just making sure
+/usr/bin/mkdir -p /etc/mail/spamassassin
+/usr/bin/chmod 755 /etc/mail/spamassassin
+## Other related files
 /usr/bin/mkdir -p /var/lib/dovecot/sieve/global_sieves /etc/mail/sa-update-keys
 /usr/bin/chown -R spamd:spamd /etc/mail/sa-update-keys
 /usr/bin/sudo -u spamd /usr/bin/vendor_perl/sa-update
@@ -58,10 +69,11 @@ Persistent=true
 [Install]
 WantedBy=timers.target
 EOF
-/usr/bin/systemctl enable spamassassin.service; wait
-/usr/bin/systemctl start spamassassin.service; wait
-/usr/bin/systemctl enable spamassassin-update.timer; wait
-/usr/bin/systemctl start spamassassin-update.timer; wait
+# Run by installpostfixvmail
+#/usr/bin/systemctl enable spamassassin.service; wait
+#/usr/bin/systemctl start spamassassin.service; wait
+#/usr/bin/systemctl enable spamassassin-update.timer; wait
+#/usr/bin/systemctl start spamassassin-update.timer; wait
 
 # ClamAV
 ## Config files
@@ -70,9 +82,13 @@ EOF
 /usr/bin/mkdir -p /var/lib/clamav
 /usr/bin/chmod 755 /var/lib/clamav
 . /opt/verb/donjon/clamav
+/usr/bin/mv -f /var/lib/clamav/main.cvd /var/lib/clamav/main.cvd.bak 2>/dev/null
+/usr/bin/mv -f /var/lib/clamav/daily.cvd /var/lib/clamav/daily.cvd.bak 2>/dev/null
+/usr/bin/mv -f /var/lib/clamav/bytecode.cvd /var/lib/clamav/bytecode.cvd.bak 2>/dev/null
 /usr/bin/wget https://inkisaverb.com/${CLAMDL}/main.cvd -P /var/lib/clamav/
 /usr/bin/wget https://inkisaverb.com/${CLAMDL}/daily.cvd -P /var/lib/clamav/
 /usr/bin/wget https://inkisaverb.com/${CLAMDL}/bytecode.cvd -P /var/lib/clamav/
+cd /var/lib/clamav/
 if [ -f "/var/lib/clamav/main.cvd" ] && [ "$(/usr/bin/sha256sum main.cvd)" = "${SHAmain}" ]; then
   /usr/bin/chown clamav:clamav /var/lib/clamav/main.cvd
   /usr/bin/chmod 644 /var/lib/clamav/main.cvd
@@ -91,6 +107,7 @@ if [ -f "/var/lib/clamav/bytecode.cvd" ] && [ "$(/usr/bin/sha256sum bytecode.cvd
 else
   /usr/bin/rm -f /var/lib/clamav/bytecode.cvd
 fi
+cd $OLDPWD
 /usr/bin/chown -R clamav:clamav /var/lib/clamav
 /usr/bin/touch /run/clamav/clamd.ctl
 /usr/bin/chown clamav:clamav /run/clamav/clamd.ctl
@@ -102,9 +119,10 @@ fi
 # echo "y" to ignore an error
 /usr/bin/echo "y" | /usr/bin/vendor_perl/cpanp -i File::Scan::ClamAV; wait
 ## Service
-/usr/bin/systemctl enable clamav-daemon.service
-/usr/bin/systemctl start clamav-daemon.service
-/usr/bin/systemctl restart spamassassin.service
+# Run by installpostfixvmail
+# /usr/bin/systemctl enable clamav-daemon.service; wait
+# /usr/bin/systemctl start clamav-daemon.service; wait
+# /usr/bin/systemctl restart spamassassin.service; wait
 
 # Razor
 /usr/bin/mkdir -p /etc/mail/spamassassin/razor
@@ -115,9 +133,12 @@ cd /etc/mail/spamassassin/razor
 /usr/bin/sudo -u spamd razor-admin -home=/etc/mail/spamassassin/razor -discover
 cd $OLDPWD
 
+# Finish
+/bin/echo "SASTATUS=\"INSTALLED\"" > /opt/verb/conf/sitemailpath
+
 
 #### original, for reference, delete when everything works
-exit
+exit 0
 
 ## SpamAssassin
 /usr/bin/mkdir -p /var/lib/dovecot/sieve/global_sieves /etc/mail/sa-update-keys

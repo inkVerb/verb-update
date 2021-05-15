@@ -95,7 +95,7 @@ fi
 
 # Update ClamAV
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/clamav /opt/verb/donjon/
-/bin/chmod 650 /opt/verb/donjon/clamav
+/bin/chmod 640 /opt/verb/donjon/clamav
 /bin/echo "ClamAV definitions ready."
 . /opt/verb/conf/sitemailpath
 if [ "${SITEMAILSTATUS}" != "EMAIL_NOT_INSTALLED" ] && [ -d "/var/lib/clamav" ]; then
@@ -108,19 +108,19 @@ if [ "${SITEMAILSTATUS}" != "EMAIL_NOT_INSTALLED" ] && [ -d "/var/lib/clamav" ];
   /usr/bin/wget https://inkisaverb.com/${CLAMDL}/bytecode.cvd -P /var/lib/clamav/
   cd /var/lib/clamav/
   if [ -f "/var/lib/clamav/main.cvd" ] && [ "$(/usr/bin/sha256sum main.cvd)" = "${SHAmain}" ]; then
-    /usr/bin/rm /var/lib/clamav/main.cvd.bak
+    /usr/bin/rm -f /var/lib/clamav/main.cvd.bak
   else
     /usr/bin/rm -f /var/lib/clamav/main.cvd
     /usr/bin/mv -f /var/lib/clamav/main.cvd.bak /var/lib/clamav/main.cvd 2>/dev/null
   fi
   if [ -f "/var/lib/clamav/daily.cvd" ] && [ "$(/usr/bin/sha256sum daily.cvd)" = "${SHAdaily}" ]; then
-    /usr/bin/rm /var/lib/clamav/daily.cvd.bak
+    /usr/bin/rm -f /var/lib/clamav/daily.cvd.bak
   else
     /usr/bin/rm -f /var/lib/clamav/daily.cvd
     /usr/bin/mv -f /var/lib/clamav/daily.cvd.bak /var/lib/clamav/daily.cvd 2>/dev/null
   fi
   if [ -f "/var/lib/clamav/bytecode.cvd" ] && [ "$(/usr/bin/sha256sum bytecode.cvd)" = "${SHAbytecode}" ]; then
-    /usr/bin/rm /var/lib/clamav/bytecode.cvd.bak
+    /usr/bin/rm -f /var/lib/clamav/bytecode.cvd.bak
   else
     /usr/bin/rm -f /var/lib/clamav/bytecode.cvd
     /usr/bin/mv -f /var/lib/clamav/bytecode.cvd.bak /var/lib/clamav/bytecode.cvd 2>/dev/null
