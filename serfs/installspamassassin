@@ -69,6 +69,11 @@ EOF
 /bin/cp /opt/verb/conf/lab/vmail/clamav/clamav.pm /etc/mail/spamassassin/
 ## Uses the package perl-cpanplus-dist-arch, which we installed
 /usr/bin/chmod 755 /var/lib/clamav
+cd /var/lib/clamav
+/usr/bin/wget https://database.clamav.net/main.cvd; wait
+/usr/bin/wget https://database.clamav.net/daily.cvd; wait
+/usr/bin/wget https://database.clamav.net/bytecode.cvd; wait
+cd $OLDPWD
 /usr/bin/chown -R clamav:clamav /var/lib/clamav
 /usr/bin/touch /run/clamav/clamd.ctl
 /usr/bin/chown clamav:clamav /run/clamav/clamd.ctl
