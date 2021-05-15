@@ -17,5 +17,5 @@
 
 DIR=$1
 
-/bin/tar -cf - ${DIR}/ | /usr/bin/xz -9 -c - > ${DIR}.tar.xz
+/bin/tar c ${DIR} | /usr/bin/xz > ${DIR}.tar.xz
 /bin/mv ${DIR}.tar.xz ${DIR}.vtxz

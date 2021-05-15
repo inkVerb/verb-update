@@ -83,15 +83,54 @@ cd /opt/verb
 /bin/echo "Serfs have been updated."
 
 # Update inkLists
-## inkGet
 . /opt/verb/conf/siteinkget
 if [ "${INKGET_LIST}" = "AUTO_UPDATE" ]; then
-/bin/cp /opt/verb/${VUPDATE_REPO}/inklists/repoverlist /opt/verb/conf/inklists/
-/bin/cp /opt/verb/${VUPDATE_REPO}/inklists/repolinks /opt/verb/conf/inklists/
-/bin/cp /opt/verb/${VUPDATE_REPO}/inkdns/inkdnsconf /opt/verb/conf/inkdns/
-/bin/echo "Repo version list is up-to-date."
+  /bin/cp /opt/verb/${VUPDATE_REPO}/inklists/repoverlist /opt/verb/conf/inklists/
+  /bin/cp /opt/verb/${VUPDATE_REPO}/inklists/repolinks /opt/verb/conf/inklists/
+  /bin/cp /opt/verb/${VUPDATE_REPO}/inkdns/inkdnsconf /opt/verb/conf/inkdns/
+  /bin/echo "Repo version list is up-to-date."
 else
-/bin/echo "Repo version list unchanged because this is a custom Verber."
+  /bin/echo "Repo version list unchanged because this is a custom Verber."
+fi
+
+# Update ClamAV
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/clamav /opt/verb/donjon/
+/bin/chmod 650 /opt/verb/donjon/clamav
+/bin/echo "ClamAV definitions ready."
+. /opt/verb/conf/sitemailpath
+if [ "${SITEMAILSTATUS}" != "EMAIL_NOT_INSTALLED" ] && [ -d "/var/lib/clamav" ]; then
+  . /opt/verb/donjon/clamav
+  /usr/bin/mv -f /var/lib/clamav/main.cvd /var/lib/clamav/main.cvd.bak 2>/dev/null
+  /usr/bin/mv -f /var/lib/clamav/daily.cvd /var/lib/clamav/daily.cvd.bak 2>/dev/null
+  /usr/bin/mv -f /var/lib/clamav/bytecode.cvd /var/lib/clamav/bytecode.cvd.bak 2>/dev/null
+  /usr/bin/wget https://inkisaverb.com/${CLAMDL}/main.cvd -P /var/lib/clamav/
+  /usr/bin/wget https://inkisaverb.com/${CLAMDL}/daily.cvd -P /var/lib/clamav/
+  /usr/bin/wget https://inkisaverb.com/${CLAMDL}/bytecode.cvd -P /var/lib/clamav/
+  if [ -f "/var/lib/clamav/main.cvd" ] && [ "$(/usr/bin/sha256sum main.cvd)" = "${SHAmain}" ]; then
+    /usr/bin/rm /var/lib/clamav/main.cvd.bak
+  else
+    /usr/bin/rm -f /var/lib/clamav/main.cvd
+    /usr/bin/mv -f /var/lib/clamav/main.cvd.bak /var/lib/clamav/main.cvd 2>/dev/null
+  fi
+  if [ -f "/var/lib/clamav/daily.cvd" ] && [ "$(/usr/bin/sha256sum daily.cvd)" = "${SHAdaily}" ]; then
+    /usr/bin/rm /var/lib/clamav/daily.cvd.bak
+  else
+    /usr/bin/rm -f /var/lib/clamav/daily.cvd
+    /usr/bin/mv -f /var/lib/clamav/daily.cvd.bak /var/lib/clamav/daily.cvd 2>/dev/null
+  fi
+  if [ -f "/var/lib/clamav/bytecode.cvd" ] && [ "$(/usr/bin/sha256sum bytecode.cvd)" = "${SHAbytecode}" ]; then
+    /usr/bin/rm /var/lib/clamav/bytecode.cvd.bak
+  else
+    /usr/bin/rm -f /var/lib/clamav/bytecode.cvd
+    /usr/bin/mv -f /var/lib/clamav/bytecode.cvd.bak /var/lib/clamav/bytecode.cvd 2>/dev/null
+  fi
+  /usr/bin/chown clamav:clamav /var/lib/clamav/main.cvd
+  /usr/bin/chown clamav:clamav /var/lib/clamav/daily.cvd
+  /usr/bin/chown clamav:clamav /var/lib/clamav/bytecode.cvd
+  /usr/bin/chmod 644 /var/lib/clamav/main.cvd
+  /usr/bin/chmod 644 /var/lib/clamav/daily.cvd
+  /usr/bin/chmod 644 /var/lib/clamav/bytecode.cvd
+  /bin/echo "ClamAV definitions updated."
 fi
 
 # Run version-by-version updates
