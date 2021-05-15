@@ -17,17 +17,17 @@
 . /opt/verb/conf/sitemailpath
 
 # Check to see if already installed
-if [ ${SITEMAILSTATUS} = "VMAIL_SERVER" ]; then
+if [ "${SITEMAILSTATUS}" = "VMAIL_SERVER" ]; then
 /bin/echo "
 Email server already installed.
 "
 exit 0; fi
-if [ ${SITEMAILSTATUS} = "EMAIL_BACKUP_MX" ]; then
+if [ "${SITEMAILSTATUS}" = "EMAIL_BACKUP_MX" ]; then
 /bin/echo "
 Email server is already a backup server.
 "
 exit 0; fi
-if [ ${SITEMAILSTATUS} = "PMAIL_SERVER" ]; then
+if [ "${SITEMAILSTATUS}" = "PMAIL_SERVER" ]; then
 /bin/echo "
 Email server is already installed.
 "

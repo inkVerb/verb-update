@@ -116,7 +116,7 @@ cd /etc/mail/spamassassin/razor
 cd $OLDPWD
 
 # Finish
-/bin/echo "SASTATUS=\"INSTALLED\"" > /opt/verb/conf/sitemailpath
+/bin/echo "SASTATUS=\"INSTALLED\"" >> /opt/verb/conf/sitemailpath
 
 
 #### original, for reference, delete when everything works
