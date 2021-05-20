@@ -36,7 +36,31 @@ DBUSER=$2
 DBPASSWORD=$3
 CLEANNAME=$(/bin/echo $CVAPPNAME | sed -e 's/\.//g')
 
+##DEV If as webapp
+# # Download as webapp
+# cd /srv/www/vapps
+# /opt/verb/serfs/inkget ${CVAPPNAME} check
+# ## Check
+# if [ "$?" = 4 ]; then
+# /bin/echo "Repo failed to retrieve the file."
+# exit 4; fi
+# if [ ! -f ${CVAPPNAME}.vtxz ]; then
+# /bin/echo "Failed to retrieve from the repo."
+# exit 4; fi
+# ## Extract
+# /bin/rm -rf ${CVAPPNAME}
+# /opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
+# ## Install it
+# /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
+# /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
+# /bin/chown -R www:www /srv/www/html/blue; wait
+# ## Run the Nextcloud script
+# /opt/verb/donjon/nextcloudprep.sh; wait
+# ## Verify ownership
+# /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
+
 # Install the package
+/usr/bin/pacman -Syyu --noconfirm
 /usr/bin/pacman -S --noconfirm nextcloud
 # /usr/bin/pacman -S --noconfirm uwsgi-plugin-php # For uwsgi if it works
 
@@ -161,11 +185,16 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   /usr/bin/systemctl restart httpd; wait
 fi
 
+# PHP version spoof
+sed -i "s/if (PHP_VERSION_ID >=.*/if (PHP_VERSION_ID >= 90000) {/" /usr/share/webapps/nextcloud/lib/versioncheck.php
+
 # Set the database and credentials for Nextcloud from the command line
-/usr/bin/occ maintenance:install --database mysql --database-name ${DBASE} --database-host localhost --database-user ${DBUSER} --database-pass=${DBPASSWORD} --data-dir /var/lib/nextcloud/data/
+#/usr/bin/su www -c 'php /usr/share/webapps/nextcloud/occ maintenance:install --database mysql --database-name ${DBASE} --database-host localhost --database-user ${DBUSER} --database-pass=${DBPASSWORD} --data-dir /var/lib/nextcloud/data/'
+#/usr/bin/su www -c 'php /usr/share/webapps/nextcloud/occ maintenance:install --database mysql --database-name nextcloudlG49P6 --database-host localhost --database-user nextcloudlG49P6 --database-pass=x870WeniU0 --data-dir /var/lib/nextcloud/data/'
+
 # Apps
-/usr/bin/occ app:disable recommendation
-/usr/bin/occ app:install notes bookmarks calendar contacts spreed tasks files_markdown news audioplayer mail
+#/usr/bin/su www -c 'php /usr/share/webapps/nextcloud/occ app:disable recommendation'
+#/usr/bin/su www -c 'php /usr/share/webapps/nextcloud/occ app:install notes bookmarks calendar contacts spreed tasks files_markdown news audioplayer mail'
 
 ## Set up cron for updates (manage the crontab files directly)
 /bin/echo '*/15 * * * *  www-data php -f /usr/share/webapps/nextcloud/cron.php' > /etc/cron.d/nextcloud

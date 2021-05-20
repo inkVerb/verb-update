@@ -40,8 +40,8 @@ net2ftp)
 ;;
 
 nextcloud)
-/bin/rm -rf /srv/www/html/blue.nc
-/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/blue.nc
+/bin/rm -rf /srv/www/html/blue
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/blue
 /bin/echo "${VAPPNAME} symlink is set."
 ;;
 
@@ -54,12 +54,6 @@ orangehrm)
 owa)
 /bin/rm -rf /srv/www/html/red.owa
 /bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/red.owa
-/bin/echo "${VAPPNAME} symlink is set."
-;;
-
-owncloud)
-/bin/rm -rf /srv/www/html/blue.owncloud
-/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/blue.owncloud
 /bin/echo "${VAPPNAME} symlink is set."
 ;;
 
