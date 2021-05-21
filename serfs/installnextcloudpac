@@ -1,16 +1,16 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This downloads and installs Nextcloud manually from inkisaverb.com/repo and linnks it to ....verb.blue
+# This installs Nextcloud through the Arch repositories ....verb.blue
 
 # All options are optional, but must are sequential, omit last options first.
 
 # How to use:
-## ./installnextcloud [latest/repo (optional, default latest, needed for following settings)] [dbase] [dbuser] [dbpassword]
+## ./installnextcloudpac [latest/repo (optional, default latest, needed for following settings)] [dbase] [dbuser] [dbpassword]
 
 # Eg:
-## ./installnextcloud
-## ./installnextcloud bestdbase bestdbuser besteverpass
+## ./installnextcloudpac
+## ./installnextcloudpac bestdbase bestdbuser besteverpass
 
 
 CVAPPNAME=nextcloud
@@ -36,27 +36,40 @@ DBUSER=$2
 DBPASSWORD=$3
 CLEANNAME=$(/bin/echo $CVAPPNAME | sed -e 's/\.//g')
 
-# Download as webapp
-cd /srv/www/vapps
-/opt/verb/serfs/inkget ${CVAPPNAME} check
-## Check
-if [ "$?" = 4 ]; then
-/bin/echo "Repo failed to retrieve the file."
-exit 4; fi
-if [ ! -f ${CVAPPNAME}.vtxz ]; then
-/bin/echo "Failed to retrieve from the repo."
-exit 4; fi
-## Extract
-/bin/rm -rf ${CVAPPNAME}
-/opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
-## Install it
-/opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
-/bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
-/bin/chown -R www:www /srv/www/html/blue; wait
-## Run the Nextcloud script
-#/opt/verb/donjon/nextcloudprep.sh; wait
-## Verify ownership
-/bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
+##DEV If as webapp
+# # Download as webapp
+# cd /srv/www/vapps
+# /opt/verb/serfs/inkget ${CVAPPNAME} check
+# ## Check
+# if [ "$?" = 4 ]; then
+# /bin/echo "Repo failed to retrieve the file."
+# exit 4; fi
+# if [ ! -f ${CVAPPNAME}.vtxz ]; then
+# /bin/echo "Failed to retrieve from the repo."
+# exit 4; fi
+# ## Extract
+# /bin/rm -rf ${CVAPPNAME}
+# /opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
+# ## Install it
+# /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
+# /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
+# /bin/chown -R www:www /srv/www/html/blue; wait
+# ## Run the Nextcloud script
+# /opt/verb/donjon/nextcloudprep.sh; wait
+# ## Verify ownership
+# /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
+
+# Install the package
+/usr/bin/pacman -Syyu --noconfirm
+/usr/bin/pacman -S --noconfirm nextcloud
+# /usr/bin/pacman -S --noconfirm uwsgi-plugin-php # For uwsgi if it works
+
+# Install notify_push
+#/usr/bin/su slave -c '/usr/bin/yay -S nextcloud-app-notify_push --noconfirm' # Broken package?
+
+# Links for vapps
+/usr/bin/mkdir /srv/www/vapps/${CVAPPNAME}
+/usr/bin/ln -sfn /var/lib/nextcloud/data /srv/www/vapps/${CVAPPNAME}/
 
 # Auto database
 if [ -z ${4} ]; then
@@ -78,11 +91,10 @@ APPDDBUSR=${DBUSER}
 APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}
 
 # php-fpm
-/usr/bin/mkdir -p /run/nextcloud
 /usr/bin/cat <<'EOF' > /etc/php/php-fpm.d/nextcloud.conf
 [nextcloud]
-user = www
-group = www
+user = nextcloud
+group = nextcloud
 listen = /run/nextcloud/nextcloud.sock
 env[PATH] = /usr/local/bin:/usr/bin:/bin
 env[TMP] = /tmp
@@ -101,25 +113,26 @@ EOF
 /usr/bin/cat <<'EOF' > /etc/systemd/system/php-fpm.service.d/override.conf
 [Service]
 # Your data directory
-ReadWritePaths=/srv/www/vapps/nextcloud/data
+ReadWritePaths=/var/lib/nextcloud/data
 
 # Optional: add if you've set the default apps directory to be writable in config.php
-ReadWritePaths=/srv/www/vapps/nextcloud/apps
+ReadWritePaths=/usr/share/webapps/nextcloud/apps
 
 # Optional: unnecessary if you've set 'config_is_read_only' => true in your config.php
-ReadWritePaths=/srv/www/vapps/nextcloud/config
+ReadWritePaths=/usr/share/webapps/nextcloud/config
+ReadWritePaths=/etc/webapps/nextcloud/config
 
 # Optional: add if you want to use Nextcloud's internal update process
-# ReadWritePaths=/srv/www/vapps/nextcloud
+# ReadWritePaths=/usr/share/webapps/nextcloud
 EOF
 ## For trouble shooting
 #/usr/bin/sed -i 's?;env\[PATH\] = /usr/local/bin:/usr/bin:/bin?env\[PATH\] = /usr/local/bin:/usr/bin:/bin?' /etc/php/php-fpm.d/www.conf
 /usr/bin/systemctl restart php-fpm; wait
-/usr/bin/systemctl daemon-reload
+
 # Webserver setup
 if [ ${SERVERTYPE} = "laemp" ]; then
   /usr/bin/mv /opt/verb/conf/webserver/nginx/sites-available/${blueURI}.conf /opt/verb/conf/webserver/nginx/sites-available/${blueURI}.conf.old
-  /usr/bin/cp /opt/verb/conf/site-files/conf/nextcloud-tar.conf /opt/verb/conf/webserver/nginx/sites-available/${blueURI}.conf
+  /usr/bin/cp /opt/verb/conf/site-files/conf/nextcloud-pac.conf /opt/verb/conf/webserver/nginx/sites-available/${blueURI}.conf
   /usr/bin/mv /opt/verb/conf/webserver/httpd/sites-available/${blueURI}.conf /opt/verb/conf/webserver/httpd/sites-available/${blueURI}.conf.old
   /usr/bin/rm /opt/verb/conf/webserver/httpd/sites-enabled/${blueURI}.conf
 elif [ ${SERVERTYPE} = "lemp" ]; then
@@ -173,15 +186,15 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
 fi
 
 # PHP version spoof
-sed -i "s/if (PHP_VERSION_ID >=.*/if (PHP_VERSION_ID >= 90000) {/" /srv/www/vapps/nextcloud/lib/versioncheck.php
+sed -i "s/if (PHP_VERSION_ID >=.*/if (PHP_VERSION_ID >= 90000) {/" /usr/share/webapps/nextcloud/lib/versioncheck.php
 
-##DEV this is disabled because it breaks and causes a "Bad Gateway warning in Nginx across the server"
 # Set the database and credentials for Nextcloud from the command line
-#/usr/bin/chmod ug+x /srv/www/vapps/nextcloud/occ
-#/usr/bin/su www -c 'php /srv/www/vapps/nextcloud/occ maintenance:install --database mysql --database-name ${DBASE} --database-host localhost --database-user ${DBUSER} --database-pass=${DBPASSWORD} --data-dir /srv/www/vapps/nextcloud/data/'
+#/usr/bin/su www -c 'php /usr/share/webapps/nextcloud/occ maintenance:install --database mysql --database-name ${DBASE} --database-host localhost --database-user ${DBUSER} --database-pass=${DBPASSWORD} --data-dir /var/lib/nextcloud/data/'
+#/usr/bin/su www -c 'php /usr/share/webapps/nextcloud/occ maintenance:install --database mysql --database-name nextcloudlG49P6 --database-host localhost --database-user nextcloudlG49P6 --database-pass=x870WeniU0 --data-dir /var/lib/nextcloud/data/'
+
 # Apps
-#/usr/bin/su www -c 'php /srv/www/vapps/nextcloud/occ app:disable recommendation'
-#/usr/bin/su www -c 'php /srv/www/vapps/nextcloud/occ app:install notes bookmarks calendar contacts spreed tasks files_markdown news audioplayer mail'
+#/usr/bin/su www -c 'php /usr/share/webapps/nextcloud/occ app:disable recommendation'
+#/usr/bin/su www -c 'php /usr/share/webapps/nextcloud/occ app:install notes bookmarks calendar contacts spreed tasks files_markdown news audioplayer mail'
 
 ## Set up cron for updates (manage the crontab files directly)
 /bin/echo '*/15 * * * *  www-data php -f /usr/share/webapps/nextcloud/cron.php' > /etc/cron.d/nextcloud
