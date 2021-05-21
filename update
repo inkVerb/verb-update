@@ -87,7 +87,7 @@ cd /opt/verb
 if [ "${INKGET_LIST}" = "AUTO_UPDATE" ]; then
   /bin/cp /opt/verb/${VUPDATE_REPO}/inklists/repoverlist /opt/verb/conf/inklists/
   /bin/cp /opt/verb/${VUPDATE_REPO}/inklists/repolinks /opt/verb/conf/inklists/
-  /bin/cp /opt/verb/${VUPDATE_REPO}/inkdns/inkdnsconf /opt/verb/conf/inkdns/
+  /bin/cp /opt/verb/${VUPDATE_REPO}/inkdns/inkdnsinkers /opt/verb/conf/inkdns/
   /bin/echo "Repo version list is up-to-date."
 else
   /bin/echo "Repo version list unchanged because this is a custom Verber."
