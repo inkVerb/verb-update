@@ -36,17 +36,11 @@ exit 8; fi
 
 # Download and unpack the latest checked version from inkisaverb.com/repo
 cd /srv/www/vapps
-/opt/verb/serfs/inkget ${CVAPPNAME}; wait
-### Check
-/opt/verb/serfs/inkget ${CVAPPNAME} check
+/opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
-if [ ! -f ${CVAPPNAME}.vtxz ]; then
-/bin/echo "Failed to retrieve from the repo."
-exit 4; fi
 
-/opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
 cd /srv/www/html
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
 /bin/chown -R www:www /srv/www/html/red.crm; wait
@@ -85,4 +79,3 @@ Database password: ${DBPASSWORD}
 
 Go to the http://crm.${redURI} site to install.
 "
-

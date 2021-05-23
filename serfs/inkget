@@ -14,7 +14,7 @@
 
 APPNAME=$1
 
-# Include the config files
+# Include the config file
 . /opt/verb/conf/siteinkget
 
 if [ "${INKGET_REPO}" = "NOT_SET" ]; then

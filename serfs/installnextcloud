@@ -43,20 +43,11 @@ cd /srv/www/vapps
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
-if [ ! -f ${CVAPPNAME}.vtxz ]; then
-/bin/echo "Failed to retrieve from the repo."
-exit 4; fi
-## Extract
-/bin/rm -rf ${CVAPPNAME}
-/opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
+
 ## Install it
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
 /bin/chown -R www:www /srv/www/html/blue; wait
-## Run the Nextcloud script
-#/opt/verb/donjon/nextcloudprep.sh; wait
-## Verify ownership
-/bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
 
 # Auto database
 if [ -z ${4} ]; then
@@ -78,12 +69,15 @@ APPDDBUSR=${DBUSER}
 APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}
 
 # php-fpm
-/usr/bin/mkdir -p /run/nextcloud
+## Use a .conf file in /etc/tmpfiles.d/ so the /var/run/nextcloud/ dir isn't deleted at system startup, but created/protected at startup
+/usr/bin/cat <<'EOF' > /etc/tmpfiles.d/nextcloud.conf
+d /var/run/nextcloud 0755 www www
+EOF
 /usr/bin/cat <<'EOF' > /etc/php/php-fpm.d/nextcloud.conf
 [nextcloud]
 user = www
 group = www
-listen = /run/nextcloud/nextcloud.sock
+listen = /var/run/nextcloud/nextcloud.sock
 env[PATH] = /usr/local/bin:/usr/bin:/bin
 env[TMP] = /tmp
 
@@ -175,16 +169,24 @@ fi
 # PHP version spoof
 sed -i "s/if (PHP_VERSION_ID >=.*/if (PHP_VERSION_ID >= 90000) {/" /srv/www/vapps/nextcloud/lib/versioncheck.php
 
-##DEV this is disabled because it breaks and causes a "Bad Gateway warning in Nginx across the server"
-# Set the database and credentials for Nextcloud from the command line
-#/usr/bin/chmod ug+x /srv/www/vapps/nextcloud/occ
-#/usr/bin/su www -c 'php /srv/www/vapps/nextcloud/occ maintenance:install --database mysql --database-name ${DBASE} --database-host localhost --database-user ${DBUSER} --database-pass=${DBPASSWORD} --data-dir /srv/www/vapps/nextcloud/data/'
-# Apps
-#/usr/bin/su www -c 'php /srv/www/vapps/nextcloud/occ app:disable recommendation'
-#/usr/bin/su www -c 'php /srv/www/vapps/nextcloud/occ app:install notes bookmarks calendar contacts spreed tasks files_markdown news audioplayer mail'
+# Autoconfig (so user does not need to enter database info)
+/usr/bin/cat <<EOF > /srv/www/vapps/nextcloud/config/autoconfig.php
+<?php
+$AUTOCONFIG = array(
+  "dbtype"        => "mysql",
+  "dbname"        => "${DBASE}",
+  "dbuser"        => "${DBUSER}",
+  "dbpass"        => "${DBPASSWORD}",
+  "dbhost"        => "localhost",
+  "dbtableprefix" => "",
+  "directory"     => "/srv/www/vapps/nextcloud/data",
+);
+EOF
+## Verify ownership
+/bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
 
-## Set up cron for updates (manage the crontab files directly)
-/bin/echo '*/15 * * * *  www-data php -f /usr/share/webapps/nextcloud/cron.php' > /etc/cron.d/nextcloud
+# Set up cron for updates (manage the crontab files directly)
+/bin/echo '*/15 * * * *  www php -f /srv/www/vapps/nextcloud/cron.php' > /etc/cron.d/nextcloud
 /bin/chmod 0644 /etc/cron.d/nextcloud
 
 # See if PFA is installed

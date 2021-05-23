@@ -32,17 +32,11 @@ exit 8; fi
 
 # Download and unpack the latest checked version from inkisaverb.com/repo
 cd /srv/www/vapps
-/opt/verb/serfs/inkget ${CVAPPNAME}; wait
-### Check
-/opt/verb/serfs/inkget ${CVAPPNAME} check
+/opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
-if [ ! -f ${CVAPPNAME}.vtxz ]; then
-/bin/echo "Failed to retrieve from the repo."
-exit 4; fi
 
-/opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
 /bin/mkdir -p /srv/www/vapps/${CVAPPNAME}/lib/logs
 /bin/mkdir -p /srv/www/vapps/${CVAPPNAME}/symfony/cache
 /bin/mkdir -p /srv/www/vapps/${CVAPPNAME}/symfony/log
@@ -92,4 +86,3 @@ Database user password: ${DBPASSWORD}
 
 Go to http://hrm.${redURI} to install.
 "
-

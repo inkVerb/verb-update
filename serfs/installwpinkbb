@@ -32,18 +32,11 @@ fi
 
 # Download and establish wordpress in the server to pre-created domain
 cd /srv/www/vapps
-/opt/verb/serfs/inkget wp; wait
-### Check
-/opt/verb/serfs/inkget wp check
+/opt/verb/serfs/inkget wp check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
 if [ ! -f wp.vtxz ]; then
-/bin/echo "Failed to retrieve from the repo."
-exit 4; fi
-
-/bin/rm -rf wp
-/opt/verb/serfs/vtxzout wp; wait
 
 # Auto database
 if [ -z ${3} ]; then

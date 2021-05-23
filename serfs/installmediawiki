@@ -27,17 +27,11 @@ exit 0; fi
 
 # Download and establish mediawiki from the inkVerb repo
 cd /srv/www/vapps
-/opt/verb/serfs/inkget ${CVAPPNAME}; wait
-### Check
-/opt/verb/serfs/inkget ${CVAPPNAME} check
+/opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
-if [ ! -f ${CVAPPNAME}.vtxz ]; then
-/bin/echo "Failed to retrieve from the repo."
-exit 4; fi
 
-/opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
 /bin/chown -R www:www /srv/www/html/ink.wiki; wait
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
@@ -76,4 +70,3 @@ Go to http://wiki.${inkURI} to install.
 
 After installing, download the LocalSettings.php file, then upload it to the \"vip\" web folder, then run postinstallmediawiki to complete in installation.
 "
-

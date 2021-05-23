@@ -68,12 +68,6 @@ cd /srv/www/email
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
-if [ ! -f ${CVAPPNAME}.vtxz ]; then
-/bin/echo "Failed to retrieve from the repo."
-exit 4; fi
-
-/bin/rm -rf ${CVAPPNAME}
-/opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
 
 # Create the MySQL database and user
 /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "

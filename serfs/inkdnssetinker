@@ -22,7 +22,7 @@
 
 
 # Defaults
-. /opt/verb/conf/inkdns/inkdnsconf
+. /opt/verb/conf/inkdns/inkdnsinkers
 
 # Check variables present
 ## Domain

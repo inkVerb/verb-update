@@ -49,9 +49,6 @@ cd /srv/www/vapps
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
-if [ ! -f ${CVAPPNAME}.vtxz ]; then
-/bin/echo "Failed to retrieve from the repo."
-exit 4; fi
 
 ## Auto options
 if [ -z ${3} ]; then
@@ -63,7 +60,6 @@ DBASE=iwp$(/bin/echo $CLEANNAME | cut -c1-23)$(/usr/bin/pwgen -s -1 5); fi
 if [ -z ${5} ]; then
 DBUSER=${DBASE}; fi
 
-/opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
 /bin/mv ${CVAPPNAME} ${DOMAIN}
 /bin/mv ${CVAPPNAME} ${CVAPPNAME}.${DOMAIN}
 /bin/ln -sfn /srv/www/vapps/${CVAPPNAME}.${DOMAIN} /srv/www/html/${DOMAIN}/${DIRECTORY}
