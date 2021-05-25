@@ -56,19 +56,11 @@ else
 fi
 
 # Download and unpack the latest checked version from inkisaverb.com/repo
-cd /srv/www
-/opt/verb/serfs/inkget ${CVAPPNAME}; wait
-### Check
-/opt/verb/serfs/inkget ${CVAPPNAME} check
+cd /srv/www/vapps
+/opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
-if [ ! -f ${CVAPPNAME}.vtxz ]; then
-/bin/echo "Failed to retrieve from the repo."
-exit 4; fi
-
-/bin/rm -rf ${CVAPPNAME}
-/opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
 
 # Auto database
 if [ -z ${5} ]; then

@@ -18,7 +18,7 @@ if [ "$SITEMAILSTATUS" != "VMAIL_SERVER" ]; then
 . /opt/verb/conf/siteurilist
 
 # Prep all vairables
-PASSWORD=$(/usr/bin/pwgen -s 24)
+PASSWORD=$(/usr/bin/pwgen -s1 24)
 password="$(/bin/echo $PASSWORD | /usr/bin/openssl passwd -1 -stdin)"
 username="sys@$nameURI"
 NAME="System"
@@ -33,13 +33,18 @@ INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('$u
 
 # Create & set the php config
 /bin/echo "
-account default
-host $nameURI
+defaults
+auth           on
+tls            on
+tls_trust_file /etc/inkcert/mail/vmail.crt
+logfile        /var/log/msmtp.log
+account sys
+host mail.$nameURI
+port 587
 from sys@$nameURI
-auth plain
 user sys@$nameURI
 password $PASSWORD
-syslog LOG_MAIL" > /etc/msmtprc
+account default : sys" > /etc/msmtprc
 /bin/chmod 0600 /etc/msmtprc
 /bin/chown www:www /etc/msmtprc
 

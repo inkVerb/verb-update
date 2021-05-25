@@ -30,12 +30,6 @@ if [ $INKGET_METHOD = "ZJZ" ]; then
   ## Continue
   /bin/cp /opt/verb/repo/${APPNAME}.vtxz .
   /bin/echo "Copied for install."
-  if [ $INKGET_REPO = "TEMP" ]; then
-    /bin/rm /opt/verb/repo/${APPNAME}.vtxz
-    /bin/echo "Temp repo files cleaned-up."
-  else
-    /bin/echo "Repo files kept."
-  fi
 fi
 
 # wget
@@ -46,6 +40,12 @@ fi
 # inker
 if [ $INKGET_METHOD = "INKER_CP" ]; then
   /bin/cp /opt/ink/repo/${APPNAME}.vtxz .
+  if [ $INKGET_REPO = "TEMP" ]; then
+    /bin/rm /opt/verb/repo/${APPNAME}.vtxz
+    /bin/echo "Temp repo files cleaned-up."
+  else
+    /bin/echo "Repo files kept."
+  fi
 fi
 
 ## DEV NOTE: Other secure methods are planned in the roadmap

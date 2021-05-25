@@ -66,8 +66,8 @@ cd /srv/www/email
 /opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 ### Check
 if [ "$?" = 4 ]; then
-/bin/echo "Repo failed to retrieve the file."
-exit 4; fi
+  /bin/echo "Repo failed to retrieve the file."
+  exit 4; fi
 
 # Create the MySQL database and user
 /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf -e "
@@ -79,7 +79,6 @@ FLUSH PRIVILEGES;"
 
 # Webserver
 ## Web directories
-/bin/cp -R /srv/www/html/0ne /srv/www/html/${SITEEMAILTLD}.rc
 /bin/ln -sfn /srv/www/email/roundcube /srv/www/html/${SITEEMAILTLD}.rc/${RCFOLDER}
 /bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.rc
 ## DNS
