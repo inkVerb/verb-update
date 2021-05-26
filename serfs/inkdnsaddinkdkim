@@ -26,10 +26,15 @@ if /bin/grep -Fq "dkim._domainkey" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMA
 exit 7; fi
 
 # Echo the key
+## Remove any existing entries
+sed -i "/inkdkim\._domainkey/d" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
+sed -i "/; inkDKIM key ${DNSDOMAIN}/d" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
+sed -i "/;; End inkDKIM key ${DNSDOMAIN}/d" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
+## Add the entry
 /bin/echo "; inkDKIM key ${DNSDOMAIN}" >> /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
 /bin/echo $(/bin/cat /etc/opendkim/keys/${DNSDOMAIN}/inkdkim.txt) >> /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
 /bin/echo ";; End inkDKIM key ${DNSDOMAIN}" >> /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
-## Add the domain to the record host name
+## Append the domain to the record host name
 /bin/sed -i "s/inkdkim\._domainkey/inkdkim\._domainkey\.${DNSDOMAIN}\./" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
 
 # Set the Serial No
