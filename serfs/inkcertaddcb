@@ -45,7 +45,7 @@ inkCert-Letsencrypt certs were not installed for ${SITEDOMAIN} because the ${CER
   - DNS for ${SITEDOMAIN} may need a \"wildcard\" * CNAME record that points to ${SITEDOMAIN} as the \"hostname\"
   - DNS records can take about 4 hours to have effect
   - You need to first run: inkcertreqcb
-  - Do not run inkcertreqle for individual subdomains with a shared certificate, but only for: ${blueURI}, ${rocksURI}, inkisaverb.com, etc.
+  - Do not run inkcertreqle for individual subdomains with a shared certificate, but only for: ${blueURI}, inkisaverb.com, etc.
   - The verb/conf/inkcert/cli-ini/ file for ${CERTDOMAIN} may not contain the subdomain you are using.
 "
 exit 8
@@ -80,9 +80,6 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
 
   ## Insert the inkCert certs
   /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_CB\n  ssl_certificate\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/cert\.pem;\n  ssl_certificate_key\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/privkey\.pem;\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf
-
-  ## Create the inkCert-DOMAIN config file
-  /bin/echo "INKCERTED=DONE_CB" > /opt/verb/conf/inkcert/cli-ini/siteinkcert.${SITEDOMAIN}
 
   ## inkCert status & exit
   if [ "${FIRSTINKCERTADDCB}" = "NOT_YET" ]; then
@@ -133,9 +130,6 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   ## Insert the inkCert certs
   /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_CB\n  SSLCertificateFile\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/cert\.pem\n  SSLCertificateKeyFile\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/privkey\.pem\n  SSLCertificateChainFile\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/chain\.pem\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf
   /usr/bin/apachectl start
-
-  ## Create the inkCert-DOMAIN config file
-  /bin/echo "INKCERTED=DONE_CB" > /opt/verb/conf/inkcert/cli-ini/siteinkcert.${SITEDOMAIN}
 
   ## inkCert status & exit
   if [ "${FIRSTINKCERTADDCB}" = "NOT_YET" ]; then

@@ -29,3 +29,7 @@ fi
 
 # Install the certs
 /opt/verb/serfs/inkcertremovesc ${DOMAIN}
+
+# Remove mail certs
+/usr/bin/rm -f /etc/inkcert/mail/${DOMAIN}.crt
+/usr/bin/rm -f /etc/inkcert/mail/${DOMAIN}.key

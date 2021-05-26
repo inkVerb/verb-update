@@ -248,31 +248,32 @@ if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${nam
   /usr/bin/ln -sfn /etc/ssl/server/server.key /etc/inkcert/mail/vmail.key
 ## inkCert
 else
-  /opt/verb/serfs/setinkcertmailcerts
-  /opt/verb/serfs/setinkcertmail ${nameURI} server
+  /opt/verb/serfs/setinkcertmailcerts ${nameURI} vmail
+  /opt/verb/serfs/setinkcertmail ${nameURI} verber
 fi
 
 # Create the mailbox table
+## We want these UNIQUE so we can update/insert appropriately with vmailsys* tools
 /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "CREATE TABLE IF NOT EXISTS mailbox (
-    username varchar(255) NOT NULL,
+    username varchar(255) NOT NULL UNIQUE,
     password varchar(255) NOT NULL,
     name varchar(255) CHARACTER SET utf8 NOT NULL,
     maildir varchar(255) NOT NULL,
     quota bigint(20) NOT NULL DEFAULT '0',
     local_part varchar(255) NOT NULL,
     domain varchar(255) NOT NULL,
-    created datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
-    modified datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+    created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     active tinyint(1) NOT NULL DEFAULT '1',
     phone varchar(30) CHARACTER SET utf8 NOT NULL DEFAULT '',
     email_other varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
     token varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
-    token_validity datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+    token_validity datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (username),
     KEY domain (domain)
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Vmail - Virtual Mailboxes';
   CREATE TABLE IF NOT EXISTS alias (
-    address varchar(255) NOT NULL,
+    address varchar(255) NOT NULL UNIQUE,
     goto text NOT NULL,
     domain varchar(255) NOT NULL,
     created DATETIME,
@@ -282,7 +283,7 @@ fi
     KEY domain (domain)
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Vmail - Virtual Aliases';
   CREATE TABLE IF NOT EXISTS domain (
-    domain varchar(255) NOT NULL,
+    domain varchar(255) NOT NULL UNIQUE,
     description varchar(255) NOT NULL,
     aliases int(10) NOT NULL default '0',
     mailboxes int(10) NOT NULL default '0',
@@ -290,38 +291,38 @@ fi
     quota bigint(20) NOT NULL default '0',
     transport varchar(255) default NULL,
     backupmx tinyint(1) NOT NULL default '0',
-    created DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
-    modified DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
+    created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     active tinyint(1) NOT NULL default '1',
     PRIMARY KEY (domain)
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Vmail - Virtual Domains';
   CREATE TABLE alias_domain (
     alias_domain varchar(255) NOT NULL DEFAULT '',
     target_domain varchar(255) NOT NULL DEFAULT '',
-    created datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
-    modified datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+    created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     active tinyint(1) NOT NULL DEFAULT '1',
     PRIMARY KEY (alias_domain),
     KEY active (active),
     KEY target_domain (target_domain)
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Admin - Domain Aliases';
   CREATE TABLE IF NOT EXISTS admin (
-    username varchar(255) NOT NULL,
+    username varchar(255) NOT NULL UNIQUE,
     password varchar(255) NOT NULL,
     superadmin tinyint(1) NOT NULL default '0',
-    created DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
-    modified DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
+    created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     active tinyint(1) NOT NULL DEFAULT '1',
     phone varchar(30) CHARACTER SET utf8 NOT NULL DEFAULT '',
     email_other varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
     token varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
-    token_validity datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+    token_validity datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (username)
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Vmail - Virtual Admins';
   CREATE TABLE IF NOT EXISTS domain_admins (
-    username varchar(255) NOT NULL,
+    username varchar(255) NOT NULL UNIQUE,
     domain varchar(255) NOT NULL,
-    created DATETIME NOT NULL DEFAULT '2000-01-01 00:00:00',
+    created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     active tinyint(1) NOT NULL default '1',
     KEY username (username)
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Postfix Vmail - Domain Admins';"
@@ -331,12 +332,12 @@ verberdomain="$nameURI"
 PASSWORD=$(/usr/bin/pwgen -s -1 20)
 password="$(/bin/echo $PASSWORD | /usr/bin/openssl passwd -1 -stdin)"
 username="verberadmin@$nameURI"
-NAME="Change Me Dont Delete Me"
+name="Change Me Dont Delete Me"
 vmaildirectory="$nameURI/verberadmin/"
 mailboxsize="524288000" # 0.5GB, 2GB=2097152000, 1GB=1048576000, 5GB=5242880000
 
 /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "INSERT INTO domain (domain, description, aliases, mailboxes, maxquota, quota, transport, backupmx, created, modified, active) VALUES ('$verberdomain', '$verberdomain', '1000', '1000', '10000', '2048', 'virtual', '0', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
-INSERT INTO mailbox (username, password, name, maildir, quota, local_part, domain, created, modified, active) VALUES ('$username', '$password', '$NAME', '$vmaildirectory', '$mailboxsize', 'verberadmin', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+INSERT INTO mailbox (username, password, name, maildir, quota, local_part, domain, created, modified, active) VALUES ('$username', '$password', '$name', '$vmaildirectory', '$mailboxsize', 'verberadmin', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('$username', '$username', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('abuse@$nameURI', 'verberadmin@$nameURI', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('hostmaster@$nameURI', 'verberadmin@$nameURI', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);

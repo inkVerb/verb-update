@@ -8,7 +8,11 @@
 
 
 DNSDOMAIN="$1"
-ZONEDIR="inkzones"
+if [ -n $2 ] && [ "$2" = "verber" ]; then
+  ZONEDIR="inkzones"
+else
+  ZONEDIR="zones"
+fi
 
 # Include the configs
 . /opt/verb/conf/sitenameip

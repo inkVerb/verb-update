@@ -46,7 +46,7 @@ inkCert certs are not installed. Common problems can include:
   - DNS for ${SITEDOMAIN} may need a \"wildcard\" * CNAME record that points to ${SITEDOMAIN} as the \"hostname\"
   - DNS records can take about 4 hours to have effect
   - You need to first run: inkcertreq
-  - Do not run for individual subdomains with a shared certificate, but only for: ${blueURI}, ${rocksURI}, inkisaverb.com, etc.
+  - Do not run for individual subdomains with a shared certificate, but only for: ${blueURI}, inkisaverb.com, etc.
 "
 exit 8
 fi
@@ -83,9 +83,6 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
 
   ## Insert the inkCert certs
   /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_SC\n  ssl_certificate\t\/etc\/inkcert\/sc\/live\/${CERTDOMAIN}\/cert\.pem;\n  ssl_certificate_key\t\/etc\/inkcert\/sc\/live\/${CERTDOMAIN}\/key\.pem;\n\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf
-
-  ## Create the inkCert-DOMAIN config file
-  /bin/echo "INKCERTED=DONE_SC" > /opt/verb/conf/inkcert/cli-ini/siteinkcert.${SITEDOMAIN}
 
   ## inkCert status & exit
   if [ "${FIRSTINKCERTADD}" = "NOT_YET" ]; then
@@ -138,9 +135,6 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
 
   ## Insert the inkCert certs
   /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_SC\n  SSLCertificateFile\t\/etc\/inkcert\/sc\/live\/${CERTDOMAIN}\/cert\.pem\n  SSLCertificateKeyFile\t\/etc\/inkcert\/sc\/live\/${CERTDOMAIN}\/key\.pem\n  SSLCertificateChainFile\t\/etc\/inkcert\/sc\/live\/${CERTDOMAIN}\/chain\.cert\.pem\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf
-
-  ## Create the inkCert-DOMAIN config file
-  /bin/echo "INKCERTED=DONE_SC" > /opt/verb/conf/inkcert/cli-ini/siteinkcert.${SITEDOMAIN}
 
   ## inkCert status & exit
   if [ "${FIRSTINKCERTADD}" = "NOT_YET" ]; then

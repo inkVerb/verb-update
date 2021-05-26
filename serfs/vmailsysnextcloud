@@ -1,0 +1,78 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This creates or resets the Nextcloud smtp user for vmail, such as is used by php to send emails
+
+# How to use:
+## ./vmailsysnextcloud
+
+
+# Check to see if vmail is installed
+. /opt/verb/conf/sitemailpath
+if [ "$SITEMAILSTATUS" != "VMAIL_SERVER" ]; then
+  /bin/echo "Vmail not installed. Do that first."
+  exit 0; fi
+
+# Include the config
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+
+# Cleanup previous entries
+if [ -f "/opt/verb/conf/vsysmail.nextcloud" ]; then
+  . /opt/verb/conf/vsysmail.nextcloud
+  /usr/bin/rm -rf /var/vmail/${vmaildirectory}
+  oldusername="${username}"
+fi
+
+# Prep all vairables
+PASSWORD=$(/usr/bin/pwgen -s1 24)
+randomuser=$(/usr/bin/pwgen -s1 14)
+/usr/bin/cat <<EOF > /opt/verb/conf/vsysmail.nextcloud
+PASSWORD="${PASSWORD}"
+user="nc_${randomuser}"
+username="nc_${randomuser}@${nameURI}"
+name="Nextcloud $nameURI"
+vmaildirectory="$nameURI/nc_${randomuser}/"
+mailboxsize="1048576" # 1MB, 2GB=2097152000, 1GB=1048576000, 5GB=5242880000
+EOF
+
+# Security check
+/opt/verb/serfs/setsecure; wait
+
+if [ -n "${oldusername}" ]; then
+  # Change the username in the database
+  . /opt/verb/conf/vsysmail.nextcloud
+  password="$(/bin/echo $PASSWORD | /usr/bin/openssl passwd -1 -stdin)"
+  /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "UPDATE mailbox
+  SET username = 'sys_${randomuser}@$nameURI', password = '${password}'
+  WHERE username = '${oldusername}';"
+fi
+
+# Directory & database cleanup
+/usr/bin/rm -rf /var/vmail/$nameURI/nc_${randomuser}
+
+# Run it quick to create the account
+/opt/verb/donjon/sysmails.sh nextcloud; wait
+
+# Set up sysmails cron
+## Nextcloud background jobs (manage the crontab files directly)
+/bin/echo '44 * * * * root /opt/verb/donjon/sysmails.sh nextcloud' > /etc/cron.d/sysmailnextcloud
+## Permissions
+/bin/chmod 0644 /etc/cron.d/sysmailnextcloud
+
+# Mail config
+/usr/bin/cat <<EOF > /srv/www/vapps/nextcloud/config/email.config.php
+<?php
+\$CONFIG = [
+'mail_domain' => '${nameURI}',
+'mail_from_address' => 'nc_${randomuser}',
+'mail_smtpmode' => 'smtp',
+'mail_smtphost' => 'mail.${nameURI}',
+'mail_smtpport' => 587,
+'mail_smtpsecure' => 'tls',
+'mail_smtpauth' => true,
+'mail_smtpauthtype' => 'LOGIN',
+'mail_smtpname' => 'nc_${randomuser}@${nameURI}',
+'mail_smtppassword' => '${PASSWORD}',
+];
+EOF

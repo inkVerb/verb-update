@@ -1,7 +1,7 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This creates or resets the system smtp user for vmail, such as is used by php to send emails
+# This creates or resets the system smtp user for vmail, such as is used by msmtp for php to send emails
 
 # How to use:
 ## ./vmailsysmailbox
@@ -17,19 +17,48 @@ if [ "$SITEMAILSTATUS" != "VMAIL_SERVER" ]; then
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
 
+# Cleanup previous entries
+if [ -f "/opt/verb/conf/vsysmail.nextcloud" ]; then
+  . /opt/verb/conf/vsysmail.msmtp
+  /usr/bin/rm -rf /var/vmail/${vmaildirectory}
+  oldusername="${username}"
+fi
+
 # Prep all vairables
 PASSWORD=$(/usr/bin/pwgen -s1 24)
-password="$(/bin/echo $PASSWORD | /usr/bin/openssl passwd -1 -stdin)"
-username="sys@$nameURI"
-NAME="System"
-vmaildirectory="$nameURI/sys/"
+randomuser=$(/usr/bin/pwgen -s1 14)
+/usr/bin/cat <<EOF > /opt/verb/conf/vsysmail.msmtp
+PASSWORD="${PASSWORD}"
+user="sys_${randomuser}"
+username="sys_${randomuser}@$nameURI"
+name="System"
+vmaildirectory="$nameURI/sys_${randomuser}/"
 mailboxsize="1048576" # 1MB, 2GB=2097152000, 1GB=1048576000, 5GB=5242880000
+EOF
 
-# Make the database entry
-## We need the alias entry for the mailbox to be active
-/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "DELETE FROM mailbox WHERE username = '$username';
-INSERT INTO mailbox (username, password, name, maildir, quota, local_part, domain, created, modified, active) VALUES ('$username', '$password', '$NAME', '$vmaildirectory', '$mailboxsize', 'sys', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
-INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('$username', '$username', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);"
+# Security check
+/opt/verb/serfs/setsecure; wait
+
+if [ -n "${oldusername}" ]; then
+  # Change the username in the database
+  . /opt/verb/conf/vsysmail.msmtp
+  password="$(/bin/echo $PASSWORD | /usr/bin/openssl passwd -1 -stdin)"
+  /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "UPDATE mailbox
+  SET username = 'sys_${randomuser}@$nameURI', password = '${password}'
+  WHERE username = '${oldusername}';"
+fi
+
+# Directory & database cleanup
+/usr/bin/rm -rf /var/vmail/$nameURI/nc_${randomuser}
+
+# Run it quick to create the account
+/opt/verb/donjon/sysmails.sh msmtp; wait
+
+# Set up cron
+## Nextcloud background jobs (manage the crontab files directly)
+/bin/echo '22 * * * * root /opt/verb/donjon/sysmails.sh msmtp' > /etc/cron.d/sysmailmsmtp
+## Permissions
+/bin/chmod 0644 /etc/cron.d/sysmailmsmtp
 
 # Create & set the php config
 /bin/echo "

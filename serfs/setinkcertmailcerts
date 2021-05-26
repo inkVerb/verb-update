@@ -2,8 +2,7 @@
 #inkVerbSerf! verb.ink
 
 # This links the mail certs defined by setinkcertmail to the location used by the mail server
-## This is run automatically by installpostfixvmail and normally should not be run independently
-## The only purpose for running this independently is if inkCert was not installed for the main Verber before running installpostfixvmail and this is run after the fact
+## This is run automatically by installpostfixvmail, setinkcertmail, and inkcertdo* and normally should not be run independently
 
 # How to use:
 ## ./setinkcertmailcerts
@@ -12,18 +11,26 @@
 # Include the config
 . /opt/verb/conf/siteurilist
 
-# Link the inkCert-LE certs if they exist, otherwise use Snakeoil
-if [ -f "/etc/inkcert/le/live/${nameURI}/fullchain.pem" ]; then
-  /usr/bin/ln -sfn /etc/inkcert/le/live/${nameURI}/fullchain.pem /etc/inkcert/mail/vmail.crt
+DOMAIN="$1"
+
+if [ -n "$2" ] && [ "$2" = "vmail" ]; then
+  DEST="vmail"
 else
-  /usr/bin/ln -sfn /etc/ssl/server/server.crt /etc/inkcert/mail/vmail.crt
+  DEST="$1"
 fi
-if [ -f "/etc/inkcert/le/live/${nameURI}/privkey.pem" ]; then
-  /usr/bin/ln -sfn /etc/inkcert/le/live/${nameURI}/privkey.pem /etc/inkcert/mail/vmail.key
+
+# Link the inkCert-LE certs if they exist, otherwise use Snakeoil
+if [ -f "/etc/inkcert/le/live/${DOMAIN}/fullchain.pem" ]; then
+  /usr/bin/ln -sfn /etc/inkcert/le/live/${DOMAIN}/fullchain.pem /etc/inkcert/mail/${DEST}.crt
 else
-  /usr/bin/ln -sfn /etc/ssl/server/server.key /etc/inkcert/mail/vmail.key
+  /usr/bin/ln -sfn /etc/ssl/server/server.crt /etc/inkcert/mail/${DEST}.crt
+fi
+if [ -f "/etc/inkcert/le/live/${DOMAIN}/privkey.pem" ]; then
+  /usr/bin/ln -sfn /etc/inkcert/le/live/${DOMAIN}/privkey.pem /etc/inkcert/mail/${DEST}.key
+else
+  /usr/bin/ln -sfn /etc/ssl/server/server.key /etc/inkcert/mail/${DEST}.key
 fi
 
 # Permissions
-/usr/bin/chmod 0444 /etc/inkcert/mail/vmail.crt
-/usr/bin/chmod 0400 /etc/inkcert/mail/vmail.key
+/usr/bin/chmod 0444 /etc/inkcert/mail/${DEST}.crt
+/usr/bin/chmod 0400 /etc/inkcert/mail/${DEST}.key
