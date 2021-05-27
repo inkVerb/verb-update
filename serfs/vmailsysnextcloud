@@ -26,13 +26,13 @@ fi
 
 # Prep all vairables
 PASSWORD=$(/usr/bin/pwgen -s1 24)
-randomuser=$(/usr/bin/pwgen -s1 14)
+randomuser=$(/usr/bin/pwgen -s1A 5)
 /usr/bin/cat <<EOF > /opt/verb/conf/vsysmail.nextcloud
 PASSWORD="${PASSWORD}"
-user="nc_${randomuser}"
-username="nc_${randomuser}@${nameURI}"
+user="nxc_${randomuser}"
+username="nxc_${randomuser}@${nameURI}"
 name="Nextcloud $nameURI"
-vmaildirectory="$nameURI/nc_${randomuser}/"
+vmaildirectory="$nameURI/nxc_${randomuser}/"
 mailboxsize="1048576" # 1MB, 2GB=2097152000, 1GB=1048576000, 5GB=5242880000
 EOF
 
@@ -49,7 +49,7 @@ if [ -n "${oldusername}" ]; then
 fi
 
 # Directory & database cleanup
-/usr/bin/rm -rf /var/vmail/$nameURI/nc_${randomuser}
+/usr/bin/rm -rf /var/vmail/$nameURI/nxc_${randomuser}
 
 # Run it quick to create the account
 /opt/verb/donjon/sysmails.sh nextcloud; wait
@@ -65,14 +65,14 @@ fi
 <?php
 \$CONFIG = [
 'mail_domain' => '${nameURI}',
-'mail_from_address' => 'nc_${randomuser}',
+'mail_from_address' => 'nxc_${randomuser}',
 'mail_smtpmode' => 'smtp',
 'mail_smtphost' => 'mail.${nameURI}',
 'mail_smtpport' => 587,
 'mail_smtpsecure' => 'tls',
 'mail_smtpauth' => true,
 'mail_smtpauthtype' => 'LOGIN',
-'mail_smtpname' => 'nc_${randomuser}@${nameURI}',
+'mail_smtpname' => 'nxc_${randomuser}@${nameURI}',
 'mail_smtppassword' => '${PASSWORD}',
 ];
 EOF

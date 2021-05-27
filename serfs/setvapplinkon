@@ -15,27 +15,27 @@ VAPPNAME=$1
 
 case ${VAPPNAME} in
 
-ampache)
-/bin/rm -rf /srv/www/html/kiwi.ampache
-/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/kiwi.ampache
-/bin/echo "${VAPPNAME} symlink is set."
-;;
-
 fossil)
-/bin/rm -rf /srv/www/html/vip.fossil
-/bin/ln -sfn /srv/www/vip/${VAPPNAME} /srv/www/html/vip.fossil
-/bin/echo "${VAPPNAME} symlink is set."
-;;
-
-mediawiki)
-/bin/rm -rf /srv/www/html/ink.wiki
-/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.wiki
+/bin/rm -rf /srv/www/html/${itsqlTLD}/fossil
+/bin/ln -sfn /srv/www/vip/${VAPPNAME} /srv/www/html/${itsqlTLD}/fossil
 /bin/echo "${VAPPNAME} symlink is set."
 ;;
 
 net2ftp)
-/bin/rm -rf /srv/www/html/vip.net2ftp
-/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/vip.net2ftp
+/bin/rm -rf /srv/www/html/${itsqlTLD}/net2ftp
+/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/${itsqlTLD}/net2ftp
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+ampache)
+/bin/rm -rf /srv/www/html/kiwi.k/ampache
+/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/kiwi.k/ampache
+/bin/echo "${VAPPNAME} symlink is set."
+;;
+
+mediawiki)
+/bin/rm -rf /srv/www/html/ink.i/wiki
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.i/wiki
 /bin/echo "${VAPPNAME} symlink is set."
 ;;
 
@@ -46,38 +46,38 @@ nextcloud)
 ;;
 
 orangehrm)
-/bin/rm -rf /srv/www/html/red.hrm
-/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/red.hrm
+/bin/rm -rf /srv/www/html/red.r/hrm
+/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/red.r/hrm
 /bin/echo "${VAPPNAME} symlink is set."
 ;;
 
 owa)
-/bin/rm -rf /srv/www/html/red.owa
-/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/red.owa
+/bin/rm -rf /srv/www/html/red.r/owa
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/red.r/owa
 /bin/echo "${VAPPNAME} symlink is set."
 ;;
 
 suitecrm)
-/bin/rm -rf red.crm
-/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/red.crm
+/bin/rm -rf /srv/www/html/red
+/bin/ln -s /srv/www/vapps/${VAPPNAME} /srv/www/html/red
 /bin/echo "${VAPPNAME} symlink is set."
 ;;
 
 october.inkblog)
-/bin/rm -rf /srv/www/html/ink.blog
-/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.blog
+/bin/rm -rf /srv/www/html/ink.i/blog
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.i/blog
 /bin/echo "${VAPPNAME} symlink is set."
 ;;
 
 wp.inkbb)
-/bin/rm -rf /srv/www/html/ink.bb
-/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.bb
+/bin/rm -rf /srv/www/html/ink.i/bb
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.i/bb
 /bin/echo "${VAPPNAME} symlink is set."
 ;;
 
 wp.inkblog)
-/bin/rm -rf /srv/www/html/ink.blog
-/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.blog
+/bin/rm -rf /srv/www/html/ink.i/blog
+/bin/ln -sfn /srv/www/vapps/${VAPPNAME} /srv/www/html/ink.i/blog
 /bin/echo "${VAPPNAME} symlink is set."
 ;;
 

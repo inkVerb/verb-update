@@ -28,8 +28,7 @@ if [ $INKGET_METHOD = "ZJZ" ]; then
   if [ "$2" = "check" ] && [ -f "/opt/verb/donjon/repoupdate/${APPNAME}.failed" ]; then
   exit 4; fi
   ## Continue
-  /bin/cp /opt/verb/repo/${APPNAME}.vtxz .
-  /bin/echo "Copied for install."
+  /bin/echo "Retrieved from repo."
 fi
 
 # wget

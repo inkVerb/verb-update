@@ -182,6 +182,7 @@ sed -i "s/if (PHP_VERSION_ID >=.*/if (PHP_VERSION_ID >= 90000) {/" /srv/www/vapp
   "dbhost"        => "localhost",
   "dbtableprefix" => "",
   "directory"     => "/srv/www/vapps/nextcloud/data",
+  "overwritehost" => "${blueURI}",
   "background" => "cron", // May not actually work
 );
 EOF
@@ -210,7 +211,7 @@ fi
 /bin/echo "
 Go to https://${blueURI} to install.
 
-After installing, do important Admin settings at https://${blueURI}/index.php/settings/admin
+Tip: https://${blueURI}/index.php/settings/admin
 - Background jobs
   - Cron
 

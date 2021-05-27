@@ -26,7 +26,7 @@ fi
 
 # Prep all vairables
 PASSWORD=$(/usr/bin/pwgen -s1 24)
-randomuser=$(/usr/bin/pwgen -s1 14)
+randomuser=$(/usr/bin/pwgen -s1A 5)
 /usr/bin/cat <<EOF > /opt/verb/conf/vsysmail.msmtp
 PASSWORD="${PASSWORD}"
 user="sys_${randomuser}"
@@ -49,7 +49,7 @@ if [ -n "${oldusername}" ]; then
 fi
 
 # Directory & database cleanup
-/usr/bin/rm -rf /var/vmail/$nameURI/nc_${randomuser}
+/usr/bin/rm -rf /var/vmail/$nameURI/sys_${randomuser}
 
 # Run it quick to create the account
 /opt/verb/donjon/sysmails.sh msmtp; wait
