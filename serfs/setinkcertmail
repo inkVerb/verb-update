@@ -47,7 +47,7 @@ EOF
 # Postfix
 if ! /bin/grep -q "mail.${DOMAIN} /etc/inkcert/mail/${DOMAIN}.key /etc/inkcert/mail/${DOMAIN}.crt" /etc/postfix/virtual_ssl.map; then
   /usr/bin/cat <<EOF >> /etc/postfix/virtual_ssl.map
-  mail.${DOMAIN} /etc/inkcert/mail/${DOMAIN}.key /etc/inkcert/mail/${DOMAIN}.crt
+mail.${DOMAIN} /etc/inkcert/mail/${DOMAIN}.key /etc/inkcert/mail/${DOMAIN}.crt
 EOF
 fi
 /usr/bin/postmap -F hash:/etc/postfix/virtual_ssl.map

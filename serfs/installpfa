@@ -48,14 +48,14 @@ exit 8; fi
 
 # Options & secure path
 if [ -n "$1" ]; then
-  export PFAFOLDER=$1 # We need this variable in our Finish echo statement when running via installvmail
+  export PFAFOLDER=$1 # We need this variable in our Finish echo statement when running via inkvmailinstall
 else
-  export PFAFOLDER="$(/usr/bin/pwgen -0 5 1)" # We need this variable in our Finish echo statement when running via installvmail
+  export PFAFOLDER="$(/usr/bin/pwgen -0 5 1)" # We need this variable in our Finish echo statement when running via inkvmailinstall
 fi
 if [ -n "$2" ]; then
-  export PFAPASS=$2 # We need this variable in our Finish echo statement when running via installvmail
+  export PFAPASS=$2 # We need this variable in our Finish echo statement when running via inkvmailinstall
 else
-  export PFAPASS="$(pwgen -1Bcn 10)" # We need this variable in our Finish echo statement when running via installvmail
+  export PFAPASS="$(pwgen -1Bcn 10)" # We need this variable in our Finish echo statement when running via inkvmailinstall
 fi
 
 # Download from repo
@@ -79,13 +79,7 @@ if [ "$?" = 4 ]; then
 /bin/sed -i "s/rcfolder286/${SITERCPATH}/g" /srv/www/email/postfixadmin/config.local.php
 /bin/sed -i "s/pfafolder286/${PFAFOLDER}/g" /srv/www/email/postfixadmin/config.local.php
 ## Whether web-generated (secure) or auto-generated password
-INSTHASH="$(php -r "echo password_hash('${PFAPASS}', PASSWORD_DEFAULT);")"
-/bin/sed -i "s/\$CONF\['configured'\] = .*/\$CONF\['configured'\] = true;/g" /srv/www/email/postfixadmin/config.local.php
-/bin/sed -i "s/^\$CONF\['setup_password'\] = /#\$CONF\['setup_password'\] = /g" /srv/www/email/postfixadmin/config.local.php
-/bin/sed -i "s/^\$CONF\['setup_password'\] = /#\$CONF\['setup_password'\] = /g" /srv/www/email/postfixadmin/config.inc.php
-/usr/bin/cat <<EOF >> /srv/www/email/postfixadmin/config.local.php
-\$CONF['setup_password'] = '${INSTHASH}';
-EOF
+/opt/verb/serfs/setpfapass ${PFAPASS}
 
 # Replace
 /bin/sed -i "s/emailTLDURI286/${emailTLDURI}/g" /srv/www/email/postfixadmin/config.local.php

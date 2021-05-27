@@ -7,7 +7,7 @@
 ### Add the domain to inkCert for SSL requests
 ### Create Apache folders or configs for the domain
 ## For inkCert and Apache configs, use adddomain or adddomaincgi
-## This can be run BEFORE AND AGAIN AFTER installvmail, it has soft tests to see what hasn't been done yet
+## This can be run BEFORE AND AGAIN AFTER inkvmailinstall, it has soft tests to see what hasn't been done yet
 
 # How to use:
 ## ./newdomainshell [newdomain.tld]

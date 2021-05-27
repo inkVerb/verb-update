@@ -5,13 +5,19 @@
 ## The hash is retrieved from the setup.php page
 
 # How to use:
-## ./setpfapass [hash]
+## ./setpfapass [rawpassword]
 
 
-PFAPASSHASH=$1
+PFAPASS=$1
 
 # Replace whatever current hash settings with the hash
+INSTHASH="$(php -r "echo password_hash('${PFAPASS}', PASSWORD_DEFAULT);")"
 /bin/sed -i "s/\$CONF\['configured'\] = .*/\$CONF\['configured'\] = true;/g" /srv/www/email/postfixadmin/config.local.php
-/bin/sed -i "s/\$CONF\['setup_password'\] = .*/\$CONF\['setup_password'\] = '${PFAPASSHASH}';/g" /srv/www/email/postfixadmin/config.local.php
-/bin/echo "Hash set. Return to PostfixAdmin setup to use the same password you entered."
+/bin/sed -i "/setup_password/d" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "/setup_password/d" /srv/www/email/postfixadmin/config.inc.php
+/usr/bin/cat <<EOF >> /srv/www/email/postfixadmin/config.local.php
+\$CONF['setup_password'] = '${INSTHASH}';
+EOF
 
+# Make a record so it can be called
+/usr/bin/echo "PFASETUPTPASS=\"${PFAPASS}\"" > /opt/verb/conf/pfasetuppass

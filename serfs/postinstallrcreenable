@@ -1,0 +1,21 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This re-enables the Roundcube installer and should only be run if necessary
+
+# How to use:
+## ./postinstallrcreenable
+
+
+# Set installer to false
+/bin/sed -i "s/\$config\['enable_installer'\].*/\$config\['enable_installer'\] = true;/g" /srv/www/email/roundcube/config/config.inc.php
+
+# Tar & remove the installer directory
+cd /srv/www/email/roundcube
+/usr/bin/tar xf installer.txz
+/usr/bin/rm -f installer.txz
+/bin/chown -R www:www /srv/www/email/roundcube/installer
+cd $OLDPWD
+
+# Finish
+/bin/echo "Finished. Roudcube installer re-enabled."

@@ -9,10 +9,10 @@
 # DEV NOTE: This is by no means finished. It is only a start to set config files.
 
 # How to use:
-## ./installvmailbackmx
+## ./inkvmailinstallbackmx
 
 # Eg:
-## ./installvmailbackmx
+## ./inkvmailinstallbackmx
 
 SERVER=$1
 

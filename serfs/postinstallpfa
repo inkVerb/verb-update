@@ -14,8 +14,11 @@ deny from all
 /bin/chown -R www:www /srv/www/email/postfixadmin/public/.htaccess
 
 # Set the setup password so it can't work until setpfapass runs agian
-/bin/sed -i "s/\$CONF\['setup_password'\] = .*/\$CONF\['setup_password'\] = ''; #NOT_SET_RUN_setup_THEN_pfapass/g" /srv/www/email/postfixadmin/config.local.php
-/bin/sed -i "/\/\/ With this long hash/d" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "/setup_password/d" /srv/www/email/postfixadmin/config.local.php
+/bin/sed -i "/setup_password/d" /srv/www/email/postfixadmin/config.inc.php
+
+# Delete the old setup password record
+/usr/bin/rm /opt/verb/conf/pfasetuppass
 
 # Finish
 /bin/echo "Finished. PostfixAdmin Setup disallowed and the setup password disabled."

@@ -40,8 +40,8 @@ exit 4; fi
 /bin/cp /srv/www/vapps/${CVAPPNAME}/config.sample.inc.php /srv/www/vapps/${CVAPPNAME}/config.inc.php
 BLOWFISH=$(/usr/bin/pwgen -c -1 32)
 /bin/sed -i "s/cfg\['blowfish_secret'\] = '';/cfg\['blowfish_secret'\] = '$BLOWFISH';" /srv/www/vapps/${CVAPPNAME}/config.inc.php
-/bin/ln -sfn /srv/www/vapps/${CVAPPNAME} /srv/www/html/vip.sql/${DIRECTRY}; wait
-/bin/chown -R www:www /srv/www/html/vip.mysql; wait
+/bin/ln -sfn /srv/www/vapps/${CVAPPNAME} /srv/www/html/${itsqlTLD}.sql/${DIRECTRY}; wait
+/bin/chown -R www:www /srv/www/html/${itsqlTLD}.sql; wait
 
 /usr/bin/apachectl graceful
 
