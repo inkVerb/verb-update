@@ -106,7 +106,9 @@ fi
 
 # Set up the Apache config
 /bin/cp /opt/verb/conf/site-files/conf/wpblg-blog.${inkURI}.conf /opt/verb/conf/webserver/httpd/sites-available/blog.${inkURI}.conf
-/usr/bin/apachectl graceful
+/usr/bin/systemctl restart httpd
+/usr/bin/systemctl restart nginx
+
 ## inkCert SSL certs
 ### Not setup
 if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${inkURI}; then

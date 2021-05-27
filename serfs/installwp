@@ -86,8 +86,8 @@ cd wp.${DOMAIN}
 /bin/sed -i "s/password_here/${DBPASSWORD}/g" wp-config.php
 /bin/echo "
 /** inkVerb Sets the URL */
-define( 'WP_SITEURL', 'http://${DOMAIN}' );
-define( 'WP_HOME', 'http://${DOMAIN}' );" >> wp-config.php
+define( 'WP_SITEURL', 'https://${DOMAIN}' );
+define( 'WP_HOME', 'https://${DOMAIN}' );" >> wp-config.php
 
 # Add the secure salt and key strings
 /opt/verb/serfs/securewp ${DOMAIN}
