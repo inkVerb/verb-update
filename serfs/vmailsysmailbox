@@ -30,9 +30,9 @@ randomuser=$(/usr/bin/pwgen -s1A 5)
 /usr/bin/cat <<EOF > /opt/verb/conf/vsysmail.msmtp
 PASSWORD="${PASSWORD}"
 user="sys_${randomuser}"
-username="sys_${randomuser}@$nameURI"
+username="sys_${randomuser}@${nameURI}"
 name="System"
-vmaildirectory="$nameURI/sys_${randomuser}/"
+vmaildirectory="${nameURI}/sys_${randomuser}/"
 mailboxsize="1048576" # 1MB, 2GB=2097152000, 1GB=1048576000, 5GB=5242880000
 EOF
 

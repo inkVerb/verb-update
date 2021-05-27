@@ -31,8 +31,8 @@ randomuser=$(/usr/bin/pwgen -s1A 5)
 PASSWORD="${PASSWORD}"
 user="nxc_${randomuser}"
 username="nxc_${randomuser}@${nameURI}"
-name="Nextcloud $nameURI"
-vmaildirectory="$nameURI/nxc_${randomuser}/"
+name="Nextcloud ${blueURI}"
+vmaildirectory="${nameURI}/nxc_${randomuser}/"
 mailboxsize="1048576" # 1MB, 2GB=2097152000, 1GB=1048576000, 5GB=5242880000
 EOF
 

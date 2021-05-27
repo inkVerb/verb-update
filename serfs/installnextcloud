@@ -175,16 +175,26 @@ sed -i "s/if (PHP_VERSION_ID >=.*/if (PHP_VERSION_ID >= 90000) {/" /srv/www/vapp
 /usr/bin/cat <<EOF > /srv/www/vapps/nextcloud/config/autoconfig.php
 <?php
 \$AUTOCONFIG = array(
-  "dbtype"        => "mysql",
-  "dbname"        => "${DBASE}",
-  "dbuser"        => "${DBUSER}",
-  "dbpass"        => "${DBPASSWORD}",
-  "dbhost"        => "localhost",
-  "dbtableprefix" => "",
-  "directory"     => "/srv/www/vapps/nextcloud/data",
-  "overwritehost" => "${blueURI}",
-  "background" => "cron", // May not actually work
+  'dbtype'        => 'mysql',
+  'dbname'        => '${DBASE}',
+  'dbuser'        => '${DBUSER}',
+  'dbpass'        => '${DBPASSWORD}',
+  'dbhost'        => 'localhost',
+  'dbtableprefix' => '',
+  'directory'     => '/srv/www/vapps/nextcloud/data'
 );
+EOF
+
+# Config for URL & basic settings
+/usr/bin/cat <<EOF > /srv/www/vapps/nextcloud/config/basic.config.php
+<?php
+\$CONFIG = [
+'overwritehost' => 'name.verb.blue',
+'overwrite.cli.url' => 'name.verb.blue',
+'proxy' => 'name.verb.blue',
+'defaultapp' => 'files',
+'auth.bruteforce.protection.enabled' => true
+];
 EOF
 
 # Use msmtp for a real SMTP address

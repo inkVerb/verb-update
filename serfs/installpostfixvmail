@@ -362,6 +362,8 @@ cd /etc/opendkim/keys/${nameURI}
 cd $OLDPWD
 /bin/chmod 660 /etc/opendkim/keys/${nameURI}/inkdkim.private
 /bin/chown -R opendkim:opendkim /etc/opendkim
+## PID file directory needs to be created (then the system will automatically manage /var/run/opendkim/opendkim.pid)
+/bin/mkdir -p /var/run/opendkim
 ## Start
 /usr/bin/systemctl enable opendkim
 /usr/bin/systemctl start opendkim
