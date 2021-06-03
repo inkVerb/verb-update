@@ -19,6 +19,15 @@
 
 DOMAIN=$1
 
+# Check inkCert installed
+if [ "${INKCERTINSTALLED}" = "NOT_YET" ]; then
+/bin/echo "inkCert not yet installed.
+
+First run inkcertinstall
+"
+exit 0
+fi
+
 # Check variables
 if [ -z ${1} ]; then
 /bin/echo "You need to specify a domain. Read the instructions."; exit 0

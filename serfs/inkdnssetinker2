@@ -17,21 +17,21 @@
 
 # Check variables present
 ## Domain
-if [ -z "$1" ] || [ "$1" -d ]; then
+if [ -z "$1" ] || [ -d "$1" ]; then
   /bin/echo "Inkder domain not specified; using default."
   NSDOMAIN="${DEFAULTns2}"
 else
   NSDOMAIN="$1"
 fi
 ## IP4
-if [ -z "$2" ] || [ "$2" -d ]; then
+if [ -z "$2" ] || [ -d "$2" ]; then
   /bin/echo "IP4 not specified; using default."
   NSIP4="${INKER2ip4}"
 else
   NSIP4="$2"
 fi
 ## IP6
-if [ -z "$3" ] || [ "$3" -d ]; then
+if [ -z "$3" ] || [ -d "$3" ]; then
   /bin/echo "IP6 not specified; using default."
   NSIP6="${INKDER2ip6}"
 else
