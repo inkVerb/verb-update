@@ -50,7 +50,7 @@ zone \"${SITEARPAIP4}\" { type master; notify explicit; also-notify { ${SITEINKE
   ## rDNS zone file
     rm -f /var/named/nv.verber
     /bin/echo "\$TTL    86400
-@		IN  SOA		${hostURI}. ns.${nameURI}. (
+@		IN  SOA		${SITEINKERDNS}. ${SITE2INKERDNS}. (
 0000000001		; Serial No
 10800			; Refresh
 3600			; Retry
@@ -58,7 +58,6 @@ zone \"${SITEARPAIP4}\" { type master; notify explicit; also-notify { ${SITEINKE
 1800 )			; Minimum TTL
 
 ; Nameserver Defaults
-@		IN  NS		${hostURI}.
 @		IN  NS		${SITEINKERDNS}.
 @		IN  NS		${SITE2INKERDNS}.
 

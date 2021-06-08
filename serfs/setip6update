@@ -113,10 +113,21 @@ NEWRARPA6=$(rarpa_ipv6 ${NEWEXPIP6})
 /bin/sed -i "s/SITEEXPIPV6.*/SITEEXPIPV6=\"${NEWEXPIP6}\"/" /opt/verb/conf/sitenameip
 /bin/sed -i "s/${SITEIPV6}/${NEWCMPIP6}/" /etc/hosts
 
+# ARPA & inverse IP
+/bin/sed -i "s/SITEARPAIP6.*/SITEARPAIP6=\"${NEWRARPA6}\"/" /opt/verb/conf/sitenameip
+
 # Update other files
-/bin/sed -i "s/${SITEIPV6}/${NEWCMPIP6}/" /etc/httpd/conf/rpaf.conf
+if [ -f /etc/httpd/conf/rpaf.conf ]; then
+  /bin/sed -i "s/${SITEIPV6}/${NEWCMPIP6}/" /etc/httpd/conf/rpaf.conf; fi
 /bin/sed -i "s/${SITEIPV6}/${NEWCMPIP6}/" /opt/verb/conf/inkdns/inkzones/db.*
 /bin/sed -i "s/${SITEIPV6}/${NEWCMPIP6}/" /opt/verb/conf/inkdns/db.dnsdomain
+/bin/sed -i "s/${SITEARPAIP6}/${NEWRARPA6}/" /opt/verb/conf/inkdns/inkzones/nv.*
+/bin/sed -i "s/${SITEARPAIP6}/${NEWRARPA6}/" /opt/verb/conf/inkdns/nv.dnsdomain
+## Any hosted zones
+if ls /opt/verb/conf/inkdns/zones/db.*; then
+  /bin/sed -i "s/${SITEIPV6}/${NEWCMPIP6}/" /opt/verb/conf/inkdns/zones/db.*; fi
+if ls /opt/verb/conf/inkdns/zones/nv.*; then
+  /bin/sed -i "s/${SITEARPAIP6}/${NEWRARPA6}/" /opt/verb/conf/inkdns/zones/nv.*; fi
 
 # ARPA & inverse IP
 /bin/sed -i "s/SITEARPAIP6.*/SITEARPAIP6=\"${NEWRARPA6}\"/" /opt/verb/conf/sitenameip

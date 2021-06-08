@@ -15,7 +15,7 @@ NEWIP4="$1"
 # Normal IP
 /bin/sed -i "s:SITEIP=.*:SITEIP=\"${NEWIP4}\":" /opt/verb/conf/sitenameip
 /bin/sed -i "s:SITEIPV4=.*:SITEIPV4=\"${NEWIP4}\":" /opt/verb/conf/sitenameip
-/bin/sed -i "s:${SITEIP}:${NEWIP4}:" /etc/hosts
+/bin/sed -i "s:${SITEIPV4}:${NEWIP4}:" /etc/hosts
 
 # ARPA & inverse IP
 ## THANKS https://unix.stackexchange.com/a/132806/315069
@@ -23,9 +23,17 @@ NEWARPAIP4=$(/bin/echo ${NEWIP4} | sed -r 's/^([0-9]{1,3}).([0-9]{1,3}).([0-9]{1
 /bin/sed -i "s:SITEARPAIP4.*:SITEARPAIP4=\"${NEWARPAIP4}\":" /opt/verb/conf/sitenameip
 
 # Update other files
-/bin/sed -i "s:${SITEIP}:${NEWIP4}:" /etc/httpd/conf/rpaf.conf
-/bin/sed -i "s:${SITEIP}:${NEWIP4}:" /opt/verb/conf/inkdns/inkzones/db.*
-/bin/sed -i "s:${SITEIP}:${NEWIP4}:" /opt/verb/conf/inkdns/db.dnsdomain
+if [ -f /etc/httpd/conf/rpaf.conf ]; then
+  /bin/sed -i "s:${SITEIPV4}:${NEWIP4}:" /etc/httpd/conf/rpaf.conf; fi
+/bin/sed -i "s:${SITEIPV4}:${NEWIP4}:" /opt/verb/conf/inkdns/inkzones/db.*
+/bin/sed -i "s:${SITEIPV4}:${NEWIP4}:" /opt/verb/conf/inkdns/db.dnsdomain
+/bin/sed -i "s:${SITEARPAIP4}:${NEWARPAIP4}:" /opt/verb/conf/inkdns/inkzones/nv.*
+/bin/sed -i "s:${SITEARPAIP4}:${NEWARPAIP4}:" /opt/verb/conf/inkdns/nv.dnsdomain
+## Any hosted zones
+if ls /opt/verb/conf/inkdns/zones/db.*; then
+  /bin/sed -i "s:${SITEIPV4}:${NEWIP4}:" /opt/verb/conf/inkdns/zones/db.*; fi
+if ls /opt/verb/conf/inkdns/zones/nv.*; then
+  /bin/sed -i "s:${SITEARPAIP4}:${NEWARPAIP4}:" /opt/verb/conf/inkdns/zones/nv.*; fi
 
 # Finish
 /opt/verb/serfs/inkdnsrefreshbind

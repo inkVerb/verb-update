@@ -41,17 +41,15 @@ fi
 
 # Set the NS domains
 ## Verber Domains
-/bin/sed -i "s/ns2\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/inkzones/db.*
-/bin/sed -i "s/ns3\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/inkzones/db.*
+/bin/sed -i "s/ns1\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/inkzones/db.*
+/bin/sed -i "s/ns2\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/inkzones/db.*
 ## Hosted domain template
-/bin/sed -i "s/ns1\.DNSDOMAIN286/${hostURI}/g" /opt/verb/conf/inkdns/db.dnsdomain
-/bin/sed -i "s/ns2\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/db.dnsdomain
-/bin/sed -i "s/ns3\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/db.dnsdomain
+/bin/sed -i "s/ns1\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/db.dnsdomain
+/bin/sed -i "s/ns2\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/db.dnsdomain
 ## Any hosted domains
 if [ -f "/opt/verb/conf/inkdns/zones/db.*" ]; then
-  /bin/sed -i "s/ns1\.DNSDOMAIN286/${hostURI}/g" /opt/verb/conf/inkdns/zones/db.*
-  /bin/sed -i "s/ns2\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/zones/db.*
-  /bin/sed -i "s/ns3\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/zones/db.*
+  /bin/sed -i "s/ns1\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/zones/db.*
+  /bin/sed -i "s/ns2\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/zones/db.*
 fi
 
 ## DEV: FYI apparmor permissions are here: /etc/apparmor.d/usr.sbin.named
