@@ -30,9 +30,9 @@ if [ -f /etc/httpd/conf/rpaf.conf ]; then
 /bin/sed -i "s:${SITEARPAIP4}:${NEWARPAIP4}:" /opt/verb/conf/inkdns/inkzones/nv.*
 /bin/sed -i "s:${SITEARPAIP4}:${NEWARPAIP4}:" /opt/verb/conf/inkdns/nv.dnsdomain
 ## Any hosted zones
-if ls /opt/verb/conf/inkdns/zones/db.*; then
+if [ -e /opt/verb/conf/inkdns/zones/db.* ]; then
   /bin/sed -i "s:${SITEIPV4}:${NEWIP4}:" /opt/verb/conf/inkdns/zones/db.*; fi
-if ls /opt/verb/conf/inkdns/zones/nv.*; then
+if [ -e /opt/verb/conf/inkdns/zones/nv.* ]; then
   /bin/sed -i "s:${SITEARPAIP4}:${NEWARPAIP4}:" /opt/verb/conf/inkdns/zones/nv.*; fi
 
 # Finish

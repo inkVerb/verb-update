@@ -124,9 +124,9 @@ if [ -f /etc/httpd/conf/rpaf.conf ]; then
 /bin/sed -i "s/${SITEARPAIP6}/${NEWRARPA6}/" /opt/verb/conf/inkdns/inkzones/nv.*
 /bin/sed -i "s/${SITEARPAIP6}/${NEWRARPA6}/" /opt/verb/conf/inkdns/nv.dnsdomain
 ## Any hosted zones
-if ls /opt/verb/conf/inkdns/zones/db.*; then
+if [ -e /opt/verb/conf/inkdns/zones/db.* ]; then
   /bin/sed -i "s/${SITEIPV6}/${NEWCMPIP6}/" /opt/verb/conf/inkdns/zones/db.*; fi
-if ls /opt/verb/conf/inkdns/zones/nv.*; then
+if [ -e /opt/verb/conf/inkdns/zones/nv.* ]; then
   /bin/sed -i "s/${SITEARPAIP6}/${NEWRARPA6}/" /opt/verb/conf/inkdns/zones/nv.*; fi
 
 # ARPA & inverse IP

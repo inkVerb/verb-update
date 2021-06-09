@@ -8,8 +8,15 @@
 ## ./inkdnssetinker2 [ domain ]
 
 # Eg:
+## ./inkdnssetinker2
+## ./inkdnssetinker2 -d 111.222.333.444 0000:ef89::2001
+## ./inkdnssetinker2 -d 111.222.333.444
+## ./inkdnssetinker2 -d -d 0000:ef89::2001
 ## ./inkdnssetinker2 ns2.inkisaverb.com
 ## ./inkdnssetinker2 ns.poetryiscode.com
+## ./inkdnssetinker2 ns2.inkisaverb.com 111.222.333.444
+## ./inkdnssetinker2 ns2.inkisaverb.com -d 0000:ef89::2001
+## ./inkdnssetinker2 ns.poetryiscode.com 555.555.555.555 8001:0056::489a
 
 
 # Defaults
