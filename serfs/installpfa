@@ -97,6 +97,10 @@ if [ "$?" = 4 ]; then
 /bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.pfa; wait
 /bin/chown -R www:www /srv/www/email/postfixadmin; wait
 
+# DNS
+/bin/sed -i "s/; Email Control Records/; Email Control Records\npfa.${emailTLDURI}. \tIN  A \t${SITEIPV4}\npfa.${emailTLDURI}. \tIN  AAAA \t${SITEIPV6}/" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}
+/bin/sed -i "s/; Email Control Records/; Email Control Records\n${SITEARPAIP4} \tIN  PTR \tpfa.${emailTLDURI}.\n${SITEARPAIP6} \tIN  PTR \tpfa.${emailTLDURI}./" /opt/verb/conf/inkdns/inkzones/nv.${emailTLDURI}
+
 # Write the config
 /bin/sed -i "s/SITEPFAPATH.*/SITEPFAPATH=\"${PFAFOLDER}\"/g" /opt/verb/conf/sitemailpath
 

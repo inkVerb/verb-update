@@ -115,6 +115,9 @@ fi
 # Own
 /bin/chown -R www:www /srv/www/email/roundcube
 
+# DNS
+/bin/sed -i "s/; Email Control Records/; Email Control Records\nrc.${emailTLDURI}.  \tIN  A \t${SITEIPV4}\nrc.${emailTLDURI}.  \tIN  AAAA \t${SITEIPV6}/" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}
+/bin/sed -i "s/; Email Control Records/; Email Control Records\n${SITEARPAIP4} \tIN  PTR \trc.${emailTLDURI}.\n${SITEARPAIP6} \tIN  PTR \trc.${emailTLDURI}./" /opt/verb/conf/inkdns/inkzones/nv.${emailTLDURI}
 # Set the config for backup
 /bin/sed -i "s/SITERCPASSAPG.*/SITERCPASSAPG=\"${RCPASSGEN}\"/g" /opt/verb/conf/sitemailpass
 /bin/sed -i "s/SITERCPATH.*/SITERCPATH=\"${RCFOLDER}\"/g" /opt/verb/conf/sitemailpath
