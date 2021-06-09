@@ -53,4 +53,5 @@ fi
 /bin/sed -i "s/SITEINKERIP6.*/SITEINKERIP6=\"${NSIP6}\"/" /opt/verb/conf/sitenameip
 
 # Finish
+/opt/verb/serfs/inkdnsrefreshbind
 /bin/echo "Primary DNS Inker set to: ${NSIP4} & ${NSIP6} for ${NSDOMAIN}"

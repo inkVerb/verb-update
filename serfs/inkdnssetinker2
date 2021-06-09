@@ -51,4 +51,5 @@ fi
 /bin/sed -i "s/SITE2INKERIP6.*/SITE2INKERIP6=\"${NSIP6}\"/" /opt/verb/conf/sitenameip
 
 # Finish
+/opt/verb/serfs/inkdnsrefreshbind
 /bin/echo "Secondary DNS Inker set to: ${NSIP4} & ${NSIP6} for ${NSDOMAIN}"
