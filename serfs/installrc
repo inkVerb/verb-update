@@ -81,8 +81,6 @@ FLUSH PRIVILEGES;"
 ## Web directories
 /bin/ln -sfn /srv/www/email/roundcube /srv/www/html/${SITEEMAILTLD}.rc/${RCFOLDER}
 /bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.rc
-## DNS
-/bin/sed -i "s/; Webmail Defaults/; Webmail Defaults\nrc\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\nrc\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}
 
 # inkCert
 ## This adds the declared domain to the end of the "domains =" line

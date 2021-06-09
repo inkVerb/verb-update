@@ -96,7 +96,6 @@ if [ "$?" = 4 ]; then
 /bin/ln -sfn /srv/www/email/postfixadmin/public /srv/www/html/${SITEEMAILTLD}.pfa/${PFAFOLDER}; wait
 /bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.pfa; wait
 /bin/chown -R www:www /srv/www/email/postfixadmin; wait
-/bin/sed -i "s/; Webmail Defaults/; Webmail Defaults\npfa\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\npfa\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/zones/db.${emailTLDURI}
 
 # Write the config
 /bin/sed -i "s/SITEPFAPATH.*/SITEPFAPATH=\"${PFAFOLDER}\"/g" /opt/verb/conf/sitemailpath

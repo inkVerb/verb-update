@@ -27,20 +27,22 @@ exit 0; fi
 ## db.DOM
 /bin/echo "; Hostname Mail Record Defaults
 email.${DNSDOMAIN}.	  IN  CNAME	mail.${DNSDOMAIN}.
-${DNSDOMAIN}.		 IN  MX  50	mail.${DNSDOMAIN}.
-mail.${DNSDOMAIN}.	 IN  A		${SITEIP}
-smtp.${DNSDOMAIN}.	 IN  A		${SITEIP}
-imap.${DNSDOMAIN}.	 IN  A		${SITEIP}
-pop3.${DNSDOMAIN}.	 IN  A		${SITEIP}
-pop2.${DNSDOMAIN}.	 IN  A		${SITEIP}
-pop.${DNSDOMAIN}.	  IN  A		${SITEIP}
-mail.${DNSDOMAIN}.	 IN  AAAA	${SITEIPV6}
-smtp.${DNSDOMAIN}.	 IN  AAAA	${SITEIPV6}
-imap.${DNSDOMAIN}.	 IN  AAAA	${SITEIPV6}
-pop3.${DNSDOMAIN}.	 IN  AAAA	${SITEIPV6}
-pop2.${DNSDOMAIN}.	 IN  AAAA	${SITEIPV6}
-pop.${DNSDOMAIN}.	  IN  AAAA	${SITEIPV6}
+${DNSDOMAIN}.       IN  MX  50	mail.${DNSDOMAIN}.
+mail.${DNSDOMAIN}.  IN  A		${SITEIPV4}
+smtp.${DNSDOMAIN}.  IN  A		${SITEIPV4}
+imap.${DNSDOMAIN}.  IN  A		${SITEIPV4}
+pop3.${DNSDOMAIN}.  IN  A		${SITEIPV4}
+pop2.${DNSDOMAIN}.  IN  A		${SITEIPV4}
+pop.${DNSDOMAIN}.   IN  A		${SITEIPV4}
+mail.${DNSDOMAIN}.  IN  AAAA	${SITEIPV6}
+smtp.${DNSDOMAIN}.  IN  AAAA	${SITEIPV6}
+imap.${DNSDOMAIN}.  IN  AAAA	${SITEIPV6}
+pop3.${DNSDOMAIN}.  IN  AAAA	${SITEIPV6}
+pop2.${DNSDOMAIN}.  IN  AAAA	${SITEIPV6}
+pop.${DNSDOMAIN}.   IN  AAAA	${SITEIPV6}
 ;; End Mail Defaults" >> /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
+/bin/sed -i "s/; Text Record Defaults/; Text Record Defaults\n${DNSDOMAIN}.	\tIN  TXT	\t\"v=spf1 a mx a:${DNSDOMAIN} ip4:${SITEIPV4} ip6:${SITEIPV6} -all\"\n_dmarc.${DNSDOMAIN}.	\tIN  TXT	\t\"v=DMARC1; p=reject; fo=0; aspf=r; adkim=r; pct=100; ri=86400; rua=mailto:dmark@${DNSDOMAIN};\"/" /opt/verb/conf/inkdns/inkzones/db.${DNSDOMAIN}
+
 ## nv.DOM
 /bin/echo "; PTR Hostname Mail Record Defaults
 ${SITEARPAIP4}		IN  PTR  mail.${DNSDOMAIN}.

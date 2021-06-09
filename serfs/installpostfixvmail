@@ -370,13 +370,9 @@ cd $OLDPWD
 
 # DNS MX and TXT mail records for this server
 /opt/verb/serfs/inkdnsaddmail ${nameURI} verber; wait
-## Keep the zone file clean & let the server know "I was here."
-/bin/echo ";" >> /opt/verb/conf/inkdns/inkzones/db.${nameURI}
+## DKIM keys & TXT records
 /opt/verb/serfs/addinkdkim ${nameURI}; wait
 /opt/verb/serfs/inkdnsaddinkdkim ${nameURI} verber; wait
-## Webmail TLD prep
-/bin/echo "; Webmail Defaults
-" >> /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}
 
 # UFW (services and ports below them if known)
 #/usr/bin/ufw allow postfix
