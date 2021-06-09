@@ -38,6 +38,9 @@ fi
 /usr/bin/touch /var/named/named.conf.verb
 ## Add the Certbot key to the named config
 /usr/bin/echo $(tsig-keygen -a HMAC-SHA512 inkCertbotKey) >> /etc/named.conf
+## Logging (permissions are finicky, so create and own)
+/usr/bin/touch /var/log/named.log
+/usr/bin/chown named:named /var/log/named.log
 
 # Set the NS domains
 ## Verber Domains
