@@ -55,8 +55,6 @@ if [ -f "/opt/verb/conf/inkdns/zones/db.*" ]; then
   /bin/sed -i "s/ns2\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/zones/db.*
 fi
 
-## DEV: FYI apparmor permissions are here: /etc/apparmor.d/usr.sbin.named
-
 # DNS serial number
 /bin/echo '0 0 * * * root /opt/verb/donjon/rmserial.sh > /dev/null 2>&1' > /etc/cron.d/dnsserial
 /bin/chmod 0644 /etc/cron.d/dnsserial
@@ -64,8 +62,9 @@ fi
 /bin/rm -f /opt/verb/conf/inkdns/serial' > /opt/verb/donjon/rmserial.sh
 /bin/chmod 750 /opt/verb/donjon/rmserial.sh
 
+# DEV remove if works, port 53 was legacy since Bind now uses ports that have no permissions by default
 # Allow the port
-/usr/bin/ufw allow 53
+#/usr/bin/ufw allow 53
 
 # Restart
 /bin/systemctl enable named; wait

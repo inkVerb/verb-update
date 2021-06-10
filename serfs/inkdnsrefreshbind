@@ -14,45 +14,37 @@
 
 if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
 
-# Stop Bind
-/bin/systemctl stop named
+  # Stop Bind
+  /bin/systemctl stop named
 
   # Create the directories and configs
-  rm -rf /var/named/zones
-  cp -rf /opt/verb/conf/inkdns/zones /var/named/
-  cp -f /opt/verb/conf/inkdns/inkzones/db.* /var/named/zones/
-  cp -f /opt/verb/conf/inkdns/inkzones/nv.* /var/named/zones/
+  /usr/bin/rm -rf /var/named/zones
+  /usr/bin/cp -rf /opt/verb/conf/inkdns/zones /var/named/
+  /usr/bin/cp -f /opt/verb/conf/inkdns/inkzones/db.* /var/named/zones/
+  /usr/bin/cp -f /opt/verb/conf/inkdns/inkzones/nv.* /var/named/zones/
   /bin/chown -R root:named /var/named/zones
   /bin/chmod -R 755 /var/named/zones
 
   # inkDNS domain list file
-  rm -f /var/named/named.conf.verb
+  /usr/bin/rm -f /var/named/named.conf.verb
   /bin/echo '// inkVerb-inkDNS domain list file, managed automatically, edits will likely be deleted' > /var/named/named.conf.verb
   /bin/chown root:named /var/named/named.conf.verb
   /bin/chmod 644 /var/named/named.conf.verb
   # Refresh global inkDNS rDNS config & zone files
   ## rDNS config
-    rm -f /var/named/named.conf.rdns
-  ### If Tertiary DNS (Secondary Inker) is set
-    if [ "${SITE2INKERIP6}" != "NOT_SET" ] && [ "${SITE2INKERIP4}" != "NOT_SET" ]; then
-    /bin/echo "// Created by inkDNS, managed automatically, edits will likely be deleted
-zone \"${SITEARPAIP6}\" { type master; notify explicit; also-notify { ${SITE2INKERIP6}; }; allow-transfer { ${SITE2INKERIP6}; }; file \"/var/named/nv.verber\"; allow-query { any; }; };
-zone \"${SITEARPAIP4}\" { type master; notify explicit; also-notify { ${SITE2INKERIP4}; }; allow-transfer { ${SITE2INKERIP4}; }; file \"/var/named/nv.verber\"; allow-query { any; }; };
+  /usr/bin/rm -f /var/named/named.conf.rdns
+  /bin/echo "// Created by inkDNS, managed automatically, edits will likely be deleted
+zone \"${SITEARPAIP6}\" { type master; allow-update { none; }; allow-transfer { ${SITEINKERIP6}; ${SITEINKERIP4}; ${SITE2INKERIP6}; ${SITE2INKERIP4}; }; file \"nv.verber\"; allow-query { any; }; };
+zone \"${SITEARPAIP4}\" { type master; allow-update { none; }; allow-transfer { ${SITEINKERIP6}; ${SITEINKERIP4}; ${SITE2INKERIP6}; ${SITE2INKERIP4}; }; file \"nv.verber\"; allow-query { any; }; };
 " > /var/named/named.conf.rdns
-  ### If Tertiary DNS (Secondary Inker) is NOT set
-    else
-    /bin/echo "// Created by inkDNS, managed automatically, edits will likely be deleted
-zone \"${SITEARPAIP6}\" { type master; notify explicit; also-notify { ${SITEINKERIP6}; }; allow-transfer { ${SITEINKERIP6}; }; file \"/var/named/nv.verber\"; allow-query { any; }; update-policy { grant inkCertbotKey name _acme-challenge.${inkZone}. txt; }; };
-zone \"${SITEARPAIP4}\" { type master; notify explicit; also-notify { ${SITEINKERIP4}; }; allow-transfer { ${SITEINKERIP4}; }; file \"/var/named/nv.verber\"; allow-query { any; }; update-policy { grant inkCertbotKey name _acme-challenge.${inkZone}. txt; }; };
-" > /var/named/named.conf.rdns
-    fi
   ### Permissions
-    /bin/chown root:named /var/named/named.conf.rdns
-    /bin/chmod 644 /var/named/named.conf.rdns
+  /bin/chown root:named /var/named/named.conf.rdns
+  /bin/chmod 644 /var/named/named.conf.rdns
   ## rDNS zone file
-    rm -f /var/named/nv.verber
-    /bin/echo "\$TTL    86400
-@		IN  SOA		${SITEINKERDNS}. ${SITE2INKERDNS}. (
+  /usr/bin/rm -f /var/named/nv.verber
+  /usr/bin/cat <<EOF > /var/named/nv.verber
+\$TTL    86400
+@		IN  SOA		${hostURI}. dns.inkisaverb.com. (
 0000000001		; Serial No
 10800			; Refresh
 3600			; Retry
@@ -63,23 +55,76 @@ zone \"${SITEARPAIP4}\" { type master; notify explicit; also-notify { ${SITEINKE
 @		IN  NS		${SITEINKERDNS}.
 @		IN  NS		${SITE2INKERDNS}.
 
-; Hosted Domains" > /var/named/nv.verber
-    /bin/chown root:named /var/named/nv.verber
-    /bin/chmod 644 /var/named/nv.verber
+; Hosted Domains
+EOF
+  /bin/chown root:named /var/named/nv.verber
+  /bin/chmod 644 /var/named/nv.verber
   ## rDNS zone file entries
   cd /var/named/zones/
   for inkZoneDB in db.*; do
     inkZone="$(/bin/echo ${inkZoneDB} | sed 's/db\.//' )"
     if [ "${inkZone}" = '*' ]; then continue; fi
-    /bin/echo "zone \"${inkZone}\" { type master; notify explicit; also-notify { ${SITEINKERIP6}; ${SITEINKERIP4}; }; allow-transfer { ${SITEINKERIP6}; ${SITEINKERIP4}; }; file \"/var/named/zones/db.${inkZone}\"; };
-" >> /var/named/named.conf.verb
-    /bin/echo "\$INCLUDE \"/var/named/zones/nv.${inkZone}\";" >> /var/named/nv.verber
+      /bin/echo "zone \"${inkZone}\" { type master; allow-update { none; }; allow-transfer { ${SITEINKERIP6}; ${SITEINKERIP4}; ${SITE2INKERIP6}; ${SITE2INKERIP4}; }; file \"zones/db.${inkZone}\"; update-policy { grant inkCertbotKey name _acme-challenge.${inkZone}. txt; }; };" >> /var/named/named.conf.verb
+      /bin/echo "\$INCLUDE \"/var/named/zones/nv.${inkZone}\";" >> /var/named/nv.verber
   done
+  ## Slave DNS server?
+  if [ -f "/opt/verb/conf/inkdns/sdns/dnshost" ]; then
+    . /opt/verb/conf/inkdns/sdns/dnshost
+    ### Create the zone files
+    SDNSDATESTAMP="$(date '+%Y%m%d')"
+    SDNSSERNO="${SDNSDATESTAMP}00"
+    #### DNS
+    /usr/bin/rm -f /var/named/db.slavedns
+    /usr/bin/cat <<EOF > /var/named/db.slavedns
+\$TTL    86400
+@		IN  SOA		${DNSSLAVE}. dns.inkisaverb.com. (
+${SDNSSERNO}		; Serial No
+10800			; Refresh
+3600			; Retry
+604800			; Expire
+1800 )			; Minimum TTL
+
+; Nameserver Defaults
+@		IN  NS		${SITEINKERDNS}.
+@		IN  NS		${SITE2INKERDNS}.
+
+; Hosted Domains
+EOF
+    /bin/chown root:named /var/named/db.slavedns
+    /bin/chmod 644 /var/named/db.slavedns
+    #### rDNS
+    /usr/bin/rm -f /var/named/nv.slavedns
+    /usr/bin/cat <<EOF > /var/named/nv.slavedns
+; PTR Domain
+${SITEARPAIP4}		IN  PTR  ${DNSSLAVE}.
+${SITEARPAIP6}		IN  PTR  ${DNSSLAVE}.
+EOF
+    /bin/chown root:named /var/named/nv.slavedns
+    /bin/chmod 644 /var/named/nv.slavedns
+    ### If this is set as the tertiary DNS server
+    if [ "${DNSSLAVE}" = "${SITE2INKERDNS}" ]; then
+      /bin/echo "zone \"${inkZone}\" { type master; allow-update { none; }; allow-transfer { ${SITEINKERIP6}; ${SITEINKERIP4}; }; file \"db.slavedns\"; };" >> /var/named/named.conf.verb
+    ### If this is set as the secondary DNS server
+    elif [ "${DNSSLAVE}" = "${SITEINKERDNS}" ]; then
+      /bin/echo "zone \"${inkZone}\" { type master; allow-update { none; }; allow-transfer { ${SITE2INKERIP6}; ${SITE2INKERIP4}; }; file \"db.slavedns\"; };" >> /var/named/named.conf.verb
+    ### If this is not set as the secondary or tertiary DNS server
+    else
+      /bin/echo "zone \"${inkZone}\" { type master; allow-update { none; }; allow-transfer { ${SITEINKERIP6}; ${SITEINKERIP4}; ${SITE2INKERIP6}; ${SITE2INKERIP4}; }; file \"db.slavedns\"; };" >> /var/named/named.conf.verb
+    fi
+    /bin/echo "\$INCLUDE \"/var/named/nv.slavedns\";" >> /var/named/nv.verber
+    ### Served slave records
+    for slv in /opt/verb/conf/inkdns/sdns/s.*; do
+      . ${slv}
+      /bin/echo "zone \"${SDOM}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"db.${SDOM}\"; };" >> /var/named/named.conf.verb
+      /bin/echo "zone \"${SIP4ARPA}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"nv4.${SDOM}\"; };" >> /var/named/nv.verber
+      /bin/echo "zone \"${SIP6ARPA}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"nv6.${SDOM}\"; };" >> /var/named/nv.verber
+    done
+  fi # End Slave DNS
   ## Set the new serial (code imported from inkdnsserial)
   ### Create the datestamp
   DATESTAMP="$(date '+%Y%m%d')"
   ### Set the increment for today
-  touch /opt/verb/conf/inkdns/serial
+  /usr/bin/touch /opt/verb/conf/inkdns/serial
   OLDSERIAL="$(/bin/cat /opt/verb/conf/inkdns/serial)"
   #### Keep it to two digits
   if [ "${OLDSERIAL}" -gt "98" ]; then
@@ -93,10 +138,10 @@ zone \"${SITEARPAIP4}\" { type master; notify explicit; also-notify { ${SITEINKE
   ### Create a datestamp-based serial number to the second (how inkVerb does it)
   SERNO="${DATESTAMP}${NEWSERIAL}\t\t; Serial No"
   ### Set it in the file
-  sed -i "/; Serial No/c ${SERNO}" /var/named/nv.verber
+  /usr/bin/sed -i "/; Serial No/c ${SERNO}" /var/named/nv.verber
+
+  # Restart Bind
+  /bin/systemctl start named || /bin/systemctl restart named
 
 else /bin/echo "inkDNS not installed, run inkdnsinstall first."; exit 0
 fi
-
-# Restart Bind
-/bin/systemctl restart named
