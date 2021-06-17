@@ -1,0 +1,35 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This removes mail cert links as defined by setinkcertmail from the location used by the mail server
+## This is run automatically by killinkcertmail and normally should not be run independently
+
+# How to use:
+## ./killinkcertmailcerts [domain]
+
+
+# Dependencies
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+  /usr/bin/echo "Install inkCert first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+  /usr/bin/echo "Install inkDNS first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
+  /usr/bin/echo "Install Postfix Vmail first, I quit."; exit 8
+fi
+
+# Include the config
+. /opt/verb/conf/siteurilist
+
+DOMAIN="$1"
+
+# Make sure we don't kill a verb domain
+if /bin/grep -q "${DOMAIN}" /opt/verb/conf/siteurilist; then
+  /usr/bin/echo "Can't kill a verber domain, I quit."; exit 9
+fi
+
+# Remove the inkCert-LE certs if they exist, otherwise use Snakeoil
+/bin/rm -f /etc/ssl/server/mail/${DOMAIN}.crt
+/bin/rm -f /etc/ssl/server/mail/${DOMAIN}.key
+

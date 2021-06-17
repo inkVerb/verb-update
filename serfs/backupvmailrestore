@@ -31,8 +31,8 @@ tbrSMPAPG=${SITEMAILPASSAPG}
 
 # Unpack the file
 cd /srv/www/vip
-/bin/mv ${FILENAME} vmail.vtxz
-/opt/verb/serfs/vtxzout vmail
+/bin/mv ${FILENAME} vmail.txz
+/opt/verb/serfs.txzout vmail
 
 # Restore and include RC settings in the sitemail config
 . /srv/www/vip/vmail/sitemailpass-old

@@ -12,18 +12,16 @@
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
 NEWCAURI="${nameURI}"
-NEWCANAME="$(/bin/echo ${hostURI} | sed 's/\./_/g')"
-if [ "${hostURI}" = "$(hostname -f)" ]; then
+NEWCANAME="$(/bin/echo ${NEWCAHOST} | sed 's/\./_/g')"
+if [ "${NEWCAHOST}" = "$(hostname -f)" ]; then
 NEWCAHOST="${hostURI}"
 else
 /bin/echo "The full hostname doesn't match the inkVerb namespace URI and host settings. Fix that before proceeding.
 The info is in: /etc/hosts
-...which is sometimes over-written at startup by:
-/etc/cloud/templates/hosts.debian.tmpl ...so try changing that.
 It should say this:
 
-127.0.1.1 ${hostURI} ${SITEHOST}
-${SITEIP} ${hostURI} ${SITEHOST}
+127.0.1.1 ${NEWCAHOST} ${nameTLD}
+${SITEIP} ${NEWCAHOST} ${nameTLD}
 127.0.0.1 localhost.localdomain localhost
 
 Check with your hosting provider if you still have trouble.
@@ -88,7 +86,7 @@ else
   rm -f /opt/verb/conf/webserver/httpd/sites-available/${NEWCAHOST}.conf; fi
   if [ -e /etc/httpd/sites-enabled/${NEWCAHOST}.conf ]; then
   rm -f /etc/httpd/sites-enabled/${NEWCAHOST}.conf; fi
-  /opt/verb/serfs/addsubdomain ${SITEHOST} ${nameURI}
+  /opt/verb/serfs/adddomain ${nameTLD} ${nameURI}
   wait
 ### Set up SSL certs based on situation
 #### If not done
@@ -99,7 +97,7 @@ else
   fi
 #### If domain is already done via inkCert-LE
   if /bin/grep -Fq "INKCERTED=DONE_LE" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${NEWCAURI}; then
-  /bin/echo "Need to update inkCert-LE (Letsencrypt) SSL certs for ${NEWCAURI} to include ${SITEHOST}.${NEWCAURI}..."
+  /bin/echo "Need to update inkCert-LE (Letsencrypt) SSL certs for ${NEWCAURI} to include ${nameTLD}.${NEWCAURI}..."
   /opt/verb/serfs/inkcertreqle ${NEWCAURI} r
   wait
   /opt/verb/serfs/inkcertaddallle ${NEWCAURI}
@@ -107,8 +105,8 @@ else
   fi
 #### If domain is handled via inkCert Proper
   if /bin/grep -Fq "INKCERTED=DONE_IC" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${NEWCAURI}; then
-  /bin/echo "Need to get inkCert SSL certs for ${SITEHOST}.${NEWCAURI}..."
-  /opt/verb/serfs/inkcertdo ${SITEHOST}.${NEWCAURI}
+  /bin/echo "Need to get inkCert SSL certs for ${nameTLD}.${NEWCAURI}..."
+  /opt/verb/serfs/inkcertdo ${NEWCAHOST}
   fi
 ## If the html link doesn't exist but the domain is in a folder on the server.
  else

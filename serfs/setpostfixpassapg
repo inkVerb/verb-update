@@ -32,13 +32,13 @@ FLUSH PRIVILEGES;"
 
 # Postfix & Dovecot password
 /bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/dovecot/dovecot-sql.conf.ext
-/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/amavis/conf.d/50-user
-/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/mysql_virtual_alias_domainaliases_maps.cf
-/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/mysql_virtual_alias_maps.cf
-/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/mysql_virtual_domains_maps.cf
-/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/mysql_virtual_mailbox_domainaliases_maps.cf
-/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/mysql_virtual_mailbox_maps.cf
-/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/mysql_virtual_sender_login_maps.cf
+/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/virtual_alias_domains.cf
+/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/virtual_alias_domains_maps.cf
+/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/virtual_alias_maps.cf
+/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/virtual_mailbox_domains.cf
+/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/virtual_mailbox_domainaliases_maps.cf
+/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/virtual_mailbox_maps.cf
+/bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${NEWMAILPASSAPG}/" /etc/postfix/virtual_sender_login_maps.cf
 
 # PFA
 if [ ${SITEPFAPATH} != "PFA_NOT_ALLOWED" ] && [ ${SITEPFAPATH} != "PFA_NOT_INSTALLED" ]; then

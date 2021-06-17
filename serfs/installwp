@@ -100,10 +100,17 @@ if /bin/grep -q '##INKHTTPSFIX=fixed' /opt/verb/conf/webserver/httpd/sites-avail
 define( 'WP_HOME', 'https://${DOMAIN}' );" >> /srv/www/vapps/wp.${DOMAIN}/wp-config.php
 fi
 
-# Reset all permissions and reload
+# Reset all permissions and restart webserver
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}.${DOMAIN}
-/usr/bin/systemctl restart httpd
-/usr/bin/systemctl restart nginx
+. /opt/verb/conf/servertype
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/systemctl restart httpd
+  /usr/bin/systemctl restart nginx
+fi
 
 /bin/echo "These are setup:
 

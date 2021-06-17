@@ -129,7 +129,6 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   fi
 
   ## Stop Apache
-  /usr/bin/apachectl graceful-stop; wait
   /bin/systemctl stop httpd; wait
 
   ## Comment the Snakeoil certs
@@ -138,7 +137,6 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
 
   ## Insert the inkCert certs
   /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_CB\n  SSLCertificateFile\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/cert\.pem\n  SSLCertificateKeyFile\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/privkey\.pem\n  SSLCertificateChainFile\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/chain\.pem\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf
-  /usr/bin/apachectl start
 
   ## inkCert status & exit
   if [ "${FIRSTINKCERTADDCB}" = "NOT_YET" ]; then

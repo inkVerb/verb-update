@@ -35,7 +35,7 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
 		# Remove the old settings
 		/bin/sed -i "/ServerAlias \*.${DOMAIN}/d" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
 		/bin/sed -i '/##INKWILDFIX/d' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
-		/usr/bin/apachectl graceful
+		/usr/bin/systemctl restart httpd
 
 		# Finish
 		/bin/echo "${DOMAIN} the wildcard subdomain fix has been removed."
@@ -51,7 +51,7 @@ elif [ ${SERVERTYPE} = "laemp" ]; then
 		## Remove the old settings
 		/bin/sed -i "/ServerAlias \*.${DOMAIN}/d" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
 		/bin/sed -i '/##INKWILDFIX/d' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
-		/usr/bin/apachectl graceful
+		/usr/bin/systemctl restart httpd
 
 		justfixedhttpd="true"
 

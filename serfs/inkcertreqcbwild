@@ -3,15 +3,18 @@
 
 # This requests and gets Letsencrypt-Certbot wildcard certs via inkCert-Certbot for a given domain
 ## Prerequesite: inkcertinstall, domains added via newdomain/newdomaincgi or an existing and active verb domain on this Verber
-## This is intended as a subscript of inkcertdocbdigoc
-### This uses a wildcard with certbot, but is NOT interactive because it is specific to DigitalOcean
+## This is intended as a subscript of inkcertdocbwild
+### BUT...
+###
+### DEV: Currently, this script is INTERACTIVE because it requires making an entry in the DNS records!!
+###
 
 # How to use:
-## ./inkcertreqcbdigoc [domain.tld NO SUBDOMAINS]
+## ./inkcertreqcbwild [domain.tld NO SUBDOMAINS]
 
 #Eg:
-## ./inkcertreqcbdigoc inkisaverb.com
-## ./inkcertreqcbdigoc YOURNAME.verb.blue
+## ./inkcertreqcbwild inkisaverb.com
+## ./inkcertreqcbwild YOURNAME.verb.blue
 
 
 DOMAIN=$1
@@ -19,6 +22,7 @@ DOMAIN=$1
 # Include the configs
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
+. /opt/verb/conf/servertype
 . /opt/verb/conf/inkcert/inkcertstatus
 
 # Check inkCert installed
@@ -38,15 +42,9 @@ Do that first, then get back to me.
 "; exit 0
 fi
 
-# Verify that Certbot DigitalOcean secrets are setup
-if [ ! -f "/opt/verb/.certbotsecrets/inkcertcbdigoc.ini" ]; then
-  /bin/echo "Sorry, DigitalOcean Certbot secrets not installed yet. Doing nothing."
-  exit 0
-fi
-
 # Include and check the inkCert domain config
 . /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}
-inkcertmsg="This sets up certs for inkCert's Certbot on a DigitalOcean server."
+inkcertmsg="This sets up certs for inkCert via Certbot."
 case ${INKCERTED} in
   DONE_SC)
   /bin/echo $inkcertmsg
@@ -76,15 +74,7 @@ case ${INKCERTED} in
   /bin/echo $inkcertmsg
   /bin/echo "inkCert cert-bot is already setup for ${DOMAIN}.
 
-  To set up certs differently, first run: inkcertrevokecb ${DOMAIN}, then run this again.
-  "
-  exit 0
-  ;;
-  DONE_CBDIGOC)
-  /bin/echo $inkcertmsg
-  /bin/echo "inkCert certbot for DigitalOcean is already setup for ${DOMAIN}.
-
-  To set up certs differently, first run: inkcertrevokecbdigoc ${DOMAIN}, then run this again.
+  To set up certs differently, first run: inkcertrevokecbwild ${DOMAIN}, then run this again.
   "
   exit 0
   ;;
@@ -93,14 +83,13 @@ case ${INKCERTED} in
   ;;
   *)
     if ! /bin/grep -q "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
-      /bin/echo "Something's wrong with the inkCert siteinkcert. configs! Aborting."
+      /bin/echo "Something's wrong with the inkCert siteinkcert configs! Aborting"
       exit 6
     else
       /bin/echo "Ready to go..."
     fi
   ;;
 esac
-
 
 # Check for verb domain and status
 ## If verb domain was spelled correctly
@@ -131,11 +120,6 @@ if [ "${DOMAIN}" = "${emailURI}" ]; then
   verbtld_is_off
  fi
 fi
-if [ "${DOMAIN}" = "${cityURI}" ]; then
- if [[ "${VERBcity}" != true ]]; then
-  verbtld_is_off
- fi
-fi
 if [ "${DOMAIN}" = "${oneURI}" ]; then
  if [[ "${VERBone}" != true ]]; then
   verbtld_is_off
@@ -161,45 +145,48 @@ if [ "${DOMAIN}" = "${kiwiURI}" ]; then
   verbtld_is_off
  fi
 fi
-if [ "${DOMAIN}" = "${pinkURI}" ]; then
- if [[ "${VERBpink}" != true ]]; then
-  verbtld_is_off
- fi
-fi
 if [ "${DOMAIN}" = "${redURI}" ]; then
  if [[ "${VERBred}" != true ]]; then
   verbtld_is_off
  fi
 fi
-if [ "${DOMAIN}" = "${rocksURI}" ]; then
- if [[ "${VERBrocks}" != true ]]; then
-  verbtld_is_off
- fi
-fi
 
 # Stop Apache
-/usr/bin/apachectl graceful-stop; wait
 /bin/systemctl stop httpd; wait
 
 # Get the certs
 ##NOTE make the system wait before and after Certbot because sometimes CB can stumble over it's own feet.
 sleep 1
-## We need `yes n |` because the salesmen want to break the script with email solicitation
-/usr/local/bin/certbot certonly --dns-digitalocean --dns-digitalocean-credentials /opt/verb/.certbotsecrets/inkcertcbdigoc.ini --dns-digitalocean-propagation-seconds 60 --email ${INKCERTEMAIL} --agree-tos --renew-by-default -d ${DOMAIN} -d *.${DOMAIN}
-#DEV: If the above fails, try removing  --dns-digitalocean-propagation-seconds 60 with this below:
-#certbot certonly --dns-digitalocean --dns-digitalocean-credentials /opt/verb/.certbotsecrets/inkcertcbdigoc.ini --email ${INKCERTEMAIL} --agree-tos --renew-by-default -d ${DOMAIN} -d *.${DOMAIN}
-
-
+#DEV: This currently does only the domain and wildcard domains interactively, not according to cli.ini files; this needs to be automated to modify inkDNS zone files with --preferred-challenges=dns
+#/usr/bin/certbot certonly --dns-rfc2136 --dns-rfc2136-credentials /etc/letsencrypt/rfc2136.ini --email ${INKCERTEMAIL} --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --force-renewal -d "${DOMAIN}" -d "*.${DOMAIN}"
+#DEV: The above shell command should work, once the on-server Named zones are synced with other nameservers, such as ns1.inkisaverb.com
+if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/certbot --nginx certonly --preferred-challenges=dns --email ${INKCERTEMAIL} --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --renew-by-default -d "${DOMAIN}" -d *.${DOMAIN}
+  if [ "$?" != "0" ]; then
+    /bin/echo "Certs not installed, cannot proceed."
+    certsuccess="false"
+    exit 4
+  else
+    certsuccess="true"
+  fi
+  /bin/systemctl restart nginx; wait
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/certbot --apache certonly --preferred-challenges=dns --email ${INKCERTEMAIL} --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --renew-by-default -d "${DOMAIN}" -d "*.${DOMAIN}"
+  if [ "$?" != "0" ]; then
+    /bin/echo "Certs not installed, cannot proceed."
+    certsuccess="false"
+    exit 4
+  else
+    certsuccess="true"
+  fi
+  /bin/systemctl start httpd; wait
+fi
 wait
 sleep 1
 # the --quiet / -q option doesn't seem to work
 # Additional options if not doing certonly: --no-redirect --no-hsts --no-uir
 # https://certbot.eff.org/docs/using.html#command-line
 # https://certbot.eff.org/#ubuntuxenial-apache
-
-# Turn Apache on again
-#/usr/bin/apachectl start; wait
-/bin/systemctl start httpd; wait
 
 # Verify the certs
 if [ ! -d /etc/inkcert/le/live/${DOMAIN} ]; then
@@ -208,5 +195,5 @@ fi
 
 # Finish
 /bin/echo "
-Finished getting certs. Now to install them with inkcertaddcbdigoc...
+Finished getting certs. Now to install them with inkcertaddcbwild...
 "

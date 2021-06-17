@@ -158,9 +158,23 @@ sleep 1
 if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   #yes n | /usr/bin/certbot --nginx certonly --expand --renew-by-default -c /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
   /usr/bin/certbot --nginx certonly --expand --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --renew-by-default -c /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
+  if [ "$?" != "0" ]; then
+    /bin/echo "Certs not installed, cannot proceed."
+    certsuccess="false"
+    exit 4
+  else
+    certsuccess="true"
+  fi
   /bin/systemctl restart nginx; wait
 elif [ ${SERVERTYPE} = "lamp" ]; then
   /usr/bin/certbot --apache certonly --expand --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --renew-by-default -c /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
+  if [ "$?" != "0" ]; then
+    /bin/echo "Certs not installed, cannot proceed."
+    certsuccess="false"
+    exit 4
+  else
+    certsuccess="true"
+  fi
   /bin/systemctl restart httpd; wait
 fi
 wait

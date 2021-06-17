@@ -74,10 +74,10 @@ if [ "${VTYPE}" = "verber" ]; then
 VERBERNAME=${IAMCANAME}" > ~/.ssh/inknet/${VCNAME}/verbername
 fi
 cd ~/.ssh/inknet/
-/opt/verb/serfs/vtxzin ${VCNAME}
+/opt/verb/serfs.txzin ${VCNAME}
 /bin/rm -rf ${VCNAME}
 /bin/mkdir /srv/www/html/${IAMCAHOST}/inknet/${SECPATH}
-/bin/mv ${VCNAME}.vtxz ${VCNAME}.ink
+/bin/mv ${VCNAME}.txz ${VCNAME}.ink
 /bin/mv ${VCNAME}.ink /srv/www/html/${IAMCAHOST}/inknet/${SECPATH}
 
 # For non-IP Vrk Stations

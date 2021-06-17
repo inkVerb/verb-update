@@ -65,7 +65,7 @@ fi
 defaults
 auth           on
 tls            on
-tls_trust_file /etc/inkcert/mail/vmail.crt
+tls_trust_file /etc/ssl/server/mail/vmail.crt
 logfile        /var/log/msmtp.log
 account sys
 host mail.$nameURI

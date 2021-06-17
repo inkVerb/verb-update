@@ -31,5 +31,5 @@ fi
 /opt/verb/serfs/inkcertremovesc ${DOMAIN}
 
 # Remove mail certs
-/usr/bin/rm -f /etc/inkcert/mail/${DOMAIN}.crt
-/usr/bin/rm -f /etc/inkcert/mail/${DOMAIN}.key
+/usr/bin/rm -f /etc/ssl/server/mail/${DOMAIN}.crt
+/usr/bin/rm -f /etc/ssl/server/mail/${DOMAIN}.key

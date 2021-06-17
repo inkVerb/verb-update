@@ -32,9 +32,9 @@ if [ -z "$SECPATH" ]; then
 /usr/bin/wget -q https://${CAVERBERHOST}/inknet/${SECPATH}/${CLIENTNAME}.ink --no-check-certificate
 
 # Unpack
-/bin/mv ${CLIENTNAME}.ink ${CLIENTNAME}.vtxz
-/opt/verb/serfs/vtxzout ${CLIENTNAME}
-/bin/rm -f ${CLIENTNAME}.vtxz
+/bin/mv ${CLIENTNAME}.ink ${CLIENTNAME}.txz
+/opt/verb/serfs.txzout ${CLIENTNAME}
+/bin/rm -f ${CLIENTNAME}.txz
 . ~/${CLIENTNAME}/verbername
 /bin/cp ~/${CLIENTNAME}/client.verber.${CLIENTNAME}.cnf /opt/verb/conf/inknet/client.${VERBERNAME}.inker.login.cnf
 /bin/rm -rf ${CLIENTNAME}

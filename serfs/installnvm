@@ -1,0 +1,12 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This installs the NVM package manager for Node.js
+
+# How to use:
+## ./installnvm
+
+/usr/bin/su slave -c '/usr/bin/yay -S --noconfirm nvm'
+
+echo 'source /usr/share/nvm/init-nvm.sh' >> /etc/bash.bashrc
+echo 'source /usr/share/nvm/init-nvm.sh' >> ~/.bashrc

@@ -32,7 +32,7 @@ if [ ${SERVERTYPE} = "lemp" ]; then
 elif [ ${SERVERTYPE} = "lamp" ]; then
 	# Check to see if "fixwildcard" has already been added
 	if /bin/grep -q "INKWILDFIX=fixed" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf; then
-	/usr/bin/apachectl graceful
+	/usr/bin/systemctl restart httpd
 		/bin/echo "${DOMAIN} already has the wildcard subdomain fix. The server was just reloaded so the site should work."
 	else
 
@@ -42,7 +42,7 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
 		# Then add the fix config line.
 		/bin/echo "##INKWILDFIX=fixed
 " >> /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
-		/usr/bin/apachectl graceful
+		/usr/bin/systemctl restart httpd
 
 		/bin/echo "${DOMAIN} now has wildcard subdomain fix for subdomains and is ready to go."
 	fi
@@ -51,7 +51,7 @@ elif [ ${SERVERTYPE} = "laemp" ]; then
 	# Apache
 	## Check to see if "fixwildcard" has already been added
 	if /bin/grep -q "INKWILDFIX=fixed" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf; then
-	/usr/bin/apachectl graceful
+	/usr/bin/systemctl restart httpd
 		/bin/echo "${DOMAIN} already has the wildcard subdomain fix. The server was just reloaded so the site should work."
 	else
 
@@ -61,7 +61,7 @@ elif [ ${SERVERTYPE} = "laemp" ]; then
 		## Then add the fix config line.
 		/bin/echo "##INKWILDFIX=fixed
 " >> /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
-		/usr/bin/apachectl graceful; wait
+		/usr/bin/systemctl restart httpd; wait
 
 		justfixedhttpd="true"
 

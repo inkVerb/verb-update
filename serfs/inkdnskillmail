@@ -1,43 +1,47 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This removes the mail subdomain A & AAAA records in the inkDNS zone file on this Verber
+# This removes the mail subdomain A & AAAA records in the inkDNS zone file added by inkdnsaddmail
+## This is used by killinkcertmail and should not be run independently
 
 # How to use:
 ## ./inkdnskillmail [domain]
-## ./inkdnskillmail [domain] verber
 
+
+# Dependencies
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+  /usr/bin/echo "Install inkCert first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+  /usr/bin/echo "Install inkDNS first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
+  /usr/bin/echo "Install Postfix Vmail first, I quit."; exit 8
+fi
 
 DNSDOMAIN="$1"
-if [ -n $2 ] && [ "$2" = "verber" ]; then
-  ZONEDIR="inkzones"
-else
-  ZONEDIR="zones"
+
+# Make sure we don't kill a verb domain
+if /bin/grep -q "${DOMAIN}" /opt/verb/conf/siteurilist; then
+  /usr/bin/echo "Can't kill a verber domain, I quit."; exit 9
 fi
 
 # Include the configs
 . /opt/verb/conf/sitenameip
 
 # Check if already added
-if ! /bin/grep -Fq "; Hostname Mail Record Defaults" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}; then
+if ! /bin/grep -Fq "; Hostname Mail Record Defaults" /opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}; then
 /bin/echo "Mail Record Defaults don't exist for ${DNSDOMAIN}. Use inkdnsaddmail to add them."
 exit 0; fi
 
 # Remove the records
-/bin/sed -i "/; Hostname Mail Record Defaults/,/;; End Mail Defaults/d" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
-/bin/sed -i "/; PTR Hostname Mail Record Defaults/,/;; End Mail Defaults/d" /opt/verb/conf/inkdns/${ZONEDIR}/nv.${DNSDOMAIN}
+/bin/sed -i "/; Hostname Mail Record Defaults/,/;; End Mail Defaults/d" /opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}
+/bin/sed -i "/; PTR Hostname Mail Record Defaults/,/;; End Mail Defaults/d" /opt/verb/conf/inkdns/zones/nv.${DNSDOMAIN}
 
 # Set the Serial No
-if [ "${ZONEDIR}" = "inkzones" ]; then
-  /opt/verb/serfs/inkdnsserial ${DNSDOMAIN} verber
-elif [ "${ZONEDIR}" = "zones" ]; then
-  /opt/verb/serfs/inkdnsserial ${DNSDOMAIN}
-fi
+/opt/verb/serfs/inkdnsserial ${DNSDOMAIN}
 
 # Refresh zones
-if [ -f "/opt/verb/conf/inkdns/inkdnsconf" ]; then
-  . /opt/verb/conf/inkdns/inkdnsconf
-  if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
 /opt/verb/serfs/inkdnsrefreshbind; fi; fi
 
 # Finish

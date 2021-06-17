@@ -60,7 +60,16 @@ fi
 /bin/cp /opt/verb/conf/site-files/conf/newodoosite.conf /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
 /bin/sed -i "s/odoosite286/${DOMAIN}/g" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
 /bin/sed -i "s/ip286/${SITEIP}/g" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
-/usr/bin/apachectl graceful
+## Restart server
+. /opt/verb/conf/servertype
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/systemctl restart httpd
+  /usr/bin/systemctl restart nginx
+fi
 ## inkCert SSL certs
 ### Not setup
 if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then

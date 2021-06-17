@@ -152,7 +152,6 @@ if [ "${DOMAIN}" = "${redURI}" ]; then
 fi
 
 # Stop Apache
-/usr/bin/apachectl graceful-stop; wait
 /bin/systemctl stop httpd; wait
 
 # Get the certs
@@ -163,8 +162,24 @@ sleep 1
 #DEV: The above shell command should work, once the on-server Named zones are synced with other nameservers, such as ns1.inkisaverb.com
 if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   /usr/bin/certbot --nginx certonly --preferred-challenges=dns --email ${INKCERTEMAIL} --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --renew-by-default -d "${DOMAIN}" -d *.${DOMAIN}
+  if [ "$?" != "0" ]; then
+    /bin/echo "Certs not installed, cannot proceed."
+    certsuccess="false"
+    exit 4
+  else
+    certsuccess="true"
+  fi
+  /bin/systemctl restart nginx; wait
 elif [ ${SERVERTYPE} = "lamp" ]; then
   /usr/bin/certbot --apache certonly --preferred-challenges=dns --email ${INKCERTEMAIL} --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --renew-by-default -d "${DOMAIN}" -d "*.${DOMAIN}"
+  if [ "$?" != "0" ]; then
+    /bin/echo "Certs not installed, cannot proceed."
+    certsuccess="false"
+    exit 4
+  else
+    certsuccess="true"
+  fi
+  /bin/systemctl start httpd; wait
 fi
 wait
 sleep 1
@@ -172,10 +187,6 @@ sleep 1
 # Additional options if not doing certonly: --no-redirect --no-hsts --no-uir
 # https://certbot.eff.org/docs/using.html#command-line
 # https://certbot.eff.org/#ubuntuxenial-apache
-
-# Turn Apache on again
-#/usr/bin/apachectl start; wait
-/bin/systemctl start httpd; wait
 
 # Verify the certs
 if [ ! -d /etc/inkcert/le/live/${DOMAIN} ]; then

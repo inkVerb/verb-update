@@ -31,6 +31,10 @@ fi
 
 # Request and get the certs
 /opt/verb/serfs/inkcertreqle ${DOMAIN}; wait
+if [ "$certsuccess" != "true" ]; then
+  /bin/echo "Cert for ${DOMAIN} aborted."
+  exit 4;
+fi
 
 # Install the certs
 if /bin/grep -q "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then

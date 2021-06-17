@@ -34,28 +34,53 @@ exit 0; fi
 
 # Apache
 ## Remove static-Apache html folder
-/bin/rm -rf /srv/www/html/red.odoo
-/bin/echo "Odoo 10" > /srv/www/html/red.odoo
+/bin/rm -rf /srv/www/verb/red.r/odoo
+/bin/echo "Odoo 10" > /srv/www/verb/red.r/odoo
 ## Set the IP address in the Apache config file
 /bin/cp -f /opt/verb/conf/site-files/conf/odoo-odoo.${redURI}.conf /opt/verb/conf/webserver/httpd/sites-available/odoo.${redURI}.conf
 /bin/sed -i "s/ip286/${SITEIP}/g" /opt/verb/conf/webserver/httpd/sites-available/odoo.${redURI}.conf
-/usr/bin/apachectl graceful
+
+# Reset all permissions and restart webserver
+/bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}.${DOMAIN}
+. /opt/verb/conf/servertype
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/systemctl restart httpd
+  /usr/bin/systemctl restart nginx
+fi
+
 ## inkCert SSL certs
 ### Not setup
-if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${redURI}; then
-/bin/echo "FYI: inkCert is not yet setup for ${redURI}."
+if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+/bin/echo "FYI: inkCert is not yet setup for ${DOMAIN}."
 fi
 ### inkCert-LE DONE
-if /bin/grep -Fq "INKCERTED=DONE_LE" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${redURI}; then
-/bin/echo "inkCert-LE is already setup for ${redURI}. Updating the Apache configs..."
-/opt/verb/serfs/inkcertaddle odoo.${redURI}
+if /bin/grep -Fq "INKCERTED=DONE_LE" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+/bin/echo "inkCert-LE is already setup for ${DOMAIN}. Updating the Apache configs..."
+/opt/verb/serfs/inkcertaddle ${DOMAIN}
+wait
+fi
+### inkCert-CB DONE
+if /bin/grep -Fq "INKCERTED=DONE_CB" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+/bin/echo "inkCert-IC is already setup for ${DOMAIN}. Updating the Apache configs..."
+/opt/verb/serfs/inkcertaddcb ${DOMAIN}
 wait
 fi
 ### inkCert-IC DONE
-if /bin/grep -Fq "INKCERTED=DONE_IC" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${redURI}; then
-/bin/echo "inkCert-IC is already setup for ${inkURI}. Updating the Apache configs..."
-/opt/verb/serfs/inkcertadd odoo.${redURI}
+if /bin/grep -Fq "INKCERTED=DONE_IC" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+/bin/echo "inkCert-IC is already setup for ${DOMAIN}. Updating the Apache configs..."
+/opt/verb/serfs/inkcertadd ${DOMAIN}
 wait
+fi
+
+## Restert webserver
+if [ ${SERVERTYPE} = "laemp" ] || [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd
 fi
 
 # Set the site-wide app-install config

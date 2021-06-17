@@ -93,9 +93,27 @@ if [ "$?" = 4 ]; then
 /bin/cp /opt/verb/conf/lab/vmail/postfixadmin/pfapics/images/favicon-ink.ico /srv/www/email/postfixadmin/public/images/
 
 # Webserver
-/bin/ln -sfn /srv/www/email/postfixadmin/public /srv/www/html/${SITEEMAILTLD}.pfa/${PFAFOLDER}; wait
-/bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.pfa; wait
+/usr/bin/mkdir -p /srv/www/verb/${SITEEMAILTLD}.pfa
+/bin/ln -sfn /srv/www/email/postfixadmin/public /srv/www/verb/${SITEEMAILTLD}.pfa/${PFAFOLDER}; wait
+/bin/chown -R www:www /srv/www/verb/${SITEEMAILTLD}.pfa; wait
 /bin/chown -R www:www /srv/www/email/postfixadmin; wait
+## Hosting conf
+if [ ${SERVERTYPE} = "laemp" ]; then
+  /bin/cp /opt/verb/conf/site-files/conf/pfa-nginx.conf /opt/verb/conf/webserver/nginx/sites-available/pfa.${emailTLDURI}.conf
+  /bin/cp /opt/verb/conf/site-files/conf/pfa-httpd.conf /opt/verb/conf/webserver/httpd/sites-enabled/pfa.${emailTLDURI}.conf
+  /opt/verb/serfs/ensitenginx pfa.${emailTLDURI}
+  /opt/verb/serfs/ensiteapache pfa.${emailTLDURI}
+  /usr/bin/systemctl restart nginx; wait
+  /usr/bin/systemctl restart httpd; wait
+elif [ ${SERVERTYPE} = "lemp" ]; then
+  /bin/cp /opt/verb/conf/site-files/conf/pfa-nginx.conf /opt/verb/conf/webserver/nginx/sites-available/pfa.${emailTLDURI}.conf
+  /opt/verb/serfs/ensitenginx pfa.${emailTLDURI}
+  /usr/bin/systemctl restart nginx; wait
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /bin/cp /opt/verb/conf/site-files/conf/pfa-httpd.conf /opt/verb/conf/webserver/httpd/sites-enabled/pfa.${emailTLDURI}.conf
+  /opt/verb/serfs/ensiteapache pfa.${emailTLDURI}
+  /usr/bin/systemctl restart httpd; wait
+fi
 
 # DNS
 /bin/sed -i "s/; Email Control Records/; Email Control Records\npfa.${emailTLDURI}. \tIN  A \t${SITEIPV4}\npfa.${emailTLDURI}. \tIN  AAAA \t${SITEIPV6}/" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}

@@ -43,8 +43,8 @@ cd /srv/www/vapps/${APPNAME}/
 
 # Pack the directory
 cd /srv/www/vapps
-/opt/verb/serfs/vtxzin ${APPNAME}
-/bin/mv ${APPNAME}.vtxz verb.${APPNAME}.${SECNAME}.vbak
+/opt/verb/serfs.txzin ${APPNAME}
+/bin/mv ${APPNAME}.txz verb.${APPNAME}.${SECNAME}.vbak
 /bin/mv verb.${APPNAME}.${SECNAME}.vbak /srv/www/vip/
 
 # Finish

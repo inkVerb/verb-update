@@ -26,22 +26,22 @@ exit 0; fi
 # Echo the records
 ## db.DOM
 /bin/echo "; Hostname Mail Record Defaults
-email.${DNSDOMAIN}.	  IN  CNAME	mail.${DNSDOMAIN}.
-${DNSDOMAIN}.       IN  MX  50	mail.${DNSDOMAIN}.
-mail.${DNSDOMAIN}.  IN  A		${SITEIPV4}
-smtp.${DNSDOMAIN}.  IN  A		${SITEIPV4}
-imap.${DNSDOMAIN}.  IN  A		${SITEIPV4}
-pop3.${DNSDOMAIN}.  IN  A		${SITEIPV4}
-pop2.${DNSDOMAIN}.  IN  A		${SITEIPV4}
-pop.${DNSDOMAIN}.   IN  A		${SITEIPV4}
-mail.${DNSDOMAIN}.  IN  AAAA	${SITEIPV6}
-smtp.${DNSDOMAIN}.  IN  AAAA	${SITEIPV6}
-imap.${DNSDOMAIN}.  IN  AAAA	${SITEIPV6}
-pop3.${DNSDOMAIN}.  IN  AAAA	${SITEIPV6}
-pop2.${DNSDOMAIN}.  IN  AAAA	${SITEIPV6}
-pop.${DNSDOMAIN}.   IN  AAAA	${SITEIPV6}
+email.${DNSDOMAIN}. IN  CNAME	mail.${DNSDOMAIN}.
+${DNSDOMAIN}.       IN  MX 50	mail.${DNSDOMAIN}.
+mail.${DNSDOMAIN}.  IN  A    	${SITEIPV4}
+smtp.${DNSDOMAIN}.  IN  A    	${SITEIPV4}
+imap.${DNSDOMAIN}.  IN  A    	${SITEIPV4}
+pop3.${DNSDOMAIN}.  IN  A    	${SITEIPV4}
+pop2.${DNSDOMAIN}.  IN  A    	${SITEIPV4}
+pop.${DNSDOMAIN}.   IN  A    	${SITEIPV4}
+mail.${DNSDOMAIN}.  IN  AAAA 	${SITEIPV6}
+smtp.${DNSDOMAIN}.  IN  AAAA 	${SITEIPV6}
+imap.${DNSDOMAIN}.  IN  AAAA 	${SITEIPV6}
+pop3.${DNSDOMAIN}.  IN  AAAA 	${SITEIPV6}
+pop2.${DNSDOMAIN}.  IN  AAAA 	${SITEIPV6}
+pop.${DNSDOMAIN}.   IN  AAAA 	${SITEIPV6}
 ;; End Mail Defaults" >> /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
-/bin/sed -i "s/; Text Record Defaults/; Text Record Defaults\n${DNSDOMAIN}.	\tIN  TXT	\t\"v=spf1 a mx a:${DNSDOMAIN} ip4:${SITEIPV4} ip6:${SITEIPV6} -all\"\n_dmarc.${DNSDOMAIN}.	\tIN  TXT	\t\"v=DMARC1; p=reject; fo=0; aspf=r; adkim=r; pct=100; ri=86400; rua=mailto:dmark@${DNSDOMAIN};\"/" /opt/verb/conf/inkdns/inkzones/db.${DNSDOMAIN}
+/bin/sed -i "s/; Text Record Defaults/; Text Record Defaults\n${DNSDOMAIN}.	\tIN  TXT	\t\"v=spf1 a mx a:${DNSDOMAIN} ip4:${SITEIPV4} ip6:${SITEIPV6} -all\"\n_dmarc.${DNSDOMAIN}.	\tIN  TXT	\t\"v=DMARC1; p=reject; fo=0; aspf=r; adkim=r; pct=100; ri=86400; rua=mailto:dmark@${DNSDOMAIN};\"/" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
 
 ## nv.DOM
 /bin/echo "; PTR Hostname Mail Record Defaults
@@ -50,13 +50,13 @@ ${SITEARPAIP4}		IN  PTR  smtp.${DNSDOMAIN}.
 ${SITEARPAIP4}		IN  PTR  imap.${DNSDOMAIN}.
 ${SITEARPAIP4}		IN  PTR  pop3.${DNSDOMAIN}.
 ${SITEARPAIP4}		IN  PTR  pop2.${DNSDOMAIN}.
-${SITEARPAIP4}		IN  PTR  pop.${DNSDOMAIN}.
+${SITEARPAIP4}		IN  PTR   pop.${DNSDOMAIN}.
 ${SITEARPAIP6}		IN  PTR  mail.${DNSDOMAIN}.
 ${SITEARPAIP6}		IN  PTR  smtp.${DNSDOMAIN}.
 ${SITEARPAIP6}		IN  PTR  imap.${DNSDOMAIN}.
 ${SITEARPAIP6}		IN  PTR  pop3.${DNSDOMAIN}.
 ${SITEARPAIP6}		IN  PTR  pop2.${DNSDOMAIN}.
-${SITEARPAIP6}		IN  PTR  pop.${DNSDOMAIN}.
+${SITEARPAIP6}		IN  PTR   pop.${DNSDOMAIN}.
 ;; End Mail Defaults" >> /opt/verb/conf/inkdns/${ZONEDIR}/nv.${DNSDOMAIN}
 
 # Set the Serial No

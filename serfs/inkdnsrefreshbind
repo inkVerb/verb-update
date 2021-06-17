@@ -113,12 +113,14 @@ EOF
     fi
     /bin/echo "\$INCLUDE \"/var/named/nv.slavedns\";" >> /var/named/nv.verber
     ### Served slave records
-    for slv in /opt/verb/conf/inkdns/sdns/s.*; do
-      . ${slv}
-      /bin/echo "zone \"${SDOM}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"db.${SDOM}\"; };" >> /var/named/named.conf.verb
-      /bin/echo "zone \"${SIP4ARPA}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"nv4.${SDOM}\"; };" >> /var/named/nv.verber
-      /bin/echo "zone \"${SIP6ARPA}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"nv6.${SDOM}\"; };" >> /var/named/nv.verber
-    done
+    if [ -e "/opt/verb/conf/inkdns/sdns/s.*" ]; then
+      for slv in /opt/verb/conf/inkdns/sdns/s.*; do
+        . ${slv}
+        /bin/echo "zone \"${SDOM}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"db.${SDOM}\"; };" >> /var/named/named.conf.verb
+        /bin/echo "zone \"${SIP4ARPA}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"nv4.${SDOM}\"; };" >> /var/named/nv.verber
+        /bin/echo "zone \"${SIP6ARPA}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"nv6.${SDOM}\"; };" >> /var/named/nv.verber
+      done
+    fi
   fi # End Slave DNS
   ## Set the new serial (code imported from inkdnsserial)
   ### Create the datestamp

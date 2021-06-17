@@ -30,8 +30,8 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
    elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
     /bin/echo "Server configs use inkCert-Letsencrypt. Use: inkcertremovele"
     exit 8
-   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBDIGOC" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
-    /bin/echo "Server configs use inkCert Proper. Use: inkcertremovecbdigoc"
+   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBWILD" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "Server configs use inkCert Proper. Use: inkcertremovecbwild"
     exit 8
    elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_SC" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
     /bin/echo "Server configs use inkCert Self-Cert. Use: inkcertremovesc"
@@ -86,8 +86,8 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
    elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
     /bin/echo "Server configs use inkCert-Letsencrypt. Use: inkcertremovele"
     exit 8
-   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBDIGOC" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
-    /bin/echo "Server configs use inkCert Proper. Use: inkcertremovecbdigoc"
+   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBWILD" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
+    /bin/echo "Server configs use inkCert Proper. Use: inkcertremovecbwild"
     exit 8
    elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_SC" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
     /bin/echo "Server configs use inkCert Self-Cert. Use: inkcertremovesc"
@@ -113,7 +113,7 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   /bin/sed -i '/#INKVERB-INKCERT=DONE_CB/,/#INKVERB-INKCERT-stop/{/#INKVERB-INKCERT=DONE_CB/!{/#INKVERB-INKCERT-stop/!d}}' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
   /bin/sed -i 's/#INKVERB-INKCERT=DONE_CB/#INKVERB-INKCERT=INK_NO_REMOVED/' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
   /bin/sed -i '/#INKVERB-INKCERT-stop/d' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
-  /usr/bin/apachectl graceful
+  /usr/bin/systemctl restart httpd
   ## Note to the config
   /bin/sed -i "s/INKCERTED=DONE_CB/INKCERTED=NO_REMOVED_CB/" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}
 

@@ -10,21 +10,34 @@
 # Include the configs
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
+. /opt/verb/conf/servertype
 
-# Prepare the directories
-/bin/mkdir /srv/vip/cgi
-/bin/rm -rf /srv/www/html/vip.cgi
-/bin/ln -s /srv/cgi /srv/www/html/vip.cgi
-/bin/chown -R www:www /srv/www
-/bin/chown -R www:www /srv/vip/cgi
+if [ ${SERVERTYPE} = "lamp" ] || [ ${SERVERTYPE} = "laemp" ]; then
+  # Prepare the directories
+  /bin/mkdir /srv/vip/cgi
+  /bin/rm -rf /srv/www/html/vip.v/cgi
+  /bin/ln -s /srv/cgi /srv/www/html/vip.v/cgi
 
-# Write the first file
-/bin/cp -f /opt/verb/site-files/cgi-fossil/helloworld.cgi /srv/www/vip/cgi/
-/bin/chmod 750 /srv/www/vip/cgi/helloworld.cgi
+  # Write the first file
+  /bin/cp -f /opt/verb/site-files/cgi-fossil/helloworld.cgi /srv/www/vip.v/cgi/
+  /bin/chmod 750 /srv/www/vip.v/cgi/helloworld.cgi
 
-/bin/echo "
+  # Own
+  /bin/chown -R www:www /srv/www/html/vip.v/cgi
+  /bin/chown -R www:www /srv/vip/cgi
+  
+  # Turn it on in server settings
+  /opt/verb/serfs/fixcgion v.${vipURI}
+  # Finish
+  /bin/echo "
 All done. Access CGI files in the cgi folder via ftp.
 And check out your first script at:
 
-http://cgi.${vipURI}/helloworld.cgi
+http://v.${vipURI}/cgi/helloworld.cgi
 "
+
+elif [ ${SERVERTYPE} = "lemp" ]; then
+  /bin/echo "CGI not allowed on LEMP servers."
+
+fi
+

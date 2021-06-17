@@ -15,31 +15,30 @@
 . /opt/verb/conf/siteurilist
 
 # Make the commute to where we will work
-cd /srv/www/html
+/bin/mkdir -p /srv/www/verb
+cd /srv/www/verb
 
 # Remove broken links
 /usr/bin/find -L . -name . -o -type d -prune -o -type l -exec rm {} +
 
 # Initial sites
 /bin/rm -rf 0sitedefaultInProgress
-/bin/cp -r /opt/verb/conf/lab/html/0sitedefaultInProgress .
+/bin/cp -r /opt/verb/conf/lab/www/0sitedefaultInProgress .
 /bin/chmod -R 750 0sitedefaultInProgress
 /bin/rm -rf vsslsitedefault
 /bin/cp -r 0sitedefaultInProgress vsslsitedefault
 /bin/rm -rf 0ne
 /bin/mkdir 0ne
-/bin/echo "<?php header(\"Location: http://${inkURI}\"); die(); ?>" > /srv/www/html/0ne/index.php
+/bin/echo "<?php header(\"Location: http://${inkURI}\"); die(); ?>" > /srv/www/verb/0ne/index.php
 /bin/chmod -R 750 0ne
 
 # Block web folder listing
-/bin/echo "Options -Indexes" >> /srv/www/html/.htaccess
-/bin/echo "Options -Indexes" >> /srv/www/html/0ne/.htaccess
-/bin/echo "Options -Indexes" >> /srv/www/html/0sitedefaultInProgress/.htaccess
+/bin/echo "Options -Indexes" >> /srv/www/verb/.htaccess
+/bin/echo "Options -Indexes" >> /srv/www/verb/0ne/.htaccess
+/bin/echo "Options -Indexes" >> /srv/www/verb/0sitedefaultInProgress/.htaccess
 
 # Verb sites
 if [ ! -e "ink" ]; then /bin/cp -r 0sitedefaultInProgress ink; fi
-if [ ! -e "${emailTLD}.rc" ]; then /bin/cp -r 0ne ${emailTLD}.rc; fi
-if [ ! -e "${emailTLD}.pfa" ]; then /bin/cp -r 0ne ${emailTLD}.pfa; fi
 if [ ! -e "${itsqlTLD}.sql" ]; then /bin/cp -r 0ne ${itsqlTLD}.sql; fi
 if [ ! -e "ink.i" ]; then /bin/cp -r 0ne ink.i; fi
 if [ ! -e "email" ]; then /bin/cp -r 0ne email; fi
@@ -56,14 +55,12 @@ if [ ! -e "red" ]; then /bin/cp -r 0ne red; fi
 if [ ! -e "red.r" ]; then /bin/cp -r 0ne red.r; fi
 
 # Serve URI
-/bin/rm -rf /srv/www/html/${SITESERVE}.serve
-/bin/mkdir -p /srv/www/html/${SITESERVE}.serve/${SERVEDIR}
-/bin/echo "<?php header(\"HTTP/1.1 301 Moved Permanently\"); header(\"Location: http://${nameURI}\"); die(); ?>" > /srv/www/html/${SITESERVE}.serve/index.php
+/bin/rm -rf /srv/www/verb/${SITESERVE}.serve
+/bin/mkdir -p /srv/www/verb/${SITESERVE}.serve/${SERVEDIR}
+/bin/echo "<?php header(\"HTTP/1.1 301 Moved Permanently\"); header(\"Location: http://${nameURI}\"); die(); ?>" > /srv/www/verb/${SITESERVE}.serve/index.php
 
 # Own
-/bin/chown -R www:www /srv/www/html
-/bin/chmod -R 750 ${emailTLD}.rc
-/bin/chmod -R 750 ${emailTLD}.pfa
+/bin/chown -R www:www /srv/www/verb
 /bin/chmod -R 750 ${itsqlTLD}.sql
 /bin/chmod -R 750 email
 /bin/chmod -R 750 email.e

@@ -35,8 +35,8 @@ cd /srv/www/vapps/${APPNAME}/
 /opt/verb/serfs/mysqlvappout vapp.${APPNAME}; wait
 /bin/mv /opt/verb/conf/vapp.${APPNAME} .
 cd /srv/www/vapps/
-/opt/verb/serfs/vtxzin ${APPNAME}
-/bin/mv ${APPNAME}.vtxz verb.${APPNAME}.restore-originalbackedup.vbak
+/opt/verb/serfs.txzin ${APPNAME}
+/bin/mv ${APPNAME}.txz verb.${APPNAME}.restore-originalbackedup.vbak
 /bin/mv verb.${APPNAME}.restore-originalbackedup.vbak /srv/www/vip/
 /opt/verb/serfs/mysqlkilldb ${APPDBASE}; wait
 /opt/verb/serfs/mysqlkilluser ${APPDDBUSR}; wait
@@ -45,8 +45,8 @@ fi
 
 # Unpack the file
 cd /srv/www/vip
-/bin/mv ${FILENAME} ${APPNAME}.vtxz
-/opt/verb/serfs/vtxzout ${APPNAME}; wait
+/bin/mv ${FILENAME} ${APPNAME}.txz
+/opt/verb/serfs.txzout ${APPNAME}; wait
 /bin/mv ${APPNAME} /srv/www/vapps/
 
 # Set up the vapp symlink

@@ -42,7 +42,7 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
 	/bin/sed -i '/^##INKWWWFIX=fixed/,/^##verbFIXwww/{/^##INKWWWFIX=fixed/!{/^##verbFIXwww/!d}}' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
 	/bin/sed -i '/##INKWWWFIX=fixed/d' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
 	/bin/sed -i '/##verbFIXwww/d' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
-	/usr/bin/apachectl graceful
+	/usr/bin/systemctl restart httpd
 
 	# Finish
 	/bin/echo "${DOMAIN} the www subdomain fix has been removed."

@@ -10,7 +10,23 @@
 ## ./killdomainshell [domain]
 
 
+# Dependencies
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+  /usr/bin/echo "Install inkCert first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+  /usr/bin/echo "Install inkDNS first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
+  /usr/bin/echo "Install Postfix Vmail first, I quit."; exit 8
+fi
+
 KILLDOMSHELL=$1
+
+# Make sure we don't kill a verb domain
+if /bin/grep -q "${KILLDOMSHELL}" /opt/verb/conf/siteurilist; then
+  /usr/bin/echo "Can't kill a verber domain, I quit."; exit 9
+fi
 
 # Remove inkCert (including Letsencrypt) configs
 /opt/verb/serfs/inkcertkilldomain ${KILLDOMAIN}; wait
@@ -20,6 +36,9 @@ KILLDOMSHELL=$1
 
 # Remove inkDKIM entries
 /opt/verb/serfs/killinkdkim ${KILLDOMSHELL}; wait
+
+# Remove inkCert mail entries
+/opt/verb/serfs/killinkcertmail ${KILLDOMSHELL}; wait
 
 # Finish
 /bin/echo "No more papers...

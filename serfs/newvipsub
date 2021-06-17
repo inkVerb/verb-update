@@ -14,17 +14,32 @@
 
 NEWVIPSUB=$1
 
-# Copy and prepare Apache server config files
-/bin/cp /opt/verb/conf/site-files/conf/newvipsub.conf /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf 
-/bin/sed -i "s/newvipsub/${NEWVIPSUB}/g" /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf
-/bin/sed -i "s/vipURI286/${vipURI}/g" /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf
-/bin/cp -R /opt/verb/conf/site-files/newvipsubdir /srv/www/vip/_subs.vip/${NEWVIPSUB}
+# Web directory
+/bin/cp -r /opt/verb/conf/site-files/newvipsubdir /srv/www/vip/_subs.vip/${NEWVIPSUB}
 /bin/chown -R www:www /srv/www/vip/_subs.vip/${NEWVIPSUB}
-/opt/verb/serfs/ensiteapache ${NEWVIPSUB}.${vipURI}
-/usr/bin/apachectl graceful
-/bin/cp /srv/www/html/vip/index-newvipsub.php /srv/www/html/vip/index-${NEWVIPSUB}.php
-/bin/chown -R www:www /srv/www/html/vip
+
+# Server
+. /opt/verb/conf/servertype
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /bin/cp /opt/verb/conf/site-files/conf/newnginxvipsub.conf /opt/verb/conf/webserver/nginx/sites-available/${NEWVIPSUB}.${vipURI}.conf 
+  /bin/sed -i "s/newvipsub/${NEWVIPSUB}/g" /opt/verb/conf/webserver/nginx/sites-available/${NEWVIPSUB}.${vipURI}.conf
+  /bin/sed -i "s/vipURI286/${vipURI}/g" /opt/verb/conf/webserver/nginx/sites-available/${NEWVIPSUB}.${vipURI}.conf
+  /opt/verb/serfs/ensitenginx -r ${NEWVIPSUB}.${vipURI}
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /bin/cp /opt/verb/conf/site-files/conf/newvipsub.conf /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf 
+  /bin/sed -i "s/newvipsub/${NEWVIPSUB}/g" /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf
+  /bin/sed -i "s/vipURI286/${vipURI}/g" /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf
+  /opt/verb/serfs/ensiteapache -r ${NEWVIPSUB}.${vipURI}
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /bin/cp /opt/verb/conf/site-files/conf/newvipsub.conf /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf 
+  /bin/sed -i "s/newvipsub/${NEWVIPSUB}/g" /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf
+  /bin/sed -i "s/vipURI286/${vipURI}/g" /opt/verb/conf/webserver/httpd/sites-available/${NEWVIPSUB}.${vipURI}.conf
+  /bin/cp /opt/verb/conf/site-files/conf/newrpnginxvipsub.conf /opt/verb/conf/webserver/nginx/sites-available/${NEWVIPSUB}.${vipURI}.conf 
+  /bin/sed -i "s/newvipsub/${NEWVIPSUB}/g" /opt/verb/conf/webserver/nginx/sites-available/${NEWVIPSUB}.${vipURI}.conf
+  /bin/sed -i "s/vipURI286/${vipURI}/g" /opt/verb/conf/webserver/nginx/sites-available/${NEWVIPSUB}.${vipURI}.conf
+  /opt/verb/serfs/ensiteapache -r ${NEWVIPSUB}.${vipURI}
+  /opt/verb/serfs/ensitenginx -r ${NEWVIPSUB}.${vipURI}
+fi
 
 # inkCert, at end of the "domains =" line
-/bin/sed -i "/^domains =/ s/$/, ${NEWONESUB}.${vipURI}/" /opt/verb/conf/inkcert/cli-ini/cli.${vipURI}.ini
-
+/bin/sed -i "/^domains =/ s/$/, ${NEWVIPSUB}.${vipURI}/" /opt/verb/conf/inkcert/cli-ini/cli.${vipURI}.ini

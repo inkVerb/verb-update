@@ -7,16 +7,28 @@
 ## ./killinkdkim [domain.tld or subdomain.domain.tld etc]
 
 
+# Dependencies
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+  /usr/bin/echo "Install inkCert first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+  /usr/bin/echo "Install inkDNS first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
+  /usr/bin/echo "Install Postfix Vmail first, I quit."; exit 8
+fi
+
 KILLDKIMDOMAIN=$1
 
-# Add the new domain key to the config files
+# Delete domain key from the config files
 /bin/sed -i "/inkdkim\._domainkey\.${KILLDKIMDOMAIN} ${KILLDKIMDOMAIN}:inkdkim:\/etc\/opendkim\/keys\/${KILLDKIMDOMAIN}\/inkdkim\.private/d" /etc/opendkim/KeyTable
 /bin/sed -i "/${KILLDKIMDOMAIN} inkdkim\._domainkey\.${KILLDKIMDOMAIN}/d" /etc/opendkim/SigningTable
 /bin/sed -i "/${KILLDKIMDOMAIN}/d" /etc/opendkim/TrustedHosts
-/etc/init.d/opendkim restart
-/etc/init.d/postfix reload
-/etc/init.d/postfix restart
 
-# Create the declared domain key
+# Delete the declared domain key
 /bin/rm -rf /etc/opendkim/keys/${KILLDKIMDOMAIN}
 
+# Restart
+/usr/bin/systemctl restart opendkim
+/usr/bin/systemctl restart postfix
+/usr/bin/systemctl restart dovecot

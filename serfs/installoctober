@@ -159,6 +159,18 @@ APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}.${DOMAIN}
 # Reset all permissions
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}.${DOMAIN}
 
+# Reset all permissions and restart webserver
+/bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}.${DOMAIN}
+. /opt/verb/conf/servertype
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/systemctl restart httpd
+  /usr/bin/systemctl restart nginx
+fi
+
 /bin/echo "These are setup for OctoberCMS:
 
 Database Type: MySQL

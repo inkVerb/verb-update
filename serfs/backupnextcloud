@@ -39,8 +39,8 @@ cd /srv/www/vapps/nextcloud/data
 
 # Pack the data directory
 cd /srv/www/vapps/nextcloud
-/opt/verb/serfs/vtxzin data
-/bin/mv data.vtxz verb.nextcloud.${SECNAME}.vbak
+/opt/verb/serfs.txzin data
+/bin/mv data.txz verb.nextcloud.${SECNAME}.vbak
 /bin/mv verb.nextcloud.${SECNAME}.vbak /srv/www/vip/
 
 # Finish

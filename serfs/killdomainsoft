@@ -18,12 +18,36 @@
 ## ./killdomainsoft [KILLDOMAIN.tld]
 
 
+# Dependencies
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+  /usr/bin/echo "Install inkCert first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+  /usr/bin/echo "Install inkDNS first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
+  /usr/bin/echo "Install Postfix Vmail first, I quit."; exit 8
+fi
+
 KILLDOMAIN=$1
 
-# Remove Apache server config files
-/bin/rm -f /etc/httpd/sites-enabled/${KILLDOMAIN}.conf
-/bin/rm -f /opt/verb/conf/webserver/httpd/sites-available/${KILLDOMAIN}.conf
-/usr/bin/apachectl graceful
+# Remove webserver config files
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /bin/rm -f /etc/nginx/sites-enabled/${KILLDOMAIN}.conf
+  /bin/rm -f /opt/verb/conf/webserver/nginx/sites-available/${KILLDOMAIN}.conf
+  /usr/bin/systemctl restart nginx
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /bin/rm -f /etc/httpd/sites-enabled/${KILLDOMAIN}.conf
+  /bin/rm -f /opt/verb/conf/webserver/httpd/sites-available/${KILLDOMAIN}.conf
+  /usr/bin/systemctl restart httpd
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /bin/rm -f /etc/httpd/sites-enabled/${KILLDOMAIN}.conf
+  /bin/rm -f /opt/verb/conf/webserver/httpd/sites-available/${KILLDOMAIN}.conf
+  /bin/rm -f /etc/nginx/sites-enabled/${KILLDOMAIN}.conf
+  /bin/rm -f /opt/verb/conf/webserver/nginx/sites-available/${KILLDOMAIN}.conf
+  /usr/bin/systemctl restart httpd
+  /usr/bin/systemctl restart nginx
+fi
 
 # Remove from inkCert
 /bin/sed -i "s/${KILLDOMAIN}, //g" /opt/verb/conf/inkcert/cli-ini/cli.${KILLDOMAIN}.ini
@@ -36,6 +60,6 @@ KILLDOMAIN=$1
 /bin/rm -f /srv/www/html/${KILLDOMAIN}
 
 # Restart
-/etc/init.d/postfix reload
-/etc/init.d/postfix restart
+/usr/bin/systemctl restart postfix
+/usr/bin/systemctl restart dovecot
 

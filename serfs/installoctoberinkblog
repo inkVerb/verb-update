@@ -148,25 +148,16 @@ APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}
 # Reset all permissions
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}
 
-# Set up the Apache config
-/bin/cp /opt/verb/conf/site-files/conf/blog.${inkURI}.conf-october /opt/verb/conf/webserver/httpd/sites-available/blog.${inkURI}.conf
-/usr/bin/apachectl graceful
-## inkCert SSL certs
-### Not setup
-if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${inkURI}; then
-/bin/echo "FYI: inkCert is not yet setup for ${inkURI}."
-fi
-### inkCert-LE DONE
-if /bin/grep -Fq "INKCERTED=DONE_LE" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${inkURI}; then
-/bin/echo "inkCert-LE is already setup for ${inkURI}. Updating the Apache configs..."
-/opt/verb/serfs/inkcertaddallle ${inkURI}
-wait
-fi
-### inkCert-IC DONE
-if /bin/grep -Fq "INKCERTED=DONE_IC" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${inkURI}; then
-/bin/echo "inkCert-IC is already setup for ${inkURI}. Updating the Apache configs..."
-/opt/verb/serfs/inkcertadd blog.${inkURI}
-wait
+# Reset all permissions and restart webserver
+/bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}.${DOMAIN}
+. /opt/verb/conf/servertype
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/systemctl restart httpd
+  /usr/bin/systemctl restart nginx
 fi
 
 # Set the site-wide inkblog config

@@ -37,7 +37,7 @@ if [ "$?" = 4 ]; then
 exit 4; fi
 
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
-/bin/chown -R www:www /srv/www/html/red.owa; wait
+/bin/chown -R www:www /srv/www/verb/red.r/owa; wait
 
 # Auto database
 if [ -z ${3} ]; then
@@ -60,14 +60,14 @@ APPDDBUSR=${DBUSER}
 APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}
 
 # Put the settings in the OWA config file
-cd /srv/www/html/red.owa
+cd /srv/www/verb/red.r/owa
 /bin/cp owa-config-dist.php owa-config.php
 /bin/sed -i "s/yourdbtypegoeshere/mysql/g" owa-config.php
 /bin/sed -i "s/yourdbnamegoeshere/${DBASE}/g" owa-config.php
 /bin/sed -i "s/yourdbhostgoeshere/localhost/g" owa-config.php
 /bin/sed -i "s/yourdbusergoeshere/${DBUSER}/g" owa-config.php
 /bin/sed -i "s/yourdbpasswordgoeshere/${DBPASSWORD}/g" owa-config.php
-/bin/sed -i "s/define('OWA_PUBLIC_URL',.*/define('OWA_PUBLIC_URL', 'https:\/\/owa\.${redURI}\/');/g" owa-config.php
+/bin/sed -i "s/define('OWA_PUBLIC_URL',.*/define('OWA_PUBLIC_URL', 'https:\/\/r\.${redURI}\/owa\/');/g" owa-config.php
 
 
 # Add the secure salt and key strings
@@ -80,9 +80,19 @@ OWA_AUTH_SALT="$(/usr/bin/pwgen -s -1 27)"
 /bin/sed -i "s/define('OWA_AUTH_KEY',.*/define('OWA_AUTH_KEY', '${OWA_AUTH_KEY}');/g" owa-config.php
 /bin/sed -i "s/define('OWA_AUTH_SALT',.*/define('OWA_AUTH_SALT', '${OWA_AUTH_SALT}');/g" owa-config.php
 
-# Reset all permissions and reload
+# Reset all permissions
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
-/usr/bin/apachectl graceful
+
+# Restart webserver
+. /opt/verb/conf/servertype
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/systemctl restart httpd
+  /usr/bin/systemctl restart nginx
+fi
 
 # Finish
 /bin/echo "These are setup:
@@ -92,5 +102,5 @@ Host Name: localhost (do not use owa....verb.red)
 Database user: ${DBUSER}
 Database password: ${DBPASSWORD}
 
-Go to the https://owa.${redURI}/install.php site to install.
+Go to the https://r.${redURI}/owa/install.php site to install.
 "

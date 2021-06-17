@@ -9,6 +9,17 @@
 ## ./adddomain [newdomain.tld]
 
 
+# Dependencies
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+  /usr/bin/echo "Install inkCert first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+  /usr/bin/echo "Install inkDNS first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
+  /usr/bin/echo "Install Postfix Vmail first, I quit."; exit 8
+fi
+
 # Include settings
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/servertype
@@ -23,14 +34,31 @@ if [ ! -f "/opt/verb/conf/inkcert/cli-ini/siteinkcert.${NEWDOMAIN}" ] || [ ! -f 
 fi
 
 # Check if it already exists
-if [ -f /opt/verb/conf/webserver/httpd/sites-available/${NEWDOMAIN}.conf ]; then
- if [ -f /etc/httpd/sites-enabled/${NEWDOMAIN}.conf ]; then
- /bin/echo "That domain already exists."
- exit 0
- else
- /bin/echo "That site's config exists, but it doesn't seem to be active on Apache. Something's not right."
- exit 0
- fi
+if [ ${SERVERTYPE} = "lemp" ]; then
+  if [ -f /opt/verb/conf/webserver/nginx/sites-available/${NEWDOMAIN}.conf ]; then
+    /opt/verb/serfs/ensitenginx -r ${NEWDOMAIN}
+    /bin/echo "Site already exists, server restarted."
+    exit 0
+  fi
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  if [ -f /opt/verb/conf/webserver/httpd/sites-available/${NEWDOMAIN}.conf ]; then
+    /opt/verb/serfs/ensiteapache -r ${NEWDOMAIN}
+    /bin/echo "Site already exists, server restarted."
+    exit 0
+  fi
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  if [ -f /opt/verb/conf/webserver/nginx/sites-available/${NEWDOMAIN}.conf ]; then
+    /opt/verb/serfs/ensitenginx -r ${NEWDOMAIN}
+    SITEON=true
+  fi
+  if [ -f /opt/verb/conf/webserver/httpd/sites-available/${NEWDOMAIN}.conf ]; then
+    /opt/verb/serfs/ensiteapache -r ${NEWDOMAIN}
+    SITEON=true
+  fi
+  if [ "$SITEON" = "true" ]; then
+    /bin/echo "Site already exists, server restarted."
+    exit 0
+  fi
 fi
 
 # Server config files

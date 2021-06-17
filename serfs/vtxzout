@@ -2,17 +2,17 @@
 #inkVerbSerf! verb.ink
 
 # This decompresses a .tvxz file and places its contents in same directory, all in the PWD
-## The .vtxz file could simply be renamed to .tar.xz and be used accordingly
+## The .txz file could simply be renamed to .tar.xz and be used accordingly
 ## This alternate extention name is intended to prevent tampering and to maintain consistency within inkVerb deployment
 
-# The .vtxz file MUST be in the PWD!
-# Do NOT include the .vtxz extension in the filename parameter!
+# The .txz file MUST be in the PWD!
+# Do NOT include the .txz extension in the filename parameter!
 
 # How to use:
-## ./vtxzout [vtxzfile]
+## ..txzout .txzfile]
 
 # Eg:
-## ./vtxzout mystuff
+## ..txzout mystuff
 
 
 FIL="$1"
@@ -23,7 +23,7 @@ if [ -e "${FIL}.tar.xz" ]; then
 exit 7; fi
 
 # Move to the proper name
-/bin/mv ${FIL}.vtxz ${FIL}.tar.xz
+/bin/mv ${FIL}.txz ${FIL}.tar.xz
 
 # Extract
 /usr/bin/echo "Quietly extracting ${FIL}.tar.xz..."

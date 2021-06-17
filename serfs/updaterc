@@ -21,7 +21,7 @@ if [ -d /srv/www/email/roundcube.vbak ]; then
 /bin/rm -rf /srv/www/email/roundcube.vbak; fi
 /bin/cp -R /srv/www/email/roundcube /srv/www/email/roundcube.vbak
 /opt/verb/serfs/inkget roundcube; wait
-/opt/verb/serfs/vtxzout roundcube; wait
+/opt/verb/serfs.txzout roundcube; wait
 /srv/www/roundcube/bin/installto.sh /srv/www/email/roundcube
 wait
 ## Disable the installer
@@ -33,11 +33,11 @@ cd /srv/www
 # Set up plugins that Composer broke
 cd /srv/www/email/roundcube/plugins/
 if [ ! -d "/srv/www/email/roundcube/plugins/authres_status" ]; then
-/bin/cp /opt/verb/conf/lab/vmail/roundcube/authres_status.vtxz .
-/opt/verb/serfs/vtxzout authres_status; wait; fi
+/bin/cp /opt/verb/conf/lab/vmail/roundcube/authres_status.txz .
+/opt/verb/serfs.txzout authres_status; wait; fi
 if [ ! -d "/srv/www/email/roundcube/plugins/contextmenu" ]; then
-/bin/cp /opt/verb/conf/lab/vmail/roundcube/contextmenu.vtxz .
-/opt/verb/serfs/vtxzout contextmenu; wait; fi
+/bin/cp /opt/verb/conf/lab/vmail/roundcube/contextmenu.txz .
+/opt/verb/serfs.txzout contextmenu; wait; fi
 
 # Copy the branding files
 /bin/cp /opt/verb/conf/lab/vmail/roundcube/roundcubepics/verbink_logo.png /srv/www/email/roundcube/

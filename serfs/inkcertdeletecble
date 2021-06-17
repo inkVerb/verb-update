@@ -28,7 +28,7 @@ Why revoke a cert for a domain that isn't even installed here?
 fi
 ## Domain cert status
 . /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}
-if [ "${INKCERTED}" = "DONE_LE" ] || [ "${INKCERTED}" = "DONE_CB" ] || [ "${INKCERTED}" = "DONE_CBDIGOC" ]; then
+if [ "${INKCERTED}" = "DONE_LE" ] || [ "${INKCERTED}" = "DONE_CB" ] || [ "${INKCERTED}" = "DONE_CBWILD" ]; then
 /bin/echo "Certs present for ${DOMAIN}, removing them..."
 else
 /bin/echo "This only removes SSL certificates set up using Letsencrypt or Certbot.

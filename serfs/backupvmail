@@ -32,8 +32,8 @@ cd /var/vmail
 
 # Zip the directory
 cd /var
-/opt/verb/serfs/vtxzin vmail
-/bin/mv vmail.vtxz verb.vmail.${SECNAME}.vbak
+/opt/verb/serfs.txzin vmail
+/bin/mv vmail.txz verb.vmail.${SECNAME}.vbak
 
 # Move to web-download area
 /bin/mv /var/verb.vmail.${SECNAME}.vbak /srv/www/vip/

@@ -48,8 +48,8 @@ cd /opt/verb/serfs
 /bin/cp -f /opt/verb/conf/sitemailpass /srv/www/email/roundcube/sitemailpass-old
 /bin/cp -f /opt/verb/conf/sitemailpath /srv/www/email/roundcube/sitemailpath-old
 cd /srv/www/email
-/opt/verb/serfs/vtxzin roundcube
-/bin/mv roundcube.vtxz verb.roundcube.restore-originalbackedup.vbak
+/opt/verb/serfs.txzin roundcube
+/bin/mv roundcube.txz verb.roundcube.restore-originalbackedup.vbak
 /bin/mv /srv/www/email/verb.roundcube.restore-originalbackedup.vbak /srv/www/vip/
 /opt/verb/serfs/mysqlkilldb rcmail; wait
 /opt/verb/serfs/mysqlkilluser rcmailusr; wait
@@ -58,8 +58,8 @@ fi
 
 # Unpack the file
 cd /srv/www/vip
-/bin/mv ${FILENAME} roundcube.vtxz
-/opt/verb/serfs/vtxzout roundcube
+/bin/mv ${FILENAME} roundcube.txz
+/opt/verb/serfs.txzout roundcube
 /bin/mv roundcube /srv/www/email/
 
 # Activate the rc web server config settings
@@ -69,7 +69,15 @@ if [ ${RCFRESH} = "YES" ]; then
  sed -i "s/; Webmail Defaults/; Webmail Defaults\nrc\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\nrc\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/zones/db.${emailTLDURI}
  fi
 /opt/verb/serfs/ensiteapache rc.${emailTLDURI}
-/usr/bin/apachectl graceful
+# Reload
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/systemctl restart httpd
+  /usr/bin/systemctl restart nginx
+fi
  if /bin/grep -Fq "rc.${emailTLDURI}" /opt/verb/conf/inkcert/cli-ini/cli.${emailTLDURI}.ini; then
  /bin/echo "rc.${emailTLDURI} already declared for inkCert, moving on..."; else
  sed -i "/^domains =/ s/$/, rc.${emailTLDURI}/" /opt/verb/conf/inkcert/cli-ini/cli.${emailTLDURI}.ini

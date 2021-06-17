@@ -1,0 +1,17 @@
+#!/bin/bash
+#inkVerbSerf! verb.ink
+
+# This displays the full URL of the serve address set by setserve
+# How to use:
+## ./showdns
+
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+. /opt/verb/conf/siteurilist
+
+# Show the info
+/bin/echo "Set DNS nameservers to:
+${hostURI}
+${SITEINKERDNS}
+${SITE2INKERDNS}"

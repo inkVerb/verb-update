@@ -56,7 +56,7 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
     /bin/cat /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf.verbhttpsfixed >> /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
     /bin/rm /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf.verbhttpsfixed
 
-    /bin/systemctl restart nginx; wait
+    /bin/systemctl restart httpd; wait
   else
     /bin/echo "${DOMAIN} doesn't have the https fix. Doing nothing."
     exit 0
@@ -65,7 +65,6 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
 fi
 
 # Finish
-/usr/bin/apachectl graceful
 /bin/echo "${DOMAIN} now accepts http traffic."
 
 # WordPress?

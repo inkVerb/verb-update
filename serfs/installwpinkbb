@@ -36,7 +36,6 @@ cd /srv/www/vapps
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
-if [ ! -f wp.vtxz ]; then
 
 # Auto database
 if [ -z ${3} ]; then
@@ -48,8 +47,8 @@ DBUSER=${DBASE}; fi
 
 /bin/mv wp ${CVAPPNAME}; wait
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
-/bin/ln -sfn /srv/www/html/ink.bb /srv/vip/_webapps/; wait
-/bin/chown -R www:www /srv/www/html/ink.bb; wait
+/bin/ln -sfn /srv/www/verb/ink.i/bb /srv/vip/_webapps/; wait
+/bin/chown -R www:www /srv/www/verb/ink.i/bb; wait
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
 
 # Create the database and credentials
@@ -101,34 +100,11 @@ fi
 /bin/chmod -R 440 wp-config.php
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}
 
-# Set up the Apache config
-/bin/cp /opt/verb/conf/site-files/conf/wpbbb-bb.${inkURI}.conf /opt/verb/conf/webserver/httpd/sites-available/bb.${inkURI}.conf
-/usr/bin/systemctl restart httpd
-/usr/bin/systemctl restart nginx
-
-## inkCert SSL certs
-### Not setup
-if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${inkURI}; then
-/bin/echo "FYI: inkCert is not yet setup for ${inkURI}."
-fi
-### inkCert-LE DONE
-if /bin/grep -Fq "INKCERTED=DONE_LE" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${inkURI}; then
-/bin/echo "inkCert-LE is already setup for ${inkURI}. Updating the Apache configs..."
-/opt/verb/serfs/inkcertaddallle ${inkURI}
-wait
-fi
-### inkCert-IC DONE
-if /bin/grep -Fq "INKCERTED=DONE_IC" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${inkURI}; then
-/bin/echo "inkCert-IC is already setup for ${inkURI}. Updating the Apache configs..."
-/opt/verb/serfs/inkcertadd blog.${inkURI}
-wait
-fi
-
 # Set the site-wide inkblog config
 /bin/sed -i "s/INKblog=.*/INKblog=\"WordPress\"/g" /opt/verb/conf/siteinstallstatus
 
 # Get the themes and plugins form inkisaverb.com
-/opt/verb/sefs/wpadd bb ink.bb
+/opt/verb/sefs/wpadd bb ink.i/bb
 wait
 
 # Set the site-wide inkblog config

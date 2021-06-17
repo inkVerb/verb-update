@@ -113,9 +113,19 @@ if [ "${isRed}" = "true" ]; then
   /bin/rm -f /srv/www/html/"${DOMAIN}"
 fi
 
-# Reset all permissions and reload
+# Reset all permissions
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
-/usr/bin/apachectl graceful
+
+# Restart webserver
+. /opt/verb/conf/servertype
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/systemctl restart httpd
+  /usr/bin/systemctl restart nginx
+fi
 
 # Finish
 /bin/echo "These are setup:

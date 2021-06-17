@@ -1,0 +1,30 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This enables cgi for a domain
+
+# How to use:
+## ./fixcgion [domain.tld or subdomain.domain.tld]
+
+
+DOMAIN=$1
+
+. /opt/verb/conf/servertype
+
+if [ ${SERVERTYPE} = "lamp" ] || [ ${SERVERTYPE} = "laemp" ]; then
+	# Nginx
+	## Check to see if "fixhttps" has already been added
+	if /bin/grep -q "Options Indexes FollowSymLinks MultiViews Execcgi" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf; then
+		/bin/systemctl restart httpd; wait
+		/bin/echo "${DOMAIN} already has the CGI enabled. The server was just reloaded so the site should work."
+	else
+		/bin/sed -i "s/Options Indexes FollowSymLinks MultiViews/Options Indexes FollowSymLinks MultiViews Execcgi\nAddHandler cgi-script .cgi/" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
+		/bin/systemctl restart httpd; wait
+		/bin/echo "CGI enabled for ${DOMAIN}."
+	fi
+
+elif [ ${SERVERTYPE} = "lemp" ]; then
+	/bin/echo "CGI not allowed on LEMP servers."
+
+fi
+

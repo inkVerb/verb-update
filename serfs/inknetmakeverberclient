@@ -38,8 +38,8 @@ The info is in: /etc/hosts
 /etc/cloud/templates/hosts.debian.tmpl ...so try changing that.
 It should say this:
 
-127.0.1.1 ${hostURI} ${SITEHOST}
-${SITEIP} ${hostURI} ${SITEHOST}
+127.0.1.1 ${hostURI} ${nameTLD}
+${SITEIP} ${hostURI} ${nameTLD}
 127.0.0.1 localhost.localdomain localhost
 
 Check with your hosting provider if you still have trouble.

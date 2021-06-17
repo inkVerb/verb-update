@@ -15,7 +15,6 @@ DOMAIN=$1
 
 . /opt/verb/conf/servertype
 
-
 if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
 	# Nginx
 	## Check to see if "fixwww" has already been added
@@ -25,15 +24,12 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
 	else
 
 		## Then add the config lines if it doesn't.
-		/bin/echo "
-
-##INKWWWFIX=fixed
+		/bin/echo "##INKWWWFIX=fixed
 # Fixes www
 server {
   server_name www.${DOMAIN};
   return 301 \$scheme://${DOMAIN}\$request_uri;
 }
-
 ##verbFIXwww" >> /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf
 		/bin/systemctl restart nginx; wait
 
@@ -43,7 +39,7 @@ server {
 elif [ ${SERVERTYPE} = "lamp" ]; then
 	# Check to see if "fixwww" has already been added
 	if /bin/grep -q "##INKWWWFIX=fixed" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf; then
-		/usr/bin/apachectl graceful
+		/usr/bin/systemctl restart httpd
 		/bin/echo "${DOMAIN} already has the www subdomain fix. The server was just reloaded so the site should work."
 	else
 
@@ -60,9 +56,8 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
     Redirect permanent / https://${DOMAIN}/
   </VirtualHost>
 </IfModule>
-
 ##verbFIXwww" >> /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf
-		/usr/bin/apachectl graceful
+		/usr/bin/systemctl restart httpd
 
 		/bin/echo "${DOMAIN} now has the www subdomain fix and is ready to go."
 	fi

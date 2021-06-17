@@ -43,7 +43,16 @@ BLOWFISH=$(/usr/bin/pwgen -c -1 32)
 /bin/ln -sfn /srv/www/vapps/${CVAPPNAME} /srv/www/html/${itsqlTLD}.sql/${DIRECTRY}; wait
 /bin/chown -R www:www /srv/www/html/${itsqlTLD}.sql; wait
 
-/usr/bin/apachectl graceful
+# Restart server
+. /opt/verb/conf/servertype
+if [ ${SERVERTYPE} = "lemp" ]; then
+  /usr/bin/systemctl restart nginx
+elif [ ${SERVERTYPE} = "lamp" ]; then
+  /usr/bin/systemctl restart httpd
+elif [ ${SERVERTYPE} = "laemp" ]; then
+  /usr/bin/systemctl restart httpd
+  /usr/bin/systemctl restart nginx
+fi
 
 /bin/echo "
 PHP My Admin now active & this MySQL admin is setup:

@@ -67,8 +67,8 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-CB: ${SITEDOMAIN}. Moving on..."
    exit 0
-  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBDIGOC" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
-   /bin/echo "Already certified by inkCert-CBDIGOC: ${SITEDOMAIN}. Moving on..."
+  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBWILD" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
+   /bin/echo "Already certified by inkCert-CBWILD: ${SITEDOMAIN}. Moving on..."
    exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-LE: ${SITEDOMAIN}. Moving on..."
@@ -117,8 +117,8 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-CB: ${SITEDOMAIN}. Moving on..."
    exit 0
-  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBDIGOC" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
-   /bin/echo "Already certified by inkCert-CBDIGOC: ${SITEDOMAIN}. Moving on..."
+  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBWILD" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
+   /bin/echo "Already certified by inkCert-CBWILD: ${SITEDOMAIN}. Moving on..."
    exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-LE: ${SITEDOMAIN}. Moving on..."
@@ -135,7 +135,6 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   fi
 
   ## Stop Apache
-  /usr/bin/apachectl graceful-stop; wait
   /bin/systemctl stop httpd; wait
 
   ## Comment the Snakeoil certs

@@ -15,22 +15,20 @@
 . /opt/verb/conf/inklists/verberverno
 
 # Display info
-/bin/echo "Here you go. This Verber's info...
-IP: ${SITEIP}
+/bin/echo "IP: ${SITEIP}
 Namespace: ${SITENAME}
 Primary TLD: ${SITETLD}
 Primary URI: ${nameURI}
-Host: ${SITEHOST}
+Host: ${SITETLD}
+FQDN: ${hostURI}
 Timezone: ${SITETIMECITY}, ${SITETIMEREGION}
 Update channel: ${SITEUPDATEREPO}
 Version: ${VERNO}
 Type: ${VTYPE}
 
+IT/SQL URL: ${itsqlTLD}
 Email main domain URI: ${emailURI}
 Email server URI: ${emailTLDURI}
 Email Status: ${SITEMAILSTATUS}
-Snail: ${SITESNAIL}
-RC path: ${SITERCPATH}
-PFA path: ${SITEPFAPATH}
-"
+PFA path: ${SITEPFAPATH}"
 

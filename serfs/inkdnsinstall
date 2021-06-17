@@ -78,3 +78,4 @@ fi
 
 # Finish
 /bin/echo "inkDNS installed."
+/opt/verb/serfs/showdns

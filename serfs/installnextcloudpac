@@ -44,12 +44,12 @@ CLEANNAME=$(/bin/echo $CVAPPNAME | sed -e 's/\.//g')
 # if [ "$?" = 4 ]; then
 # /bin/echo "Repo failed to retrieve the file."
 # exit 4; fi
-# if [ ! -f ${CVAPPNAME}.vtxz ]; then
+# if [ ! -f ${CVAPPNAME}.txz ]; then
 # /bin/echo "Failed to retrieve from the repo."
 # exit 4; fi
 # ## Extract
 # /bin/rm -rf ${CVAPPNAME}
-# /opt/verb/serfs/vtxzout ${CVAPPNAME}; wait
+# /opt/verb/serfs.txzout ${CVAPPNAME}; wait
 # ## Install it
 # /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
 # /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
