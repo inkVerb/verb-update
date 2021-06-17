@@ -16,9 +16,14 @@ if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
   exit 0
 fi
 
-# Set the Inkers
-/opt/verb/serfs/inkdnssetinker
-/opt/verb/serfs/inkdnssetinker2
+# Set the Inkers to defaults (only if not already set)
+. /opt/verb/conf/sitenameip
+if [ "${SITEINKERDNS}" = "NOT_SET" ] || [ "${SITEINKERIP4}" = "NOT_SET" ] || [ "${SITEINKERIP6}" = "NOT_SET" ]; then
+  /opt/verb/serfs/inkdnssetinker
+fi
+if [ "${SITE2INKERDNS}" = "NOT_SET" ] || [ "${SITE2INKERIP4}" = "NOT_SET" ] || [ "${SITE2INKERIP6}" = "NOT_SET" ]; then
+  /opt/verb/serfs/inkdnssetinker2
+fi
 
 # Include the configs
 . /opt/verb/conf/sitenameip
