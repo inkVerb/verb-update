@@ -1,8 +1,7 @@
 BASEHOSTns="inkisaverb.com"
-DEFAULTns1="ns0.inkisaverb.com"
+DEFAULTns1="ns0.verb.ink"
 INKER1ip4="149.28.80.15"
 INKDER1ip6="2001:19f0:6001:5313:5400:03ff:fe6a:abb2"
-DEFAULTns2="ns1.inkisaverb.com"
+DEFAULTns2="ns1.verb.ink"
 INKER2ip4="149.28.85.38"
 INKDER2ip6="2001:19f0:6001:54f:5400:03ff:fe6a:ae9e"
-
