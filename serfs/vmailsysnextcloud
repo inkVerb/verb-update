@@ -53,7 +53,7 @@ fi
 
 # Run it quick to create the account
 /opt/verb/donjon/sysmails.sh nextcloud; wait
-if [ "$?" = 0 ]; then
+if [ "$?" != 0 ]; then
   echo "Error updating new Nextcloud mail user in databse"
   exit 6;
 fi

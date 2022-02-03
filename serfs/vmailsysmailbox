@@ -49,14 +49,11 @@ if [ -n "${oldusername}" ]; then
   UPDATE alias
   SET address = 'sys_${randomuser}@${nameURI}', goto = 'sys_${randomuser}@${nameURI}', domain = '${nameURI}', modified = CURRENT_TIMESTAMP, active = 1
   WHERE address = '${oldusername}';"
-  echo "oldusername"
-else
-  echo "no old username"
 fi
 
 # Run it quick to create the account
 /opt/verb/donjon/sysmails.sh msmtp; wait
-if [ "$?" = 0 ]; then
+if [ "$?" != 0 ]; then
   echo "Error updating new System mail user in databse"
   exit 6;
 fi
