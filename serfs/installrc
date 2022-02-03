@@ -45,10 +45,10 @@ if [ ${SITEMAILSTATUS} = "EMAIL_NOT_INSTALLED" ]; then
 This is a backup email server and Roundcube is not allowed.
 "
 exit 8; fi
-if /bin/grep -Fq "Webmail Defaults" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}; then
+if /bin/grep -Fq "Email Control Records" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}; then
 /bin/echo "Proceeding..."; else
 /bin/echo "
-Webmail Defaults not declared in the DNS zone file. This won't work.
+Email Control Records not declared in the DNS zone file. This won't work.
 "
 exit 8; fi
 
@@ -85,7 +85,7 @@ FLUSH PRIVILEGES;"
 ## Hosting conf
 if [ ${SERVERTYPE} = "laemp" ]; then
   /bin/cp /opt/verb/conf/site-files/conf/rc-nginx.conf /opt/verb/conf/webserver/nginx/sites-available/rc.${emailTLDURI}.conf
-  /bin/cp /opt/verb/conf/site-files/conf/rc-httpd.conf /opt/verb/conf/webserver/httpd/sites-enabled/rc.${emailTLDURI}.conf
+  /bin/cp /opt/verb/conf/site-files/conf/rc-httpd.conf /opt/verb/conf/webserver/httpd/sites-available/rc.${emailTLDURI}.conf
   /opt/verb/serfs/ensitenginx rc.${emailTLDURI}
   /opt/verb/serfs/ensiteapache pfa.${emailTLDURI}
   /usr/bin/systemctl restart nginx; wait
@@ -95,14 +95,13 @@ elif [ ${SERVERTYPE} = "lemp" ]; then
   /opt/verb/serfs/ensitenginx rc.${emailTLDURI}
   /usr/bin/systemctl restart nginx; wait
 elif [ ${SERVERTYPE} = "lamp" ]; then
-  /bin/cp /opt/verb/conf/site-files/conf/rc-httpd.conf /opt/verb/conf/webserver/httpd/sites-enabled/rc.${emailTLDURI}.conf
+  /bin/cp /opt/verb/conf/site-files/conf/rc-httpd.conf /opt/verb/conf/webserver/httpd/sites-available/rc.${emailTLDURI}.conf
   /opt/verb/serfs/ensiteapache rc.${emailTLDURI}
   /usr/bin/systemctl restart httpd; wait
 fi
 
-# inkCert
-## This adds the declared domain to the end of the "domains =" line
-/bin/sed -i "/^domains =/ s/$/, rc.${emailTLDURI}/" /opt/verb/conf/inkcert/cli-ini/cli.${emailTLDURI}.ini
+# Add inkCert certs to the web server config
+/opt/verb/serfs/inkcertaddle rc.${emailTLDURI} ${emailTLDURI}
 
 # Settings
 /bin/cp /opt/verb/conf/lab/vmail/roundcube/mime.types /srv/www/email/roundcube/

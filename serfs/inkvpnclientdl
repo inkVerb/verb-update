@@ -14,13 +14,13 @@
 
 # Set the link names
 cDIR="$(/usr/bin/pwgen -s -1 128)"
-/bin/mkdir -p /srv/www/html/ink.serve/${SERVEDIR}/${cDIR}
+/bin/mkdir -p /srv/www/verb/ink.serve/${SERVEDIR}/${cDIR}
 
 # Link it to the Serve folder
-/bin/ln -sfn /opt/openvpn/certificates/clients/client.ovpn /srv/www/html/ink.serve/${SERVEDIR}/${cDIR}/${SITENAME}-${SITETLD}-client.ovpn
+/bin/ln -sfn /opt/openvpn/certificates/clients/client.ovpn /srv/www/verb/ink.serve/${SERVEDIR}/${cDIR}/${SITENAME}-${SITETLD}-client.ovpn
 
 # Permissions
-/bin/chown -R www:www /srv/www/html/ink.serve/${SERVEDIR}
+/bin/chown -R www:www /srv/www/verb/ink.serve
 
 # Finish
 /bin/echo "The client OVPN profile is ready for download.

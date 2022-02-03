@@ -15,7 +15,7 @@
 if [ ${SERVERTYPE} = "lamp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   # Prepare the directories
   /bin/rm -rf /srv/vip/cgi
-  /bin/rm -rf /srv/www/html/vip.v/cgi
+  /bin/rm -rf /srv/www/verb/vip.v/cgi
 
   # Turn it on in server settings
   /opt/verb/serfs/fixcgioff v.${vipURI}

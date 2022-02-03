@@ -17,16 +17,16 @@
 
 if [ "$1" = "on" ]
 then
-    rm -rf /srv/www/html/vip.repo
-    /bin/ln -sfn /srv/www/vip/repo /srv/www/html/vip.repo
+    rm -rf /srv/www/verb/vip.repo
+    /bin/ln -sfn /srv/www/vip/repo /srv/www/verb/vip.repo
     /bin/echo "repo on."
 exit 0
 fi
 
 if [ "$1" = "off" ]
 then
-    rm -f /srv/www/html/vip.repo
-    cp -R /srv/www/html/0ne /srv/www/html/vip.repo
+    rm -f /srv/www/verb/vip.repo
+    cp -R /srv/www/html/0ne /srv/www/verb/vip.repo
     /bin/echo "repo off."
 exit 0
 fi

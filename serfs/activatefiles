@@ -17,16 +17,16 @@
 
 if [ "$1" = "on" ]
 then
-    rm -rf /srv/www/html/vip.files
-    /bin/ln -sfn /srv/www/vip/files /srv/www/html/vip.files
+    rm -rf /srv/www/verb/vip.files
+    /bin/ln -sfn /srv/www/vip/files /srv/www/verb/vip.files
     /bin/echo "files on."
 exit 0
 fi
 
 if [ "$1" = "off" ]
 then
-    rm -f /srv/www/html/vip.files
-    cp -R /srv/www/html/0ne /srv/www/html/vip.files
+    rm -f /srv/www/verb/vip.files
+    cp -R /srv/www/html/0ne /srv/www/verb/vip.files
     /bin/echo "files off."
 exit 0
 fi

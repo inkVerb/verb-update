@@ -127,8 +127,8 @@ cd ../themes
 /bin/rm -f master.zip
 ## Setup links
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
-/bin/ln -sfn /srv/www/html/ink.blog /srv/vip/_webapps/; wait
-/bin/chown -R www:www /srv/www/html/ink.blog; wait
+/bin/ln -sfn /srv/www/verb/ink.blog /srv/vip/_webapps/; wait
+/bin/chown -R www:www /srv/www/verb/ink.blog; wait
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
 
 # Create the database and credentials

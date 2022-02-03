@@ -14,9 +14,9 @@ OWA_AUTH_KEY="$(/usr/bin/pwgen -s -1 27)"
 OWA_AUTH_SALT="$(/usr/bin/pwgen -s -1 27)"
 
 # Insert the random pwgen strings
-/bin/sed -i "s/define('OWA_NONCE_KEY',.*/define('OWA_NONCE_KEY', '${OWA_NONCE_KEY}');/g" /srv/www/html/red.owa/owa-config.php
-/bin/sed -i "s/define('OWA_NONCE_SALT',.*/define('OWA_NONCE_SALT', '${OWA_NONCE_SALT}');/g" /srv/www/html/red.owa/owa-config.php
-/bin/sed -i "s/define('OWA_AUTH_KEY',.*/define('OWA_AUTH_KEY', '${OWA_AUTH_KEY}');/g" /srv/www/html/red.owa/owa-config.php
-/bin/sed -i "s/define('OWA_AUTH_SALT',.*/define('OWA_AUTH_SALT', '${OWA_AUTH_SALT}');/g" /srv/www/html/red.owa/owa-config.php
+/bin/sed -i "s/define('OWA_NONCE_KEY',.*/define('OWA_NONCE_KEY', '${OWA_NONCE_KEY}');/g" /srv/www/verb/red.owa/owa-config.php
+/bin/sed -i "s/define('OWA_NONCE_SALT',.*/define('OWA_NONCE_SALT', '${OWA_NONCE_SALT}');/g" /srv/www/verb/red.owa/owa-config.php
+/bin/sed -i "s/define('OWA_AUTH_KEY',.*/define('OWA_AUTH_KEY', '${OWA_AUTH_KEY}');/g" /srv/www/verb/red.owa/owa-config.php
+/bin/sed -i "s/define('OWA_AUTH_SALT',.*/define('OWA_AUTH_SALT', '${OWA_AUTH_SALT}');/g" /srv/www/verb/red.owa/owa-config.php
 
 /bin/echo "OWA now has secure strings."

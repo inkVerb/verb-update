@@ -41,7 +41,7 @@ exit 4; fi
 /bin/mkdir -p /srv/www/vapps/${CVAPPNAME}/symfony/cache
 /bin/mkdir -p /srv/www/vapps/${CVAPPNAME}/symfony/log
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
-/bin/chown -R www:www /srv/www/html/red.hrm; wait
+/bin/chown -R www:www /srv/www/verb/red.hrm; wait
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
 
 # Auto database

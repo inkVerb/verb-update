@@ -29,15 +29,15 @@ exit 0
 fi
 
 if [ "$1" = "verb.one" ]; then
-    cp /srv/www/html/one/index-one.php /srv/www/html/one/index.php
+    cp /srv/www/verb/one/index-one.php /srv/www/html/one/index.php
     /bin/echo "Reset, done."
 exit 0
 fi
 
 NEWONESUB=$1
 
-    cp /srv/www/html/one/index-newonesub.php /srv/www/html/one/index.php
-    sed -i "s/newonesub/${NEWONESUB}/g" /srv/www/html/one/index.php
+    cp /srv/www/verb/one/index-newonesub.php /srv/www/html/one/index.php
+    sed -i "s/newonesub/${NEWONESUB}/g" /srv/www/verb/one/index.php
     /bin/echo "Pointing to http://${NEWONESUB}.${oneURI}, done."
 exit 0
 

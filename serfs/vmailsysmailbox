@@ -18,7 +18,7 @@ if [ "$SITEMAILSTATUS" != "VMAIL_SERVER" ]; then
 . /opt/verb/conf/siteurilist
 
 # Cleanup previous entries
-if [ -f "/opt/verb/conf/vsysmail.nextcloud" ]; then
+if [ -f "/opt/verb/conf/vsysmail.msmtp" ]; then
   . /opt/verb/conf/vsysmail.msmtp
   /usr/bin/rm -rf /var/vmail/${vmaildirectory}
   oldusername="${username}"
@@ -31,6 +31,7 @@ randomuser=$(/usr/bin/pwgen -s1A 5)
 PASSWORD="${PASSWORD}"
 user="sys_${randomuser}"
 username="sys_${randomuser}@${nameURI}"
+maildomain="${nameURI}"
 name="System"
 vmaildirectory="${nameURI}/sys_${randomuser}/"
 mailboxsize="1048576" # 1MB, 2GB=2097152000, 1GB=1048576000, 5GB=5242880000
@@ -39,41 +40,48 @@ EOF
 # Security check
 /opt/verb/serfs/setsecure; wait
 
+# Disable the old entry in the database
 if [ -n "${oldusername}" ]; then
-  # Change the username in the database
-  . /opt/verb/conf/vsysmail.msmtp
   password="$(/bin/echo $PASSWORD | /usr/bin/openssl passwd -1 -stdin)"
   /usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "UPDATE mailbox
-  SET username = 'sys_${randomuser}@$nameURI', password = '${password}'
-  WHERE username = '${oldusername}';"
+  SET username = 'sys_${randomuser}@${nameURI}', password = '${password}', name = 'System', maildir = ${nameURI}/sys_${randomuser}, domain = '${nameURI}', modified = CURRENT_TIMESTAMP, active = 1
+  WHERE username = '${oldusername}';
+  UPDATE alias
+  SET address = 'sys_${randomuser}@${nameURI}', goto = 'sys_${randomuser}@${nameURI}', domain = '${nameURI}', modified = CURRENT_TIMESTAMP, active = 1
+  WHERE address = '${oldusername}';"
+  echo "oldusername"
+else
+  echo "no old username"
 fi
-
-# Directory & database cleanup
-/usr/bin/rm -rf /var/vmail/$nameURI/sys_${randomuser}
 
 # Run it quick to create the account
 /opt/verb/donjon/sysmails.sh msmtp; wait
+if [ "$?" = 0 ]; then
+  echo "Error updating new System mail user in databse"
+  exit 6;
+fi
 
 # Set up cron
-## Nextcloud background jobs (manage the crontab files directly)
+## MSMTP background jobs (manage the crontab files directly)
 /bin/echo '22 * * * * root /opt/verb/donjon/sysmails.sh msmtp' > /etc/cron.d/sysmailmsmtp
 ## Permissions
 /bin/chmod 0644 /etc/cron.d/sysmailmsmtp
 
-# Create & set the php config
-/bin/echo "
+# Create & set the config
+/usr/bin/cat <<EOF >  /etc/msmtprc
 defaults
 auth           on
 tls            on
 tls_trust_file /etc/ssl/server/mail/vmail.crt
 logfile        /var/log/msmtp.log
 account sys
-host mail.$nameURI
+host mail.${nameURI}
 port 587
-from sys@$nameURI
-user sys@$nameURI
-password $PASSWORD
-account default : sys" > /etc/msmtprc
+from sys_${randomuser}@$nameURI
+user sys_${randomuser}@$nameURI
+password ${PASSWORD}
+account default : sys
+EOF
 /bin/chmod 0600 /etc/msmtprc
 /bin/chown www:www /etc/msmtprc
 
@@ -85,5 +93,5 @@ if ! /bin/grep -q '^sendmail_path = "/usr/bin/msmtp -C /etc/msmtprc -t"' /opt/ve
   else
     /bin/echo "sendmail_path = \"/usr/bin/msmtp -C /etc/msmtprc -t\"" >> /opt/verb/conf/php.$SITENAME.ini
   fi
-  systemctl restart httpd
+  /usr/bin/systemctl restart httpd
 fi

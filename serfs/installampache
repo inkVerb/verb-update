@@ -27,7 +27,7 @@ if [ "$?" = 4 ]; then
 exit 4; fi
 
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
-/bin/chown -R www:www /srv/www/html/kiwi.ampache; wait
+/bin/chown -R www:www /srv/www/verb/kiwi.ampache; wait
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
 
 # Auto database

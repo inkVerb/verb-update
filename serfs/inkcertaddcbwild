@@ -88,7 +88,7 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   /bin/sed -i "s/ssl_certificate/#INKVERB-INKCERT-COMMENT-ssl_certificate/g" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf
 
   ## Insert the inkCert certs
-  /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_CBWILD\n  ssl_certificate\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/cert\.pem;\n  ssl_certificate_key\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/privkey\.pem;\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf
+  /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_CBWILD\n  ssl_certificate\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/fullchain\.pem;\n  ssl_certificate_key\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/privkey\.pem;\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf
 
   ## inkCert status & exit
   if [ "${FIRSTINKCERTADDCBWILD}" = "NOT_YET" ]; then

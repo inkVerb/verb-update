@@ -33,7 +33,7 @@ if [ "$?" = 4 ]; then
 exit 4; fi
 
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
-/bin/chown -R www:www /srv/www/html/ink.wiki; wait
+/bin/chown -R www:www /srv/www/verb/ink.wiki; wait
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
 
 # Auto database

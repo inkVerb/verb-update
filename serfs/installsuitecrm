@@ -43,7 +43,7 @@ exit 4; fi
 
 cd /srv/www/html
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
-/bin/chown -R www:www /srv/www/html/red.crm; wait
+/bin/chown -R www:www /srv/www/verb/red.crm; wait
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
 
 # Auto database

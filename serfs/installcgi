@@ -15,15 +15,15 @@
 if [ ${SERVERTYPE} = "lamp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   # Prepare the directories
   /bin/mkdir /srv/vip/cgi
-  /bin/rm -rf /srv/www/html/vip.v/cgi
-  /bin/ln -s /srv/cgi /srv/www/html/vip.v/cgi
+  /bin/rm -rf /srv/www/verb/vip.v/cgi
+  /bin/ln -s /srv/cgi /srv/www/verb/vip.v/cgi
 
   # Write the first file
   /bin/cp -f /opt/verb/site-files/cgi-fossil/helloworld.cgi /srv/www/vip.v/cgi/
   /bin/chmod 750 /srv/www/vip.v/cgi/helloworld.cgi
 
   # Own
-  /bin/chown -R www:www /srv/www/html/vip.v/cgi
+  /bin/chown -R www:www /srv/www/verb/vip.v/cgi
   /bin/chown -R www:www /srv/vip/cgi
   
   # Turn it on in server settings

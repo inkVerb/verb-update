@@ -32,9 +32,9 @@ if [ "${SITEMAILSTATUS}" = "PMAIL_SERVER" ]; then
 Email server is already installed.
 "
 exit 0; fi
-if /bin/grep -Fq "Webmail Defaults" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}; then
+if /bin/grep -Fq "Email Control Records" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}; then
 /bin/echo "
-Webmail Defaults already declared in the DNS zone file. This won't work.
+Email Control Records already declared in the DNS zone file. This won't work.
 "
 exit 7; fi
 

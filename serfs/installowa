@@ -50,7 +50,7 @@ exit 8; fi
 . /opt/verb/conf/siteurilist
 if [ "${DOMAIN}" = "owa.${redURI}" ]; then
   isRed="true"
-  /bin/ln -snf /srv/www/html/red.owa /srv/www/html/"${DOMAIN}"
+  /bin/ln -snf /srv/www/verb/red.owa /srv/www/html/"${DOMAIN}"
 else
   isRed="false"
 fi

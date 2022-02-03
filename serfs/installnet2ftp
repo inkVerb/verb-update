@@ -23,7 +23,7 @@ exit 4; fi
 
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
-/bin/chown -R www:www /srv/www/html/vip.net2ftp; wait
+/bin/chown -R www:www /srv/www/verb/vip.net2ftp; wait
 
 # Settings
 cd net2ftp

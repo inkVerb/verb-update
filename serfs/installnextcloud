@@ -48,7 +48,7 @@ exit 4; fi
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
 /usr/bin/mkdir -p /srv/www/vapps/nextcloud/data
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
-/bin/chown -R www:www /srv/www/html/blue; wait
+/bin/chown -R www:www /srv/www/verb/blue; wait
 
 # Auto database
 if [ -z ${4} ]; then

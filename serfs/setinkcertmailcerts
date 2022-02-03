@@ -5,7 +5,7 @@
 ## This is run automatically by installpostfixvmail, setinkcertmail, and inkcertdo* and normally should not be run independently
 
 # How to use:
-## ./setinkcertmailcerts
+## ./setinkcertmailcerts [ domain.tld ] [ dev switch 'vmail', optional and for dev only ]
 
 
 # Dependencies

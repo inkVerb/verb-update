@@ -53,7 +53,7 @@ CLEANNAME=$(/bin/echo $CVAPPNAME | sed -e 's/\.//g')
 # ## Install it
 # /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
 # /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
-# /bin/chown -R www:www /srv/www/html/blue; wait
+# /bin/chown -R www:www /srv/www/verb/blue; wait
 # ## Run the Nextcloud script
 # /opt/verb/donjon/nextcloudprep.sh; wait
 # ## Verify ownership

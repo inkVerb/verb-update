@@ -1,7 +1,7 @@
 #!/bin/bash
 #inkVerbSerf! verb.ink
 
-# This installs inkCert Self-Cert Apache credentials for a given domain, including inkVerb namespace domains
+# This installs inkCert Self-Cert Apache/NGINX credentials for a given domain, including inkVerb namespace domains
 ## It applies only to one domain/subdomain at a time
 ## Prerequesite: inkcertreqsc
 ## This is intended as a subscript of inkcertdosc
@@ -91,7 +91,7 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   /bin/sed -i "s/ssl_certificate/#INKVERB-INKCERT-COMMENT-ssl_certificate/g" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf
 
   ## Insert the inkCert certs
-  /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_SC\n  ssl_certificate\t\/etc\/inkcert\/sc\/live\/${CERTDOMAIN}\/cert\.pem;\n  ssl_certificate_key\t\/etc\/inkcert\/sc\/live\/${CERTDOMAIN}\/key\.pem;\n\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf
+  /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_SC\n  ssl_certificate\t\/etc\/inkcert\/sc\/live\/${CERTDOMAIN}\/fullchain\.pem;\n  ssl_certificate_key\t\/etc\/inkcert\/sc\/live\/${CERTDOMAIN}\/key\.pem;\n\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf
 
   ## inkCert status & exit
   if [ "${FIRSTINKCERTADD}" = "NOT_YET" ]; then

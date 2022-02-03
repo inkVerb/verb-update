@@ -65,8 +65,8 @@ cd /srv/www/vip
 # Activate the rc web server config settings
 if [ ${RCFRESH} = "YES" ]; then
 ##DNS
- if /bin/grep -Fq "Webmail Defaults" /opt/verb/conf/inkdns/zones/db.${emailTLDURI}; then
- sed -i "s/; Webmail Defaults/; Webmail Defaults\nrc\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\nrc\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/zones/db.${emailTLDURI}
+ if /bin/grep -Fq "Email Control Records" /opt/verb/conf/inkdns/zones/db.${emailTLDURI}; then
+ sed -i "s/; Email Control Records/; Email Control Records\nrc\.${emailTLDURI}\.\tIN  A\t\t${SITEIP}\nrc\.${emailTLDURI}\.\tIN  AAAA\t${SITEIPV6}/" /opt/verb/conf/inkdns/zones/db.${emailTLDURI}
  fi
 /opt/verb/serfs/ensiteapache rc.${emailTLDURI}
 # Reload

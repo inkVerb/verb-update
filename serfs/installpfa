@@ -39,10 +39,10 @@ if [ ${SITEPFAPATH} != "PFA_NOT_INSTALLED" ]; then
 PostfixAdmin is already installed.
 "
 exit 0; fi
-if /bin/grep -Fq "Webmail Defaults" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}; then
+if /bin/grep -Fq "Email Control Records" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}; then
 /bin/echo "Proceeding..."; else
 /bin/echo "
-Webmail Defaults not declared in the DNS zone file. This won't work.
+Email Control Records not declared in the DNS zone file. This won't work.
 "
 exit 8; fi
 
@@ -100,7 +100,7 @@ if [ "$?" = 4 ]; then
 ## Hosting conf
 if [ ${SERVERTYPE} = "laemp" ]; then
   /bin/cp /opt/verb/conf/site-files/conf/pfa-nginx.conf /opt/verb/conf/webserver/nginx/sites-available/pfa.${emailTLDURI}.conf
-  /bin/cp /opt/verb/conf/site-files/conf/pfa-httpd.conf /opt/verb/conf/webserver/httpd/sites-enabled/pfa.${emailTLDURI}.conf
+  /bin/cp /opt/verb/conf/site-files/conf/pfa-httpd.conf /opt/verb/conf/webserver/httpd/sites-available/pfa.${emailTLDURI}.conf
   /opt/verb/serfs/ensitenginx pfa.${emailTLDURI}
   /opt/verb/serfs/ensiteapache pfa.${emailTLDURI}
   /usr/bin/systemctl restart nginx; wait
@@ -110,10 +110,13 @@ elif [ ${SERVERTYPE} = "lemp" ]; then
   /opt/verb/serfs/ensitenginx pfa.${emailTLDURI}
   /usr/bin/systemctl restart nginx; wait
 elif [ ${SERVERTYPE} = "lamp" ]; then
-  /bin/cp /opt/verb/conf/site-files/conf/pfa-httpd.conf /opt/verb/conf/webserver/httpd/sites-enabled/pfa.${emailTLDURI}.conf
+  /bin/cp /opt/verb/conf/site-files/conf/pfa-httpd.conf /opt/verb/conf/webserver/httpd/sites-available/pfa.${emailTLDURI}.conf
   /opt/verb/serfs/ensiteapache pfa.${emailTLDURI}
   /usr/bin/systemctl restart httpd; wait
 fi
+
+# Add inkCert certs to the web server config
+/opt/verb/serfs/inkcertaddle pfa.${emailTLDURI} ${emailTLDURI}
 
 # DNS
 /bin/sed -i "s/; Email Control Records/; Email Control Records\npfa.${emailTLDURI}. \tIN  A \t${SITEIPV4}\npfa.${emailTLDURI}. \tIN  AAAA \t${SITEIPV6}/" /opt/verb/conf/inkdns/inkzones/db.${emailTLDURI}

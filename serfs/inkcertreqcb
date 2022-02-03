@@ -164,10 +164,10 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   /usr/bin/certbot --nginx certonly --preferred-challenges=dns --email ${INKCERTEMAIL} --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --renew-by-default -d "${DOMAIN}" -d *.${DOMAIN}
   if [ "$?" != "0" ]; then
     /bin/echo "Certs not installed, cannot proceed."
-    certsuccess="false"
+    export certsuccess="false"
     exit 4
   else
-    certsuccess="true"
+    export certsuccess="true"
   fi
   /bin/systemctl restart nginx; wait
 elif [ ${SERVERTYPE} = "lamp" ]; then
@@ -175,9 +175,9 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   if [ "$?" != "0" ]; then
     /bin/echo "Certs not installed, cannot proceed."
     certsuccess="false"
-    exit 4
+    export exit 4
   else
-    certsuccess="true"
+    export certsuccess="true"
   fi
   /bin/systemctl start httpd; wait
 fi

@@ -79,14 +79,14 @@ wait
 
 # inkCert
 ## This adds the declared domain to the end of the "domains =" line
-/bin/sed -i "s/, ${SUBDOMAIN}.${OLDDOMAIN}//g" /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
+/bin/sed -i "s/, ${SUBDOMAIN}.${OLDDOMAIN}//g" /opt/verb/conf/inkcert/cli-ini/cli.${OLDDOMAIN}.ini
 /bin/sed -i "/^domains =/ s/$/, ${SUBDOMAIN}.${OLDDOMAIN}/" /opt/verb/conf/inkcert/cli-ini/cli.${OLDDOMAIN}.ini
 
 # inkCert status
 ## Not setup
 if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${OLDDOMAIN}; then
-/bin/echo "FYI: inkCert hasn't been setup for this domain.
-You are ready to run inkCert for ${OLDDOMAIN}, if you haven't already or unless you want to add more subdomains first."
+/bin/echo "FYI: inkCert has NOT YET been setup for this domain, which is probably what you want.
+Once all set up, you are ready to run inkCert for ${OLDDOMAIN}, if you haven't already or unless you want to add more subdomains first."
 fi
 ## inkCert-LE DONE
 if /bin/grep -Fq "INKCERTED=DONE_LE" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${OLDDOMAIN}; then
