@@ -2,9 +2,11 @@
 #inkVerbSerf! verb.ink
 
 # This creates or resets the system smtp user for vmail, such as is used by PHP for php to send emails
+## This uses msmtp specifically, which requires the msmtp package, not installed by default
+## This is an alternative to vmailsysmailbox should there be any reason postfix/sendmail can't be used for PHP mails
 
 # How to use:
-## ./vmailsysmailbox
+## ./vmailsysmailboxmsmtp
 
 
 # Check to see if vmail is installed
@@ -19,7 +21,7 @@ if [ "$SITEMAILSTATUS" != "VMAIL_SERVER" ]; then
 
 # Cleanup previous entries
 if [ -f "/opt/verb/conf/vsysmail.phpmail" ]; then
-  . /opt/verb/conf/vsysmail.phpmail
+  . /opt/verb/conf/vsysmail.msmtp
   /usr/bin/rm -rf /var/vmail/${vmaildirectory}
   oldusername="${username}"
 fi
@@ -52,17 +54,38 @@ if [ -n "${oldusername}" ]; then
 fi
 
 # Run it quick to create the account
-/opt/verb/donjon/sysmails.sh phpmail; wait
+/opt/verb/donjon/sysmails.sh msmtp; wait
 if [ "$?" != 0 ]; then
   echo "Error updating new System mail user in databse"
   exit 6;
 fi
 
 # Set up cron
-/bin/echo '22 * * * * root /opt/verb/donjon/sysmails.sh phpmail' > /etc/cron.d/sysmailphp
+## MSMTP background jobs (manage the crontab files directly)
+/bin/echo '22 * * * * root /opt/verb/donjon/sysmails.sh msmtp' > /etc/cron.d/sysmailphp
 ## Permissions
 /bin/chmod 0644 /etc/cron.d/sysmailphp
 
-# Confirm the php.ini entry, comment the alternative
-/bin/sed -i 's?^;sendmail_path = "/usr/sbin/sendmail -ti"?sendmail_path = "/usr/sbin/sendmail -ti"?' /opt/verb/conf/php.ini
-/bin/sed -i 's?^sendmail_path = "/usr/bin/msmtp -C /etc/msmtprc -t"?;sendmail_path = "/usr/bin/msmtp -C /etc/msmtprc -t"?' /opt/verb/conf/php.ini
+# DEV Legacy, remove after new servers test right
+# Create & set the msmpt config
+/usr/bin/cat <<EOF >  /etc/msmtprc
+defaults
+#auth           on
+#tls            on
+#tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile        /var/log/msmtp.log
+account default
+#port 587
+#host ${nameURI}
+host localhost
+from sys_${randomuser}@${nameURI}
+user sys_${randomuser}@${nameURI}
+password ${PASSWORD}
+EOF
+/bin/chmod 0600 /etc/msmtprc
+/bin/chown www:www /etc/msmtprc
+/usr/bin/ln -sfn /etc/msmtprc /opt/verb/conf/
+
+# Confirm the php.ini entry
+/bin/sed -i 's?^;sendmail_path = "/usr/bin/msmtp -C /etc/msmtprc -t"?sendmail_path = "/usr/bin/msmtp -C /etc/msmtprc -t"?' /opt/verb/conf/php.ini
+/bin/sed -i 's?^sendmail_path = "/usr/sbin/sendmail -ti"?;sendmail_path = "/usr/sbin/sendmail -ti"?' /opt/verb/conf/php.ini

@@ -50,7 +50,7 @@ host = localhost
 ## Set the config for backup
 /bin/sed -i "s/SITEMAILPASSAPG.*/SITEMAILPASSAPG=\"${MAILPASSGEN}\"/g" /opt/verb/conf/sitemailpass
 
-# Packages already installed from make-verber-* postfix postfix-mysql dovecot php-imap spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor msmtp cyrus-sasl opendkim
+# Packages already installed from make-verber-* postfix postfix-mysql dovecot php-imap spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor cyrus-sasl opendkim
 
 # Virtual mail user
 /usr/bin/groupadd -g 5000 vmail
@@ -204,8 +204,19 @@ FLUSH PRIVILEGES;"
 /usr/bin/mkdir -p /etc/ssl/server/mail
 ## Snakeoil
 if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${nameURI}; then
-  /usr/bin/ln -sfn /etc/ssl/server/server.crt /etc/ssl/server/mail/vmail.crt
-  /usr/bin/ln -sfn /etc/ssl/server/server.key /etc/ssl/server/mail/vmail.key
+  /usr/bin/rm -f /etc/ssl/server/mail/vmail.crt
+  /usr/bin/sed -i "s?^#smtpd_tls_cert_file=/etc/ssl/server/server.crt?smtpd_tls_cert_file=/etc/ssl/server/server.crt?" /etc/postfix/main.cf
+  /usr/bin/sed -i "s?^#ssl_cert = </etc/ssl/server/server.crt?ssl_cert = </etc/ssl/server/server.crt?" /etc/dovecot/conf.d/10-ssl.conf
+  /usr/bin/sed -i "s?^smtpd_tls_cert_file=/etc/ssl/server/mail/vmail.crt?#smtpd_tls_cert_file=/etc/ssl/server/mail/vmail.crt?" /etc/postfix/main.cf
+  /usr/bin/sed -i "s?^smtp_tls_cert_file=/etc/ssl/server/mail/vmail.crt?#smtp_tls_cert_file=/etc/ssl/server/mail/vmail.crt?" /etc/postfix/main.cf
+  /usr/bin/sed -i "s?^ssl_cert = </etc/ssl/server/mail/vmail.crt?#ssl_cert = </etc/ssl/server/mail/vmail.crt?" /etc/dovecot/conf.d/10-ssl.conf
+  /usr/bin/rm -f /etc/ssl/server/mail/vmail.key
+  /usr/bin/sed -i "s?^#smtpd_tls_key_file=/etc/ssl/server/server.key?smtpd_tls_key_file=/etc/ssl/server/server.key?" /etc/postfix/main.cf
+  /usr/bin/sed -i "s?^#ssl_key = </etc/ssl/server/server.key?ssl_key = </etc/ssl/server/server.key?" /etc/dovecot/conf.d/10-ssl.conf
+  /usr/bin/sed -i "s?^smtpd_tls_key_file=/etc/ssl/server/mail/vmail.key?#smtpd_tls_key_file=/etc/ssl/server/mail/vmail.key?" /etc/postfix/main.cf
+  /usr/bin/sed -i "s?^smtp_tls_key_file=/etc/ssl/server/mail/vmail.key?#smtp_tls_key_file=/etc/ssl/server/mail/vmail.key?" /etc/postfix/main.cf
+  /usr/bin/sed -i "s?^ssl_key = </etc/ssl/server/mail/vmail.key?#ssl_key = </etc/ssl/server/mail/vmail.key?" /etc/dovecot/conf.d/10-ssl.conf
+  /usr/bin/sed -i "s?^ssl_dh = </etc/dovecot/dh.pem?#ssl_dh = </etc/dovecot/dh.pem?" /etc/dovecot/conf.d/10-ssl.conf
 ## inkCert
 else
   /opt/verb/serfs/setinkcertmailcerts ${nameURI} vmail
@@ -366,7 +377,20 @@ cd $OLDPWD
 # Config settings to "EMAIL_INSTALLED"
 /bin/sed -i "s/SITEMAILSTATUS=.*/SITEMAILSTATUS=\"VMAIL_SERVER\"/g" /opt/verb/conf/sitemailpath
 
-# Use msmtp for a real SMTP address to send system mail, such as in php
+# PHP mail log
+if ! /bin/grep -q '^mail.log = /var/log/phpmail.log' /opt/verb/conf/php.ini; then
+  /bin/sed -i "s/^mail.log = /;mail.log = /" /opt/verb/conf/php.ini
+  if /bin/grep -q ';mail.log = /var/log/phpmail.log' /opt/verb/conf/php.ini; then
+    /bin/sed -i "s?^;mail.log = /var/log/phpmail.log?mail.log = /var/log/phpmail.log?" /opt/verb/conf/php.ini
+  else
+    /bin/echo "mail.log = /var/log/phpmail.log" >> /opt/verb/conf/php.ini
+  fi
+  /usr/bin/systemctl restart httpd
+fi
+/usr/bin/touch /var/log/phpmail.log
+/usr/bin/chown www:www /var/log/phpmail.log
+
+# Setup PHP to send system mail
 /opt/verb/serfs/vmailsysmailbox
 
 # Grand Restart
