@@ -50,7 +50,7 @@ if [ "${DOMAIN}" = "${nameURI}" ] || [ "${DOMAIN}" != "${emailTLD}" ] && [ "${DO
 fi
 
 # Update the inkCert-DOMAIN config file, fail silently (eg. when used on subdomains)
-/bin/sed -i "s/INKCERTED=.*/INKCERTED=\"DONE_SC\"/" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN} 2> /dev/null
+/bin/sed -i "s/INKCERTED=.*/INKCERTED=DONE_SC/" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN} 2> /dev/null
 
 # Finish
 /bin/echo "
