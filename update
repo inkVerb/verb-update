@@ -87,7 +87,7 @@ cd /opt/verb
 /bin/rm -rf /opt/verb/ink/help/*
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/inks/* /opt/verb/ink/inks/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/help/* /opt/verb/ink/help/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/PHPcities.pb /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/PHPcities /opt/verb/ink/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/actions.pb /opt/verb/ink/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink /opt/verb/ink/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink.functions /opt/verb/ink/
