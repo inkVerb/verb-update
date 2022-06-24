@@ -1,17 +1,36 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This adds a subdomain A & AAAA records to an existing DNS record in the inkDNS zone file on this Verber
+# This adds a subdomain A & AAAA records to an existing DNS record in the inkDNS zone file on the server
 
 # How to use:
-## ./inkdnsaddsub [subdomain] [domain]
+## ./inkdnsaddsub [ subdomain ] [ domain.tld ]
+
+usagenotes="This adds a subdomain A & AAAA records to an existing ONE DNS record in the inkDNS zone file on the server"
+usageformat="inkdnsaddsub [ subdomain ] [ domain.tld ]"
+usageexample="inkdnsaddsub subdomain"
+hierarchy=( tertiary addsubdomain )
+vsetnames=( "Subdomain" "Domain" )
+vsettypes=( isDomainPart isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkdnsinstall )
+prerequesite=(  )
+usedby=( addsubdomain )
+useserfs=( inkdnsserial inkdnsrefreshbind )
+useconfigs=( inkcertstatus inkdnsconf sitemailpath )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkdnsaddsub.replace" ]; then . /opt/verb/mods/inkdnsaddsub.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkdnsaddsub.before" ]; then . /opt/verb/mods/inkdnsaddsub.before; return 0; fi # Replaces this script
 
 
 # Dependencies
-if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcertstatus; then
   /usr/bin/echo "Install inkCert first, I quit."; exit 8
 fi
-if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdnsconf; then
   /usr/bin/echo "Install inkDNS first, I quit."; exit 8
 fi
 if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
@@ -26,7 +45,7 @@ DNSDOMAIN="$2"
 
 # Check if already added
 if /bin/grep -Fq "${DNSSUBDOM}.${DNSDOMAIN}" /opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}; then
-/bin/echo "The subdomain ${DNSSUBDOM} has already been added to ${DNSDOMAIN}. Use inkdnskillsub to remove it."
+/bin/echo "The subdomain ${DNSSUBDOM} has already been added to ${DNSDOMAIN}. Use killinkdnssub to remove it."
 exit 0; fi
 
 # Echo the records
@@ -43,10 +62,15 @@ exit 0; fi
 /opt/verb/serfs/inkdnsserial ${DNSDOMAIN}
 
 # Refresh zones
-if [ -f "/opt/verb/conf/inkdns/inkdnsconf" ]; then
-  . /opt/verb/conf/inkdns/inkdnsconf
+if [ -f "/opt/verb/conf/inkdnsconf" ]; then
+  . /opt/verb/conf/inkdnsconf
   if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
 /opt/verb/serfs/inkdnsrefreshbind; fi; fi
 
 # Finish
 /bin/echo "The subdomain ${DNSSUBDOM} has been added to the ${DNSDOMAIN} DNS zone file."
+
+
+
+
+if [ -e "/opt/verb/mods/inkdnsaddsub.after" ]; then . /opt/verb/mods/inkdnsaddsub.after; fi # Follows this script

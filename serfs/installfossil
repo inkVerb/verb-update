@@ -75,3 +75,8 @@ fossil.${vipURI}/dinosaur.cgi
 
 All relevant files appear via ftp in the \"vip/fossil\" folder.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installfossil.after" ]; then . /opt/verb/mods/installfossil.after; fi # Follows this script

@@ -45,3 +45,8 @@ After creating an FTP VIP (or FTP Filer for private file access also)
 
 Login at http://net2ftp.${vipURI}
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installnet2ftp.after" ]; then . /opt/verb/mods/installnet2ftp.after; fi # Follows this script

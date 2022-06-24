@@ -1,11 +1,29 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This adds a subdomain A & AAAA records to an existing VIP DNS record in the inkDNS zone file on this Verber
+# This adds a subdomain A & AAAA records to an existing VIP DNS record in the inkDNS zone file on the server
 
 # How to use:
-## ./inkdnsaddvipsub [subdomain]
-## ./inkdnsaddvipsub [subdomain] verber
+## ./inkdnsaddvipsub [ subdomain ]
+
+usagenotes="This adds a subdomain A & AAAA records to an existing VIP DNS record in the inkDNS zone file on the server"
+usageformat="inkdnsaddvipsub [ subdomain ]"
+usageexample="inkdnsaddvipsub subdomain"
+hierarchy=( tertiary newonesub )
+vsetnames=( "Subdomain" )
+vsettypes=( isDomainPart )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkdnsinstall )
+prerequesite=(  )
+usedby=( newonesub )
+useserfs=( inkdnsserial inkdnsrefreshbind )
+useconfigs=( sitenameip siteurilist inkdnsconf )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkdnsaddvipsub.replace" ]; then . /opt/verb/mods/inkdnsaddvipsub.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkdnsaddvipsub.before" ]; then . /opt/verb/mods/inkdnsaddvipsub.before; return 0; fi # Replaces this script
 
 
 DNSSUBDOM="$1"
@@ -17,7 +35,7 @@ ZONEDIR="inkzones"
 
 # Check if already added
 if /bin/grep -Fq "${DNSSUBDOM}.${vipURI}" /opt/verb/conf/inkdns/${ZONEDIR}/db.${vipURI}; then
-/bin/echo "The subdomain ${DNSSUBDOM} has already been added to ${vipURI}. Use inkdnskillsub to remove it."
+/bin/echo "The subdomain ${DNSSUBDOM} has already been added to ${vipURI}. Use killinkdnssub to remove it."
 exit 0; fi
 
 # Echo the record
@@ -34,10 +52,15 @@ exit 0; fi
 /opt/verb/serfs/inkdnsserial ${vipURI} verber
 
 # Refresh zones
-if [ -f "/opt/verb/conf/inkdns/inkdnsconf" ]; then
-  . /opt/verb/conf/inkdns/inkdnsconf
+if [ -f "/opt/verb/conf/inkdnsconf" ]; then
+  . /opt/verb/conf/inkdnsconf
   if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
 /opt/verb/serfs/inkdnsrefreshbind; fi; fi
 
 # Finish
 /bin/echo "The GURU subdomain ${DNSSUBDOM} has been added to the DNS zone file."
+
+
+
+
+if [ -e "/opt/verb/mods/inkdnsaddvipsub.after" ]; then . /opt/verb/mods/inkdnsaddvipsub.after; fi # Follows this script

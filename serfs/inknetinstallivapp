@@ -11,3 +11,8 @@
 /opt/verb/donjon/ivapp/installivapp /opt/verb/conf/inknet/ivapp-inknet.conf
 wait
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetinstallivapp.after" ]; then . /opt/verb/mods/inknetinstallivapp.after; fi # Follows this script

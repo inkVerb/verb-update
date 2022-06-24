@@ -72,3 +72,8 @@ RewriteRule . index.php [L]
 /bin/echo ".htaccess file is set for http://${WPDOMAIN} multisite."
 fi
 
+
+
+
+
+if [ -e "/opt/verb/mods/wpmuhtaccess.after" ]; then . /opt/verb/mods/wpmuhtaccess.after; fi # Follows this script

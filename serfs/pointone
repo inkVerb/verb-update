@@ -41,3 +41,8 @@ NEWONESUB=$1
     /bin/echo "Pointing to http://${NEWONESUB}.${oneURI}, done."
 exit 0
 
+
+
+
+
+if [ -e "/opt/verb/mods/pointone.after" ]; then . /opt/verb/mods/pointone.after; fi # Follows this script

@@ -1,14 +1,33 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This creates a new fossil available at fossil.your-name.verb.vip/FOSSIL-NAME.cgi
+# This creates a new fossil user for an existing fossile available at fossil.NAME.verb.vip/FOSSIL-NAME.cgi
 ## Prereq: fossil
 
 # How to use:
-## ./newfossiluser [existing-fossil-name] [username] [user-email] [userpassword]
+## ./newfossiluser [ existing-fossil-name ] [ username ] [ user-email ] [ userpassword ]
 
 # Example:
 ## ./newfossiluser dinosaur adam adam@verb.ink Adamp4$$w0RD
+
+usagenotes="This creates a new fossil user for an existing fossile available at fossil.NAME.verb.vip/FOSSIL-NAME.cgi"
+usageformat="newfossiluser [ existing-fossil-name ] [ username ] [ user-email ] [ userpassword ]"
+usageexample="newfossiluser dinosaur adam NotSecure125"
+hierarchy=( primary )
+vsetnames=( "Existing fossil name" "Username" "Email" "Password" )
+vsettypes=( isPathname isUsername isEmail string_quote )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=(  )
+prerequesite=( newfossil )
+usedby=(  )
+useserfs=(  )
+useconfigs=( sitenameip siteurilist )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/newfossiluser.replace" ]; then . /opt/verb/mods/newfossiluser.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/newfossiluser.before" ]; then . /opt/verb/mods/newfossiluser.before; return 0; fi # Replaces this script
 
 
 # Include the configs
@@ -20,10 +39,13 @@ NEWUSER=$2
 NEWEMAIL=$3
 NEWPASS=$4
 
-cd /srv/www/vip/fossil
-
 # Add the user
-fossil user new ${NEWUSER} ${NEWEMAIL} ${NEWPASS} --repository ${OLDFOSSIL}.fossil
+/srv/www/vip/fossil user new ${NEWUSER} ${NEWEMAIL} ${NEWPASS} --repository ${OLDFOSSIL}.fossil
 
 /bin/echo "New user ${NEWUSER} added to ${OLDFOSSIL}.fossil.
 Available on web at fossil.${vipURI}/${OLDFOSSIL}.cgi"
+
+
+
+
+if [ -e "/opt/verb/mods/newfossiluser.after" ]; then . /opt/verb/mods/newfossiluser.after; fi # Follows this script

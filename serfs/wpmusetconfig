@@ -89,3 +89,8 @@ exit 6; fi
 /bin/rm -f /srv/www/html/${WPDOMAIN}/wp-config.php.Vmu
 ## Finish
 /bin/echo "http://${WPDOMAIN} now ready for WP Multisite. Log in again."
+
+
+
+
+if [ -e "/opt/verb/mods/wpmusetconfig.after" ]; then . /opt/verb/mods/wpmusetconfig.after; fi # Follows this script

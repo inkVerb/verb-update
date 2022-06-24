@@ -10,3 +10,8 @@
 
 echo 'source /usr/share/nvm/init-nvm.sh' >> /etc/bash.bashrc
 echo 'source /usr/share/nvm/init-nvm.sh' >> ~/.bashrc
+
+
+
+
+if [ -e "/opt/verb/mods/installnvm.after" ]; then . /opt/verb/mods/installnvm.after; fi # Follows this script

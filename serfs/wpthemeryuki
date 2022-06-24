@@ -28,3 +28,8 @@ git clone https://github.com/cfinke/Ryuki.git
 # Finish
 /bin/echo "Ryuki theme installed and updated."
 
+
+
+
+
+if [ -e "/opt/verb/mods/wpthemeryuki.after" ]; then . /opt/verb/mods/wpthemeryuki.after; fi # Follows this script

@@ -24,3 +24,8 @@ PFAFOLDER=$1
 /bin/sed -i "s/SITEPFAPATH=.*/SITEPFAPATH=\"${PFAFOLDER}\"/g" /opt/verb/conf/sitemailpass
 /bin/sed -i "s/\$CONF\['postfix_admin_url'\] = 'https:\/\/.*/\$CONF\['postfix_admin_url'\] = 'https:\/\/pfa\.${SITENAME}\.verb\.${SITEEMAILTLD}\/${PFAFOLDER}';/g" /srv/www/email/postfixadmin/config.inc.php
 
+
+
+
+
+if [ -e "/opt/verb/mods/setpfapath.after" ]; then . /opt/verb/mods/setpfapath.after; fi # Follows this script

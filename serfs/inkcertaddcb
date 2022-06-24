@@ -1,29 +1,48 @@
 #!/bin/bash
 #inkVerbSerf! verb.ink
 
-# This installs inkCert-Certbot Apache/NGINX credentials for a given domain, including inkVerb namespace domains
-## Prerequesite: inkcertreqcb
-## This is intended as a subscript of inkcertdocb or to add certs to specific server configs as they are installed after the fact, such as in updates.
+# This installs inkCert-Certbot Apache/Nginx credentials for a given domain with wildcard subdomains
+## Prerequesite: inkcertreqcbsingle
+## This is intended as a subscript of inkcertdocbsingle or to add certs to specific server configs as they are installed after the fact, such as in updates.
 
 # How to use:
-## ./inkcertaddcb [domain.tld or sub.domain.tld] [DOMAIN OF CERTIFICATE IF DIFFERENT, ie: domain.tld]
+## ./inkcertaddcb [ domain.tld or sub.domain.tld ] [ DOMAIN OF PARENT, ie: domain.tld ]
 
 # Eg:
 ## ./inkcertaddcb NAME.verb.ink (will apply ONLY to NAME.verb.ink)
-## ./inkcertaddcb blog.NAME.verb.ink (BAD NEWS: this won't work!! blog.NAME.verb.ink does not have a certificate by itself, use: 'inkcertaddallcb NAME.verb.ink')
-## ./inkcertaddcb blog.NAME.verb.ink NAME.verb.ink
-## ./inkcertaddcb inkisaverb.com (BAD NEWS: this won't work!! inkisaverb.com does not have a certificate by itself, use: 'inkcertaddallcb inkisaverb.com')
-## ./inkcertaddcb poetryiscode.com inkisaverb.com (if the SSL cert for poetryiscode.com is included in the CN of the certificate for inkisaverb.com)
+## ./inkcertaddcb inkisaverb.com
+## ./inkcertaddcb sub.inkisaverb.com inkisaverb.com (this wildcard feature shouldn't be necessary if used correctly)
+
+usagenotes="This installs inkCert-Certbot Apache/Nginx credentials for a given domain with wildcard subdomains"
+usageformat="inkcertaddcb [ domain.tld or sub.domain.tld ] [ DOMAIN OF PARENT, ie: domain.tld ]"
+usageexample="inkcertaddcb NAME.verb.ink
+inkcertaddcb inkisaverb.com
+inkcertaddcb sub.inkisaverb.com inkisaverb.com (this wildcard feature shouldn't be necessary if used correctly)"
+hierarchy=( tertiary inkcertdocb )	# Choose: primary (works by itself, may use secondaries or tertiaries); secondary (can work by itself, but not normally, may use other secondaries or tertiaries); tertiary (cannot run by itself, must be run by a secondary or primary);oversight (uses primaries)
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )  # purpose for each optional flag
+dependencyinstall=( inkcertinstall )
+prerequesite=( inkcertinstall inkcertreqcb )
+usedby=( inkcertaddallcb )
+useserfs=(  )
+useconfigs=( sitenameip siteurilist servertype inkcertstatus )	# List config files of any kind used in this serf, please preserve order of appearance
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkcertaddcb.replace" ]; then . /opt/verb/mods/inkcertaddcb.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkcertaddcb.before" ]; then . /opt/verb/mods/inkcertaddcb.before; return 0; fi # Replaces this script
 
 
 SITEDOMAIN=$1
-CERTDOMAIN=$2
+PARENTDOMAIN=$2
 
 # Include the configs
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
 . /opt/verb/conf/servertype
-. /opt/verb/conf/inkcert/inkcertstatus
+. /opt/verb/conf/inkcertstatus
 
 # Check inkCert installed
 if [ "${INKCERTINSTALLED}" = "NOT_YET" ]; then
@@ -41,21 +60,21 @@ fi
 
 # Set variable for same certificate as domain (most all scenarios)
 if [ -z ${2} ]; then
-CERTDOMAIN=$1
+PARENTDOMAIN=$1
 fi
 
 # Certs should already be in place from inkcertreqle
 ## This is a test for the inkcert directories:
-if [ ! -d "/etc/inkcert/le/live/${CERTDOMAIN}" ]; then
+if [ ! -d "/etc/inkcert/le/live/${PARENTDOMAIN}" ]; then
 /bin/echo "Something's wrong...
 
-inkCert-Letsencrypt certs were not installed for ${SITEDOMAIN} because the ${CERTDOMAIN} certs don't exist. Common problems can include:
+inkCert-Letsencrypt certs were not installed for ${SITEDOMAIN} because the ${PARENTDOMAIN} certs don't exist. Common problems can include:
   - DNS records: ${SITEDOMAIN} should point to ${SITEIP}
   - DNS for ${SITEDOMAIN} may need a \"wildcard\" * CNAME record that points to ${SITEDOMAIN} as the \"hostname\"
   - DNS records can take about 4 hours to have effect
-  - You need to first run: inkcertreqcb
+  - You need to first run: inkcertreqcbsingle
   - Do not run inkcertreqle for individual subdomains with a shared certificate, but only for: ${blueURI}, inkisaverb.com, etc.
-  - The verb/conf/inkcert/cli-ini/ file for ${CERTDOMAIN} may not contain the subdomain you are using.
+  - The verb/conf/inkcert/cli-ini/ file for ${PARENTDOMAIN} may not contain the subdomain you are using.
 "
 exit 8
 fi
@@ -64,14 +83,14 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   ## Check Apache config status
   if /bin/grep -Fq "#INKVERB-INKCERT=INK_NO" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Setting inkCert configs for ${SITEDOMAIN}..."
+  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBSINGLE" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
+   /bin/echo "Already certified by inkCert-CBSINGLE: ${SITEDOMAIN}. Moving on..."
+   exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-CB: ${SITEDOMAIN}. Moving on..."
    exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-LE: ${SITEDOMAIN}. Moving on..."
-   exit 0
-  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_IC" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
-   /bin/echo "Already certified by inkCert-IC: ${SITEDOMAIN}. Moving on..."
    exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=NA" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "inkCert certs do not apply here: ${SITEDOMAIN}. Moving on..."
@@ -88,16 +107,16 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   /bin/sed -i "s/ssl_certificate/#INKVERB-INKCERT-COMMENT-ssl_certificate/g" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf
 
   ## Insert the inkCert certs
-  /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_CB\n  ssl_certificate\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/fullchain\.pem;\n  ssl_certificate_key\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/privkey\.pem;\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf
+  /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_CBSINGLE\n  ssl_certificate\t\/etc\/inkcert\/le\/live\/${PARENTDOMAIN}\/fullchain\.pem;\n  ssl_certificate_key\t\/etc\/inkcert\/le\/live\/${PARENTDOMAIN}\/privkey\.pem;\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf
 
   ## inkCert status & exit
-  if [ "${FIRSTINKCERTADDCB}" = "NOT_YET" ]; then
+  if [ "${FIRSTINKCERTADDCBSINGLE}" = "NOT_YET" ]; then
     ### Config status: first inkCert done
-    /bin/sed -i "s/FIRSTINKCERTADDCB=\"NOT_YET\"/FIRSTINKCERTADDCB=\"DONE\"/g" /opt/verb/conf/inkcert/inkcertstatus
+    /bin/sed -i "s/FIRSTINKCERTADDCBSINGLE=\"NOT_YET\"/FIRSTINKCERTADDCBSINGLE=\"DONE\"/g" /opt/verb/conf/inkcertstatus
     ### Create the cron job
     #### Add CB's auto updater to the cron
-    /bin/echo '4 4 * * * root /opt/verb/donjon/inkcertcb-renew-all.sh' > /etc/cron.d/inkcertrenewcbcron
-    /bin/chmod 0644 /etc/cron.d/inkcertrenewcbcron
+    /bin/echo '4 4 * * * root /opt/verb/donjon/inkcertcble-renew-all.sh' > /etc/cron.d/inkcertrenewcblecron
+    /bin/chmod 0644 /etc/cron.d/inkcertrenewcblecron
   fi
 
   ## Create the inkCert log file
@@ -110,15 +129,15 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
 elif [ ${SERVERTYPE} = "lamp" ]; then
   ## Check Apache config status
   if /bin/grep -Fq "#INKVERB-INKCERT=INK_NO" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
-   /bin/echo "Setting inkCert configs for ${SITEDOMAIN}..."
+    /bin/echo "Setting inkCert configs for ${SITEDOMAIN}..."
+  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBSINGLE" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
+    /bin/echo "Already certified by inkCert-CB: ${SITEDOMAIN}. Moving on..."
+    exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-CB: ${SITEDOMAIN}. Moving on..."
    exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-LE: ${SITEDOMAIN}. Moving on..."
-   exit 0
-  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_IC" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
-   /bin/echo "Already certified by inkCert-IC: ${SITEDOMAIN}. Moving on..."
    exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=NA" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "inkCert certs do not apply here: ${SITEDOMAIN}. Moving on..."
@@ -136,21 +155,21 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   /bin/sed -i "s/SSLCertificateKeyFile/#INKVERB-INKCERT-COMMENT-SSLCertificateKeyFile/g" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf
 
   ## Insert the inkCert certs
-  /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_CB\n  SSLCertificateFile\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/cert\.pem\n  SSLCertificateKeyFile\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/privkey\.pem\n  SSLCertificateChainFile\t\/etc\/inkcert\/le\/live\/${CERTDOMAIN}\/chain\.pem\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf
+  /bin/sed -i "s/#INKVERB-INKCERT=INK_.*/#INKVERB-INKCERT=DONE_CBSINGLE\n  SSLCertificateFile\t\/etc\/inkcert\/le\/live\/${PARENTDOMAIN}\/cert\.pem\n  SSLCertificateKeyFile\t\/etc\/inkcert\/le\/live\/${PARENTDOMAIN}\/privkey\.pem\n  SSLCertificateChainFile\t\/etc\/inkcert\/le\/live\/${PARENTDOMAIN}\/chain\.pem\n  #INKVERB-INKCERT-stop/" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf
 
   ## inkCert status & exit
-  if [ "${FIRSTINKCERTADDCB}" = "NOT_YET" ]; then
+  if [ "${FIRSTINKCERTADDCBSINGLE}" = "NOT_YET" ]; then
     ### Config status: first inkCert done
-    /bin/sed -i "s/FIRSTINKCERTADDCB=\"NOT_YET\"/FIRSTINKCERTADDCB=\"DONE\"/g" /opt/verb/conf/inkcert/inkcertstatus
+    /bin/sed -i "s/FIRSTINKCERTADDCBSINGLE=\"NOT_YET\"/FIRSTINKCERTADDCBSINGLE=\"DONE\"/g" /opt/verb/conf/inkcertstatus
     ### Create the cron job
     #### Add CB's auto updater to the cron
-    /bin/echo '4 4 * * * root /opt/verb/donjon/inkcertcb-renew-all.sh' > /etc/cron.d/inkcertrenewcbcron
-    /bin/chmod 0644 /etc/cron.d/inkcertrenewcbcron
+    /bin/echo '4 4 * * * root /opt/verb/donjon/inkcertcble-renew-all.sh' > /etc/cron.d/inkcertrenewcblecron
+    /bin/chmod 0644 /etc/cron.d/inkcertrenewcblecron
   fi
 
   ## Create the inkCert log file
   /bin/mkdir -p /var/log/inkcert/
-  /usr/bin/touch /var/log/inkcert/inkcertle.log
+  /usr/bin/touch /var/log/inkcert/inkcertcble.log
 
   ## Start Apache
   /bin/systemctl start httpd; wait
@@ -161,3 +180,8 @@ fi
 /bin/echo "
 ${SITEDOMAIN} certs installed.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertaddcb.after" ]; then . /opt/verb/mods/inkcertaddcb.after; fi # Follows this script

@@ -81,3 +81,8 @@ if [ ! -f "/opt/ivapp/inknet/sailor/${CLIENTSAILOR}/.ssh/known_hosts" ];then
 # Finish
 /bin/echo "Inker CA key from ${CAVERBERURI} has been added and is up to date."
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetaddcaverberpubkey.after" ]; then . /opt/verb/mods/inknetaddcaverberpubkey.after; fi # Follows this script

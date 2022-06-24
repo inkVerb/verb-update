@@ -24,3 +24,8 @@ NEWARPAIP4=$(/bin/echo ${NEWIP4} | sed -r 's/^([0-9]{1,3}).([0-9]{1,3}).([0-9]{1
 
 # Finish
 /bin/echo "IPv4 now set to: ${NEWIP4}"
+
+
+
+
+if [ -e "/opt/verb/mods/setip4.after" ]; then . /opt/verb/mods/setip4.after; fi # Follows this script

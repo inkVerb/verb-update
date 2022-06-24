@@ -31,3 +31,8 @@ RewriteRule . /index.php [L]
 # Finish
 /bin/echo ".htaccess file for http://${WPDOMAIN} is set to normal, NOT WP Multisite, use."
 
+
+
+
+
+if [ -e "/opt/verb/mods/wphtaccess.after" ]; then . /opt/verb/mods/wphtaccess.after; fi # Follows this script

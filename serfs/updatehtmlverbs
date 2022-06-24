@@ -49,6 +49,7 @@ if [ ! -e "blue" ]; then /bin/cp -r 0ne blue; fi
 if [ ! -e "blue.b" ]; then /bin/cp -r 0ne blue.b; fi
 if [ ! -e "vip" ]; then /bin/cp -r 0ne vip; fi
 if [ ! -e "vip.v" ]; then /bin/cp -r 0ne vip.v; fi
+if [ ! -e "vip.files" ]; then /bin/cp -r 0ne vip.files; fi
 if [ ! -e "kiwi" ]; then /bin/cp -r 0ne kiwi; fi
 if [ ! -e "kiwi.k" ]; then /bin/cp -r 0ne kiwi.k; fi
 if [ ! -e "red" ]; then /bin/cp -r 0ne red; fi
@@ -72,6 +73,7 @@ if [ ! -e "red.r" ]; then /bin/cp -r 0ne red.r; fi
 /bin/chmod -R 750 blue.b
 /bin/chmod -R 750 vip
 /bin/chmod -R 750 vip.v
+/bin/chmod -R 750 vip.files
 /bin/chmod -R 750 kiwi
 /bin/chmod -R 750 kiwi.k
 /bin/chmod -R 750 red
@@ -79,3 +81,8 @@ if [ ! -e "red.r" ]; then /bin/cp -r 0ne red.r; fi
 
 # Finish
 /bin/echo "Done. Except for any installed apps, any missing Verber html folders have been set to original setup state."
+
+
+
+
+if [ -e "/opt/verb/mods/updatehtmlverbs.after" ]; then . /opt/verb/mods/updatehtmlverbs.after; fi # Follows this script

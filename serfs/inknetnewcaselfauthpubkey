@@ -34,3 +34,8 @@ ssh-keygen -N "" -f in_ca_${IAMCANAME}_key
 # Finish
 /bin/echo "Go change the world! New master keys have been created for this CA Verber."
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetnewcaselfauthpubkey.after" ]; then . /opt/verb/mods/inknetnewcaselfauthpubkey.after; fi # Follows this script

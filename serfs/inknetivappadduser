@@ -30,3 +30,8 @@ wait
 /bin/mkdir -p /opt/ivapp/inknet/${IVAPPGROUPDIR}/${ADDINIVUSER}/.ssh
 /bin/chown -R ${ADDINIVUSER}:${ADDINIVUSER} /opt/ivapp/inknet/${IVAPPGROUPDIR}/${ADDINIVUSER}
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetivappadduser.after" ]; then . /opt/verb/mods/inknetivappadduser.after; fi # Follows this script

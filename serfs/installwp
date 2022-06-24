@@ -90,7 +90,7 @@ define( 'WP_SITEURL', 'https://${DOMAIN}' );
 define( 'WP_HOME', 'https://${DOMAIN}' );" >> wp-config.php
 
 # Add the secure salt and key strings
-/opt/verb/serfs/securewp ${DOMAIN}
+/opt/verb/serfs/setsecurewp ${DOMAIN}
 
 #### fixhttps already done?
 if /bin/grep -q '##INKHTTPSFIX=fixed' /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf; then
@@ -120,3 +120,8 @@ Database password: ${DBPASSWORD}
 
 Go to http://${DOMAIN}/wp-admin/index.php to install.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installwp.after" ]; then . /opt/verb/mods/installwp.after; fi # Follows this script

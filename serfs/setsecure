@@ -10,3 +10,8 @@
 # File permissions for configs
 /bin/chmod 660 -R /opt/verb/conf
 
+
+
+
+
+if [ -e "/opt/verb/mods/setsecure.after" ]; then . /opt/verb/mods/setsecure.after; fi # Follows this script

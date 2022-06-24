@@ -22,3 +22,8 @@ exit 0; fi
 # Finish
 /bin/echo "Docker installed."
 
+
+
+
+
+if [ -e "/opt/verb/mods/installdocker.after" ]; then . /opt/verb/mods/installdocker.after; fi # Follows this script

@@ -55,7 +55,7 @@ There is no logical explanation. We must purge and begin anew.
 exit 8; fi
 
 # inkCert prerequisites
-. /opt/verb/conf/inkcert/inkcertstatus
+. /opt/verb/conf/inkcertstatus
 if [ "${INKCERTINSTALLED}" = "NOT_YET" ]; then
 /bin/echo "inkCert not yet installed. Installing now...
 "
@@ -103,10 +103,11 @@ else
   /opt/verb/serfs/inkcertaddallle ${NEWCAURI}
   wait
   fi
-#### If domain is handled via inkCert Proper
-  if /bin/grep -Fq "INKCERTED=DONE_IC" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${NEWCAURI}; then
-  /bin/echo "Need to get inkCert SSL certs for ${nameTLD}.${NEWCAURI}..."
-  /opt/verb/serfs/inkcertdo ${NEWCAHOST}
+#### If domain is already done via inkCert-CB
+  if /bin/grep -Fq "INKCERTED=DONE_CB" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${nameURI}; then
+  /bin/echo "Need to update inkCert-CB (Certbot) SSL wildcard certs for ${NEWCAURI} to use ${nameTLD} wildcard certs..."
+  /opt/verb/serfs/inkcertaddcb ${NEWCAURI} ${nameURI}
+  wait
   fi
 ## If the html link doesn't exist but the domain is in a folder on the server.
  else
@@ -191,3 +192,7 @@ IAMCANAME=\"${NEWCANAME}\"
 # Finish
 /bin/echo "This server now considers itself an inkNet CA Verber, now just a little more work to do in the flow..."
 
+
+
+
+if [ -e "/opt/verb/mods/inknetmakeca.after" ]; then . /opt/verb/mods/inknetmakeca.after; fi # Follows this script

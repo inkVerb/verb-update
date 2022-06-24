@@ -1,11 +1,31 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This sets a new serial number for an existing DNS record in the inkDNS zone file on this Verber
+# This sets a new serial number for an existing DNS record in the inkDNS zone file on the server
 
 # How to use:
-## ./inkdnsserial [domain]
-## ./inkdnsserial [domain] verber
+## ./inkdnsserial [ domain.tld ]
+## ./inkdnsserial [ domain.tld ] verber
+
+usagenotes="This sets a new serial number for an existing DNS record in the inkDNS zone file on the server"
+usageformat="inkdnsserial [ domain.tld ] verber"
+usageexample="inkdnsserial inkisaverb.com
+inkdnsserial myself.verb.blue verber"
+hierarchy=( secondary )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=( "verber" )
+vopttypes=( string_match )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkdnsinstall )
+prerequesite=(  )
+usedby=( inkdnsadddomain  )
+useserfs=( inkdnsserial inkdnsaddinkdkim inkdnsaddmail inkdnsaddonesub inkdnsaddvipsub killinkdnsinkdkim killinkdnsmail killinkdnsonesub killinkdnssub killinkdnsvipsub setserve )
+useconfigs=( sitenameip )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkdnsserial.replace" ]; then . /opt/verb/mods/inkdnsserial.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkdnsserial.before" ]; then . /opt/verb/mods/inkdnsserial.before; return 0; fi # Replaces this script
 
 
 DNSDOMAIN="$1"
@@ -41,3 +61,8 @@ NEWSERIAL="0${NEWSERIAL}"; fi
 SERNO="${DATESTAMP}${NEWSERIAL}\t\t; Serial No"
 ## Set it in the files
 /bin/sed -i "/; Serial No/c ${SERNO}" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}
+
+
+
+
+if [ -e "/opt/verb/mods/inkdnsserial.after" ]; then . /opt/verb/mods/inkdnsserial.after; fi # Follows this script

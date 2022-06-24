@@ -56,3 +56,8 @@ $(/bin/cat /opt/openvpn/certificates/keys/ta.key)
 
 # Set the download link and finish
 /opt/verb/serfs/inkvpnclientdl
+
+
+
+
+if [ -e "/opt/verb/mods/inkvpnclientkey.after" ]; then . /opt/verb/mods/inkvpnclientkey.after; fi # Follows this script

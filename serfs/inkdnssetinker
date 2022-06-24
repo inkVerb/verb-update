@@ -1,13 +1,13 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This sets the main Inker as the backup DNS for this Verber
+# This sets the main Inker as the backup DNS for on this server
 ## The default backup nameservers are already ns0.inkisaverb.com and ns1.inkisaverb.com
 ## This can replace ns0.inkisaverb.com, but is not recommended
 ## To replace ns1.inkisaverb.com, use inkdnssetinker2
 
 # How to use:
-## ./inkdnssetinker [ IPv6 Address ] [ IPv4 Address ] [ domain - optional, rare ]
+## ./inkdnssetinker [ -d OR domain.tld - optional, rare ] [ -d OR IPv4 Address - optional ] [ IPv6 Address - optional ]
 
 # Eg:
 ## ./inkdnssetinker
@@ -20,9 +20,36 @@
 ## ./inkdnssetinker ns2.inkisaverb.com -d 0000:ef89::2001
 ## ./inkdnssetinker ns.poetryiscode.com 555.555.555.555 8001:0056::489a
 
+usagenotes="This sets the main Inker as the backup DNS for on this server"
+usageformat="inkdnssetinker [ -d OR domain.tld - optional, rare ] [ -d OR IPv4 Address - optional ] [ IPv6 Address - optional ]"
+usageexample="inkdnssetinker
+inkdnssetinker -d 111.222.333.444 0000:ef89::2001
+inkdnssetinker -d 111.222.333.444
+inkdnssetinker -d -d 0000:ef89::2001
+inkdnssetinker ns2.inkisaverb.com
+inkdnssetinker ns.poetryiscode.com
+inkdnssetinker ns2.inkisaverb.com 111.222.333.444
+inkdnssetinker ns2.inkisaverb.com -d 0000:ef89::2001
+inkdnssetinker ns.poetryiscode.com 555.555.555.555 8001:0056::489a"
+hierarchy=( secondary )
+vsetnames=(  )
+vsettypes=(  )
+voptnames=( "-d || Domain" "-d || IPv4" "-d || IPv6" )
+vopttypes=( "string_match || isDomain" "string_match || isIP4" "isIP6" )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkdnsinstall )
+prerequesite=(  )
+usedby=( inkdnsinstall )
+useserfs=( inkdnsrefreshbind )
+useconfigs=( inkdnsinkers )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkdnssetinker.replace" ]; then . /opt/verb/mods/inkdnssetinker.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkdnssetinker.before" ]; then . /opt/verb/mods/inkdnssetinker.before; return 0; fi # Replaces this script
+
 
 # Defaults
-. /opt/verb/conf/inkdns/inkdnsinkers
+. /opt/verb/conf/inkdnsinkers
 
 # Check variables present
 ## Domain
@@ -55,3 +82,8 @@ fi
 # Finish
 /opt/verb/serfs/inkdnsrefreshbind
 /bin/echo "Primary DNS Inker set to: ${NSIP4} & ${NSIP6} for ${NSDOMAIN}"
+
+
+
+
+if [ -e "/opt/verb/mods/inkdnssetinker.after" ]; then . /opt/verb/mods/inkdnssetinker.after; fi # Follows this script

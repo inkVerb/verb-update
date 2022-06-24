@@ -35,3 +35,8 @@ shred -f -x req/${DOMAIN}/${DOMAIN}.chain.pem
 shred -f -x csr/${DOMAIN}/${DOMAIN}.key.pem
 /bin/rm -f req/${DOMAIN}.csr.pem
 
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertaddkeyset.after" ]; then . /opt/verb/mods/inkcertaddkeyset.after; fi # Follows this script

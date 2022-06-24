@@ -38,3 +38,8 @@ if [ -e /opt/verb/conf/inkdns/zones/nv.* ]; then
 # Finish
 /opt/verb/serfs/inkdnsrefreshbind
 /bin/echo "IPv4 now set to: ${NEWIP4}"
+
+
+
+
+if [ -e "/opt/verb/mods/setip4update.after" ]; then . /opt/verb/mods/setip4update.after; fi # Follows this script

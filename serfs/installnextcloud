@@ -136,11 +136,11 @@ case ${INKCERTED} in
   DONE_SC)
   /opt/verb/serfs/inkcertaddsc ${blueURI}
   ;;
-  DONE_IC)
-  /opt/verb/serfs/inkcertadd ${blueURI}
-  ;;
   DONE_LE)
   /opt/verb/serfs/inkcertaddle ${blueURI}
+  ;;
+  DONE_CBSINGLE)
+  /opt/verb/serfs/inkcertaddcbsingle ${blueURI}
   ;;
   DONE_CB)
   /opt/verb/serfs/inkcertaddcb ${blueURI}
@@ -198,7 +198,7 @@ EOF
 EOF
 
 # Use msmtp for a real SMTP address
-/opt/verb/serfs/vmailsysnextcloud
+/opt/verb/serfs/inkvmailsysnextcloud
 
 # Verify ownership
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
@@ -227,3 +227,8 @@ Tip: https://${blueURI}/index.php/settings/admin
 
 After, you may want to run setnextcloudbfdoff to disable brute force detection in order to allow some client apps to work. You can always turn it on again with setnextcloudbfdon
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installnextcloud.after" ]; then . /opt/verb/mods/installnextcloud.after; fi # Follows this script

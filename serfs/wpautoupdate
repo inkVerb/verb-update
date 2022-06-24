@@ -19,3 +19,8 @@ DOMAIN=$1
 
 # Finished
 /bin/echo "inkVerb Auto-Update added to ${DOMAIN}. No further action is necessary."
+
+
+
+
+if [ -e "/opt/verb/mods/wpautoupdate.after" ]; then . /opt/verb/mods/wpautoupdate.after; fi # Follows this script

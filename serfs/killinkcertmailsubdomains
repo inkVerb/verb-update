@@ -1,11 +1,31 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This sets up basic mail DNS and inkCert entries
-## This is run automatically by killinkcertmail (used in installpostfixvmail and newdomainshell) and normally should not be run independently
+# This removes mail subdomains domains from the inkCert Letsencrypt cli-ini file
+## This is run automatically by killinkcertmail (used in inkvmailinstall and newdomainshell) and normally should not be run independently
 
 # How to use:
-## ./killinkcertmailsubdomains [domain]
+## ./killinkcertmailsubdomains [ domain.tld ]
+
+usagenotes="This removes mail subdomains domains from the inkCert Letsencrypt cli-ini file"
+usageformat="killinkcertmailsubdomains [ domain.tld ]"
+usageexample="killinkcertmailsubdomains inkisaverb.com"
+hierarchy=( tertiary killdomainshell )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=(  )
+prerequesite=( setinkcertmailsubdomains )
+usedby=( killinkcertmail )
+useserfs=(  )
+useconfigs=( inkcertstatus inkdnsconf sitemailpath )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/killinkcertmailsubdomains.replace" ]; then . /opt/verb/mods/killinkcertmailsubdomains.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/killinkcertmailsubdomains.before" ]; then . /opt/verb/mods/killinkcertmailsubdomains.before; return 0; fi # Replaces this script
+
 
 DOMAIN="$1"
 
@@ -27,3 +47,7 @@ fi
 /bin/sed -i "s/, pop2.${DOMAIN}//g" /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
 /bin/sed -i "s/, pop.${DOMAIN}//g" /opt/verb/conf/inkcert/cli-ini/cli.${DOMAIN}.ini
 
+
+
+
+if [ -e "/opt/verb/mods/killinkcertmailsubdomains.after" ]; then . /opt/verb/mods/killinkcertmailsubdomains.after; fi # Follows this script

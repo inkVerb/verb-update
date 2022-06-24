@@ -1,16 +1,35 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This installs Bind DNS for managing DNS records in the inkDNS zone file on this Verber
+# This installs Bind DNS for managing DNS records in the inkDNS zone file on the server
 ## This makes the server itself tha authoritative DNS server with a default/optional backup serfer
 ## If the backup server is not specified, the default will be used, which should be used unless this is a domain mod
 
 # How to use:
 ## ./inkdnsinstall
 
+usagenotes="This installs the inkDNS Bind package for managing DNS records on the server"
+usageformat="inkdnsinstall"
+usageexample="inkdnsinstall"
+hierarchy=( primary )
+vsetnames=(  )
+vsettypes=(  )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkdnsinstall )
+prerequesite=(  )
+usedby=(  )
+useserfs=(  )
+useconfigs=( sitenameip servertype inkcertstatus )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkdnsinstall.replace" ]; then . /opt/verb/mods/inkdnsinstall.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkdnsinstall.before" ]; then . /opt/verb/mods/inkdnsinstall.before; return 0; fi # Replaces this script
+
 
 # Check if installed
-. /opt/verb/conf/inkdns/inkdnsconf
+. /opt/verb/conf/inkdnsconf
 if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
   /bin/echo "inkDNS already installed."
   exit 0
@@ -76,7 +95,7 @@ fi
 /bin/systemctl start named; wait
 
 # Config
-/bin/sed -i "s/INKDNSSTAT=.*/INKDNSSTAT=\"INSTALLED\"/" /opt/verb/conf/inkdns/inkdnsconf
+/bin/sed -i "s/INKDNSSTAT=.*/INKDNSSTAT=\"INSTALLED\"/" /opt/verb/conf/inkdnsconf
 
 # Refresh all records
 /opt/verb/serfs/inkdnsrefreshbind
@@ -84,3 +103,8 @@ fi
 # Finish
 /bin/echo "inkDNS installed."
 /opt/verb/serfs/showdns
+
+
+
+
+if [ -e "/opt/verb/mods/inkdnsinstall.after" ]; then . /opt/verb/mods/inkdnsinstall.after; fi # Follows this script

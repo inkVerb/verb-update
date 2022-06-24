@@ -96,3 +96,8 @@ Now, you need to add the client ssh-rsa key via: inknetaddclientkey
 Then follow instructions.
 "
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetaddvrkclient.after" ]; then . /opt/verb/mods/inknetaddvrkclient.after; fi # Follows this script

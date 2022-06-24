@@ -1,11 +1,31 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This adds the mail subdomain A & AAAA records in the inkDNS zone file on this Verber
+# This adds the mail subdomain A & AAAA records in the inkDNS zone file on the server
 
 # How to use:
-## ./inkdnsaddmail [domain]
-## ./inkdnsaddmail [domain] verber
+## ./inkdnsaddmail [ domain.tld ]
+## ./inkdnsaddmail [ domain.tld ] verber
+
+usagenotes="This adds the mail subdomain A & AAAA records in the inkDNS zone file on the server"
+usageformat="inkdnsaddmail [ domain.tld ] verber"
+usageexample="inkdnsaddmail inkisaverb.com
+inkdnsaddmail myself.verb.blue verber"
+hierarchy=( tertiary newdomainshell )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=( "verber" )
+vopttypes=( string_match )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkdnsinstall )
+prerequesite=(  )
+usedby=( newdomainshell )
+useserfs=( inkdnsserial inkdnsrefreshbind )
+useconfigs=( sitenameip )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkdnsaddmail.replace" ]; then . /opt/verb/mods/inkdnsaddmail.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkdnsaddmail.before" ]; then . /opt/verb/mods/inkdnsaddmail.before; return 0; fi # Replaces this script
 
 
 DNSDOMAIN="$1"
@@ -20,7 +40,7 @@ fi
 
 # Check if already added
 if /bin/grep -Fq "; Hostname Mail Record Defaults" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}; then
-/bin/echo "Mail Record Defaults already added to . Use inkdnskillmail to remove them."
+/bin/echo "Mail Record Defaults already added to . Use killinkdnsmail to remove them."
 exit 0; fi
 
 # Echo the records
@@ -67,10 +87,15 @@ elif [ "${ZONEDIR}" = "zones" ]; then
 fi
 
 # Refresh zones
-if [ -f "/opt/verb/conf/inkdns/inkdnsconf" ]; then
-  . /opt/verb/conf/inkdns/inkdnsconf
+if [ -f "/opt/verb/conf/inkdnsconf" ]; then
+  . /opt/verb/conf/inkdnsconf
   if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
 /opt/verb/serfs/inkdnsrefreshbind; fi; fi
 
 # Finish
 /bin/echo "The Mail Record Defaults have been added to the ${DNSDOMAIN} DNS zone file."
+
+
+
+
+if [ -e "/opt/verb/mods/inkdnsaddmail.after" ]; then . /opt/verb/mods/inkdnsaddmail.after; fi # Follows this script

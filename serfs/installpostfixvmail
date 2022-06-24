@@ -2,12 +2,13 @@
 #inkVerbSerf! verb.ink
 
 # This installs Postfix as the email server wtih Dovecot and OpenDKIM
+## This creates a database accessed by PostfixAdmin as a web tool, but PFA is not a requirement for the database and inkvmail to work
 ## Prerequisite: sertupverb
 ## This only performs basic back-end server setup and creates no mail accounts
 ## Once this is done it is set for the server permanently.
 
 # How to use:
-## ./installpostfixvmail
+## ./inkvmailinstall
 
 
 # Include the config files
@@ -46,33 +47,33 @@ user = mail
 password = mailpass${MAILPASSGEN}
 database = mail
 host = localhost
-" > /opt/verb/conf/mysqldb.vmail.cnf
+" > /opt/verb/conf/mysqldb.inkvmail.cnf
 ## Set the config for backup
 /bin/sed -i "s/SITEMAILPASSAPG.*/SITEMAILPASSAPG=\"${MAILPASSGEN}\"/g" /opt/verb/conf/sitemailpass
 
 # Packages already installed from make-verber-* postfix postfix-mysql dovecot php-imap spamassassin pigeonhole perl-cpanplus-dist-arch clamav razor cyrus-sasl opendkim
 
 # Virtual mail user
-/usr/bin/groupadd -g 5000 vmail
-/usr/bin/useradd -u 5000 -g vmail -s /usr/bin/nologin -d /var/vmail -m vmail
-/bin/mkdir -p /var/vmail
-/bin/chmod 770 /var/vmail
-/bin/chown -R vmail:vmail /var/vmail
+/usr/bin/groupadd -g 5000 inkvmail
+/usr/bin/useradd -u 5000 -g inkvmail -s /usr/bin/nologin -d /var/inkvmail -m inkvmail
+/bin/mkdir -p /var/inkvmail
+/bin/chmod 770 /var/inkvmail
+/bin/chown -R inkvmail:inkvmail /var/inkvmail
 
 # Postfix
 ## Copy configs
 /usr/bin/touch /etc/postfix/virtual_ssl.map
-/bin/cp /opt/verb/conf/lab/vmail/postfix/main.cf /etc/postfix/
-/bin/cp /opt/verb/conf/lab/vmail/postfix/master.cf /etc/postfix/
-/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_alias_domains.cf /etc/postfix/
-/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_alias_domains_maps.cf /etc/postfix/
-/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_alias_maps.cf /etc/postfix/
-/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_mailbox_domains.cf /etc/postfix/
-/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_mailbox_domainaliases_maps.cf /etc/postfix/
-/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_mailbox_maps.cf /etc/postfix/
-/bin/cp /opt/verb/conf/lab/vmail/postfix/virtual_sender_login_maps.cf /etc/postfix/
-/bin/cp /opt/verb/conf/lab/vmail/postfix/header_checks /etc/postfix/
-/bin/cp /opt/verb/conf/lab/vmail/postfix/smtp_header_checks /etc/postfix/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfix/main.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfix/master.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfix/virtual_alias_domains.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfix/virtual_alias_domains_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfix/virtual_alias_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfix/virtual_mailbox_domains.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfix/virtual_mailbox_domainaliases_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfix/virtual_mailbox_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfix/virtual_sender_login_maps.cf /etc/postfix/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfix/header_checks /etc/postfix/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfix/smtp_header_checks /etc/postfix/
 ## Replace configs
 /bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/virtual_alias_domains.cf
 /bin/sed -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/postfix/virtual_alias_domains_maps.cf
@@ -120,20 +121,20 @@ EOF
 # Dovecot
 /usr/bin/mkdir -p /etc/dovecot/sieve.before.d /etc/dovecot/sieve-filter /etc/dovecot/crt.d
 /bin/cp -r /usr/share/doc/dovecot/example-config/conf.d /etc/dovecot
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/dovecot.conf /etc/dovecot/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/10-mail.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/10-master.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/10-ssl.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/15-lda.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/15-mailboxes.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/20-lmtp.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/20-lmtp.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/20-managesieve.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/90-plugin.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/conf.d/90-sieve.conf /etc/dovecot/conf.d/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/dovecot-sql.conf.ext /etc/dovecot/
-/bin/cp /opt/verb/conf/lab/vmail/dovecot/dovecot.conf /etc/dovecot/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/dovecot.conf /etc/dovecot/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/conf.d/10-mail.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/conf.d/10-master.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/conf.d/10-ssl.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/conf.d/15-lda.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/conf.d/15-mailboxes.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/conf.d/20-lmtp.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/conf.d/20-lmtp.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/conf.d/20-managesieve.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/conf.d/90-plugin.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/conf.d/90-sieve.conf /etc/dovecot/conf.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/dovecot-sql.conf.ext /etc/dovecot/
+/bin/cp /opt/verb/conf/lab/inkvmail/dovecot/dovecot.conf /etc/dovecot/
 ### Diffie-Helman Group file (unique & extra large for email server)
 /usr/bin/rm -f /etc/dovecot/dh.pem
 #/usr/bin/openssl dhparam -out /etc/dovecot/dh.pem 4096
@@ -144,7 +145,7 @@ EOF
 /bin/sed  -i "s/nameURI286/${nameURI}/g" /etc/dovecot/conf.d/15-lda.conf
 /bin/sed  -i "s/mailpassword/mailpass${MAILPASSGEN}/g" /etc/dovecot/dovecot-sql.conf.ext
 ## Own
-/bin/chown -R vmail:dovecot /etc/dovecot
+/bin/chown -R inkvmail:dovecot /etc/dovecot
 /bin/chmod -R o-rwx /etc/dovecot
 ## Service
 /usr/bin/systemctl enable dovecot
@@ -185,8 +186,8 @@ EOF
   /usr/bin/systemctl start spamassassin.service; wait
   /usr/bin/systemctl enable spamassassin-update.timer; wait
   /usr/bin/systemctl start spamassassin-update.timer; wait
-  /usr/bin/systemctl enable clamav-daemon.service; wait
-  /usr/bin/systemctl start clamav-daemon.service; wait
+  #/usr/bin/systemctl enable clamav-daemon.service; wait
+  #/usr/bin/systemctl start clamav-daemon.service; wait
   /usr/bin/systemctl restart spamassassin.service; wait
   /bin/echo "installed and enabled."
 else
@@ -204,28 +205,28 @@ FLUSH PRIVILEGES;"
 /usr/bin/mkdir -p /etc/ssl/server/mail
 ## Snakeoil
 if /bin/grep -Fq "INKCERTED=NO" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${nameURI}; then
-  /usr/bin/rm -f /etc/ssl/server/mail/vmail.crt
+  /usr/bin/rm -f /etc/ssl/server/mail/inkvmail.crt
   /usr/bin/sed -i "s?^#smtpd_tls_cert_file=/etc/ssl/server/server.crt?smtpd_tls_cert_file=/etc/ssl/server/server.crt?" /etc/postfix/main.cf
   /usr/bin/sed -i "s?^#ssl_cert = </etc/ssl/server/server.crt?ssl_cert = </etc/ssl/server/server.crt?" /etc/dovecot/conf.d/10-ssl.conf
-  /usr/bin/sed -i "s?^smtpd_tls_cert_file=/etc/ssl/server/mail/vmail.crt?#smtpd_tls_cert_file=/etc/ssl/server/mail/vmail.crt?" /etc/postfix/main.cf
-  /usr/bin/sed -i "s?^smtp_tls_cert_file=/etc/ssl/server/mail/vmail.crt?#smtp_tls_cert_file=/etc/ssl/server/mail/vmail.crt?" /etc/postfix/main.cf
-  /usr/bin/sed -i "s?^ssl_cert = </etc/ssl/server/mail/vmail.crt?#ssl_cert = </etc/ssl/server/mail/vmail.crt?" /etc/dovecot/conf.d/10-ssl.conf
-  /usr/bin/rm -f /etc/ssl/server/mail/vmail.key
+  /usr/bin/sed -i "s?^smtpd_tls_cert_file=/etc/ssl/server/mail/inkvmail.crt?#smtpd_tls_cert_file=/etc/ssl/server/mail/inkvmail.crt?" /etc/postfix/main.cf
+  /usr/bin/sed -i "s?^smtp_tls_cert_file=/etc/ssl/server/mail/inkvmail.crt?#smtp_tls_cert_file=/etc/ssl/server/mail/inkvmail.crt?" /etc/postfix/main.cf
+  /usr/bin/sed -i "s?^ssl_cert = </etc/ssl/server/mail/inkvmail.crt?#ssl_cert = </etc/ssl/server/mail/inkvmail.crt?" /etc/dovecot/conf.d/10-ssl.conf
+  /usr/bin/rm -f /etc/ssl/server/mail/inkvmail.key
   /usr/bin/sed -i "s?^#smtpd_tls_key_file=/etc/ssl/server/server.key?smtpd_tls_key_file=/etc/ssl/server/server.key?" /etc/postfix/main.cf
   /usr/bin/sed -i "s?^#ssl_key = </etc/ssl/server/server.key?ssl_key = </etc/ssl/server/server.key?" /etc/dovecot/conf.d/10-ssl.conf
-  /usr/bin/sed -i "s?^smtpd_tls_key_file=/etc/ssl/server/mail/vmail.key?#smtpd_tls_key_file=/etc/ssl/server/mail/vmail.key?" /etc/postfix/main.cf
-  /usr/bin/sed -i "s?^smtp_tls_key_file=/etc/ssl/server/mail/vmail.key?#smtp_tls_key_file=/etc/ssl/server/mail/vmail.key?" /etc/postfix/main.cf
-  /usr/bin/sed -i "s?^ssl_key = </etc/ssl/server/mail/vmail.key?#ssl_key = </etc/ssl/server/mail/vmail.key?" /etc/dovecot/conf.d/10-ssl.conf
+  /usr/bin/sed -i "s?^smtpd_tls_key_file=/etc/ssl/server/mail/inkvmail.key?#smtpd_tls_key_file=/etc/ssl/server/mail/inkvmail.key?" /etc/postfix/main.cf
+  /usr/bin/sed -i "s?^smtp_tls_key_file=/etc/ssl/server/mail/inkvmail.key?#smtp_tls_key_file=/etc/ssl/server/mail/inkvmail.key?" /etc/postfix/main.cf
+  /usr/bin/sed -i "s?^ssl_key = </etc/ssl/server/mail/inkvmail.key?#ssl_key = </etc/ssl/server/mail/inkvmail.key?" /etc/dovecot/conf.d/10-ssl.conf
   /usr/bin/sed -i "s?^ssl_dh = </etc/dovecot/dh.pem?#ssl_dh = </etc/dovecot/dh.pem?" /etc/dovecot/conf.d/10-ssl.conf
 ## inkCert
 else
-  /opt/verb/serfs/setinkcertmailcerts ${nameURI} vmail
+  /opt/verb/serfs/setinkcertmailcerts ${nameURI} inkvmail
   /opt/verb/serfs/setinkcertmail ${nameURI} verber
 fi
 
 # Create the mailbox table
-## We want these UNIQUE so we can update/insert appropriately with vmailsys* tools
-/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "CREATE TABLE IF NOT EXISTS mailbox (
+## We want these UNIQUE so we can update/insert appropriately with inkvmailsys* tools
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.inkvmail.cnf -e "CREATE TABLE IF NOT EXISTS mailbox (
     username varchar(255) NOT NULL UNIQUE,
     password varchar(255) NOT NULL,
     name varchar(255) CHARACTER SET utf8 NOT NULL,
@@ -304,11 +305,11 @@ PASSWORD=$(/usr/bin/pwgen -s -1 20)
 password="$(/bin/echo $PASSWORD | /usr/bin/openssl passwd -1 -stdin)"
 username="verberadmin@$nameURI"
 name="Change Me Dont Delete Me"
-vmaildirectory="$nameURI/verberadmin/"
+inkvmaildirectory="$nameURI/verberadmin/"
 mailboxsize="524288000" # 0.5GB, 2GB=2097152000, 1GB=1048576000, 5GB=5242880000
 
-/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.vmail.cnf -e "INSERT INTO domain (domain, description, aliases, mailboxes, maxquota, quota, transport, backupmx, created, modified, active) VALUES ('$verberdomain', '$verberdomain', '1000', '1000', '10000', '2048', 'virtual', '0', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
-INSERT INTO mailbox (username, password, name, maildir, quota, local_part, domain, created, modified, active) VALUES ('$username', '$password', '$name', '$vmaildirectory', '$mailboxsize', 'verberadmin', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+/usr/bin/mysql --defaults-extra-file=/opt/verb/conf/mysqldb.inkvmail.cnf -e "INSERT INTO domain (domain, description, aliases, mailboxes, maxquota, quota, transport, backupmx, created, modified, active) VALUES ('$verberdomain', '$verberdomain', '1000', '1000', '10000', '2048', 'virtual', '0', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
+INSERT INTO mailbox (username, password, name, maildir, quota, local_part, domain, created, modified, active) VALUES ('$username', '$password', '$name', '$inkvmaildirectory', '$mailboxsize', 'verberadmin', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('$username', '$username', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('abuse@$nameURI', 'verberadmin@$nameURI', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
 INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('hostmaster@$nameURI', 'verberadmin@$nameURI', '$nameURI', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1);
@@ -318,8 +319,8 @@ INSERT INTO alias (address, goto, domain, created, modified, active) VALUES ('we
 # OpenDKIM
 ## Create/reset OpenDKIM files
 /bin/mkdir -p /etc/opendkim/keys
-/bin/cp /opt/verb/conf/lab/vmail/default/opendkim /etc/default/
-/bin/cp /opt/verb/conf/lab/vmail/opendkim.conf /etc/opendkim/
+/bin/cp /opt/verb/conf/lab/inkvmail/default/opendkim /etc/default/
+/bin/cp /opt/verb/conf/lab/inkvmail/opendkim.conf /etc/opendkim/
 /bin/echo "127.0.0.1
 localhost
 ${SITEIP}
@@ -342,7 +343,7 @@ cd $OLDPWD
 # DNS MX and TXT mail records for this server
 /opt/verb/serfs/inkdnsaddmail ${nameURI} verber; wait
 ## DKIM keys & TXT records
-/opt/verb/serfs/addinkdkim ${nameURI}; wait
+/opt/verb/serfs/newinkdkim ${nameURI}; wait
 /opt/verb/serfs/inkdnsaddinkdkim ${nameURI} verber; wait
 
 # UFW (services and ports below them if known)
@@ -366,11 +367,11 @@ cd $OLDPWD
 /usr/bin/ufw allow 12301
 
 # Monit
-#/bin/cp /opt/verb/conf/lab/vmail/monit/monitrc.d/amavis /etc/monit/monitrc.d/
-/bin/cp /opt/verb/conf/lab/vmail/monit/monitrc.d/dovecot /etc/monit/monitrc.d/
-/bin/cp /opt/verb/conf/lab/vmail/monit/monitrc.d/opendkim /etc/monit/monitrc.d/
-/bin/cp /opt/verb/conf/lab/vmail/monit/monitrc.d/postfix /etc/monit/monitrc.d/
-/bin/cp /opt/verb/conf/lab/vmail/monit/monitrc.d/spamassassin /etc/monit/monitrc.d/
+#/bin/cp /opt/verb/conf/lab/inkvmail/monit/monitrc.d/amavis /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/monit/monitrc.d/dovecot /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/monit/monitrc.d/opendkim /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/monit/monitrc.d/postfix /etc/monit/monitrc.d/
+/bin/cp /opt/verb/conf/lab/inkvmail/monit/monitrc.d/spamassassin /etc/monit/monitrc.d/
 /bin/systemctl enable monit
 /bin/systemctl start monit
 
@@ -391,7 +392,7 @@ fi
 /usr/bin/chown www:www /var/log/phpmail.log
 
 # Setup PHP to send system mail
-/opt/verb/serfs/vmailsysmailbox
+/opt/verb/serfs/inkvmailsysmailbox
 
 # Grand Restart
 if [ ${SERVERTYPE} = "laemp" ]; then
@@ -404,11 +405,16 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
 fi
 /usr/bin/systemctl restart postfix
 /usr/bin/systemctl restart spamassassin
-/usr/bin/systemctl restart clamav-daemon
-/usr/bin/systemctl restart dovecot
+#/usr/bin/systemctl restart clamav-daemon
+#/usr/bin/systemctl restart dovecot
 /usr/bin/systemctl daemon-reload
 
 # Finish
 /bin/echo "Postfix and friends for inkVerb has been installed.
 The email server is https://${emailTLDURI}
 "
+
+
+
+
+if [ -e "/opt/verb/mods/inkvmailinstall.after" ]; then . /opt/verb/mods/inkvmailinstall.after; fi # Follows this script

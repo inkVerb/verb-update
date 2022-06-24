@@ -104,3 +104,8 @@ free
 
 # Set to enable it at next startup
 /bin/echo "/var/swap.img    none    swap    sw    0    0" >> /etc/fstab
+
+
+
+
+if [ -e "/opt/verb/mods/setswapsize.after" ]; then . /opt/verb/mods/setswapsize.after; fi # Follows this script

@@ -36,3 +36,8 @@ if [ "${INKVPNINSTALLED}" = "INSTALLED_OPENVPN" ]; then
     /bin/echo "Something's wrong. Systemctl says OpenVPN is not active. I quit."; exit 6
   fi
 fi
+
+
+
+
+if [ -e "/opt/verb/mods/inkvpncakey.after" ]; then . /opt/verb/mods/inkvpncakey.after; fi # Follows this script

@@ -6,10 +6,10 @@
 ## Check prerequisites for those
 
 # OPTIONAL Prerequesite:
-## If restoring from a backupvmail backup, the .vbak file must be in vip
+## If restoring from a backupinkvmail backup, the .vbak file must be in vip
 
 # How to use:
-## ./inkvmailinstall [RoundCube webmail path] [PostfixAdmin email pfa path - optional: if no other arguments and same as RoundCube] [PostfixAdmin setup password option] [backup filename IF restoring from backupvmail backup, optional]
+## ./inkvmailinstall [RoundCube webmail path] [PostfixAdmin email pfa path - optional: if no other arguments and same as RoundCube] [PostfixAdmin setup password option] [backup filename IF restoring from backupinkvmail backup, optional]
 
 # Eg:
 ## ./inkvmailinstall # Auto-generated secure paths (different for PFA and RC), no setup password nor backup
@@ -17,7 +17,7 @@
 ## ./inkvmailinstall rcbase pfabase setup-password myemailfile.vbak # Backup and setup password
 ## ./inkvmailinstall rcbase pfabase no myemailfile.vbak  # Backup, not setup password
 ## ./inkvmailinstall rciscool pfarocks # No setup password, no backup
-## ./inkvmailinstall vmailpath # Same path for RC and PFA, no setup password, no backup
+## ./inkvmailinstall inkvmailpath # Same path for RC and PFA, no setup password, no backup
 
 # Include the configs
 . /opt/verb/conf/sitenameip
@@ -49,7 +49,7 @@ else
 fi
 
 # Postfix
-/opt/verb/serfs/installpostfixvmail; wait
+/opt/verb/serfs/inkvmailinstall; wait
 
 # PostfixAdmin
 /opt/verb/serfs/installpfa ${PFAFOLDER} ${PFAPASS}; wait
@@ -60,7 +60,7 @@ fi
 # Backup
 if [ -n "$4" ]; then
   BACKUPRESTORE=$4
-  /opt/verb/serfs/backupvmailrestore ${BACKUPRESTORE}; wait
+  /opt/verb/serfs/backupinkvmailrestore ${BACKUPRESTORE}; wait
 fi
 
 # inkCert check and FYI
@@ -82,3 +82,8 @@ Postfix Admin:
 Roundcube:
 - https://rc.${emailTLDURI}/${RCFOLDER}
 "
+
+
+
+
+if [ -e "/opt/verb/mods/inkvmailinstall.after" ]; then . /opt/verb/mods/inkvmailinstall.after; fi # Follows this script

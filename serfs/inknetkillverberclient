@@ -31,3 +31,8 @@ userdel -r ${CLIENTUSERNAME}
 # Finish
 /bin/echo "Done. ${KILLHOST} pushed overboard and fed to the sharks."
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetkillverberclient.after" ]; then . /opt/verb/mods/inknetkillverberclient.after; fi # Follows this script

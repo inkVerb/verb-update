@@ -9,10 +9,10 @@
 # Do NOT include the .txz extension in the filename parameter!
 
 # How to use:
-## ..txzout .txzfile]
+## ./vtxzout .txzfile]
 
 # Eg:
-## ..txzout mystuff
+## ./vtxzout mystuff
 
 
 FIL="$1"
@@ -32,3 +32,8 @@ exit 7; fi
 
 # Remove
 /usr/bin/rm ${FIL}.tar.xz
+
+
+
+
+if [ -e "/opt/verb/mods/vtxzout.after" ]; then . /opt/verb/mods/vtxzout.after; fi # Follows this script

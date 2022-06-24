@@ -2,7 +2,7 @@
 #inkVerbSerf! verb.ink
 
 # This puts the login credentials into the right place for a Verber
-## This assumes that the key has been already uploaded to the CA, signed, downloaded from the CA, and put on this Verber in the www/vip folder
+## This assumes that the key has been already uploaded to the CA, signed, downloaded from the CA, and put on the server in the www/vip folder
 
 # How to use:
 ## ./inknetaddcavpkg [sec path code from CA Verber - optional, will prompt if not entered here]
@@ -42,3 +42,8 @@ if [ -z "$SECPATH" ]; then
 # Finish
 /bin/echo "The CA-signed cert for this Verber has been installed. This Verber may now use inkNet to connect to the Inker for other services, such as inkCert."
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetaddcavpkg.after" ]; then . /opt/verb/mods/inknetaddcavpkg.after; fi # Follows this script

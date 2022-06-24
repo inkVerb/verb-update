@@ -119,3 +119,8 @@ NEWRARPA6=$(rarpa_ipv6 ${NEWEXPIP6})
 
 # ARPA & inverse IP
 /bin/sed -i "s/SITEARPAIP6.*/SITEARPAIP6=\"${NEWRARPA6}\"/" /opt/verb/conf/sitenameip
+
+
+
+
+if [ -e "/opt/verb/mods/setip6.after" ]; then . /opt/verb/mods/setip6.after; fi # Follows this script

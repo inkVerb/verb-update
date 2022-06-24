@@ -11,7 +11,7 @@
 
 
 # Include and check the config
-. /opt/verb/conf/inkcert/inkcertstatus
+. /opt/verb/conf/inkcertstatus
 
 if [ "${INKCERTSCINSTALLED}" = "DONE" ]; then
 /bin/echo "inkCert-SC already installed."
@@ -50,9 +50,14 @@ cd /etc/inkcert/sc/cli
 /bin/ln -sfn /etc/inkcert/req /srv/www/vip/
 
 # Set configs
-/bin/echo "INKCERTSCINSTALLED=\"DONE\"" >> /opt/verb/conf/inkcert/inkcertstatus
+/bin/echo "INKCERTSCINSTALLED=\"DONE\"" >> /opt/verb/conf/inkcertstatus
 
 # Finish
 /bin/echo "
 inkCert Self-Cert is now installed and ready to make self-signed & root cert sets for SSL.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertinstallsc.after" ]; then . /opt/verb/mods/inkcertinstallsc.after; fi # Follows this script

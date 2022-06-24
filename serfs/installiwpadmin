@@ -90,3 +90,8 @@ Database port / prefix: DO NOT CHANGE
 
 Go to http://${DOMAIN}/${DIRECTORY} to install.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installiwpadmin.after" ]; then . /opt/verb/mods/installiwpadmin.after; fi # Follows this script

@@ -1,7 +1,7 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This restores a back up of the entire email server, including folders and database, that was made using backupvmail
+# This restores a back up of the entire email server, including folders and database, that was made using backupinkvmail
 ## This only restores the users and their mailpfa as created in PostfixAdmin. Any PostfixAdmin setup will be overwritten.
 
 # Prereq: Postfix and PostfixAdmin installed, but PostfixAdmin setup is irrelevant. postinstallpfa can be run before or after this.
@@ -12,10 +12,10 @@
 ## This can be run before or after running installemail or installpostfix, etc.
 
 # How to use:
-## ./backupvmailrestore [filename]
+## ./backupinkvmailrestore [filename]
 
 # Eg:
-## ./backupvmailrestore verb.vmail.hR21.vbak
+## ./backupinkvmailrestore verb.inkvmail.hR21.vbak
 
 
 FILENAME=$1
@@ -31,11 +31,11 @@ tbrSMPAPG=${SITEMAILPASSAPG}
 
 # Unpack the file
 cd /srv/www/vip
-/bin/mv ${FILENAME} vmail.txz
-/opt/verb/serfs.txzout vmail
+/bin/mv ${FILENAME} inkvmail.txz
+/opt/verb/serfs.txzout inkvmail
 
 # Restore and include RC settings in the sitemail config
-. /srv/www/vip/vmail/sitemailpass-old
+. /srv/www/vip/inkvmail/sitemailpass-old
 /bin/sed -i "s/SITEMAILPASSAPG.*/SITEMAILPASSAPG=\"${SITEMAILPASSAPG}\"/g" /opt/verb/conf/sitemailpass
 . /opt/verb/conf/sitemailpass
 
@@ -43,7 +43,7 @@ cd /srv/www/vip
 /opt/verb/serfs/mysqlkilldb mail; wait
 /opt/verb/serfs/mysqlkilluser mail; wait
 /opt/verb/serfs/mysqlnewdb mail mail mailpass${SITEMAILPASSAPG}; wait
-cd vmail
+cd inkvmail
 /opt/verb/serfs/mysqlin mail; wait
 /bin/rm -f mail.sql
 /bin/rm -f sitemailpass-old
@@ -51,11 +51,11 @@ cd vmail
 /bin/rm -f sitenameip-old
 cd ..
 
-# Move the vmail directory into place
-/bin/cp -rf vmail /var/
-/bin/chmod -R 770 /var/vmail
-/bin/chown -R vmail:mail /var/vmail
-/bin/rm -rf vmail
+# Move the inkvmail directory into place
+/bin/cp -rf inkvmail /var/
+/bin/chmod -R 770 /var/inkvmail
+/bin/chown -R inkvmail:mail /var/inkvmail
+/bin/rm -rf inkvmail
 
 # Postfix & Dovecot password
 /bin/sed -i "s/mailpass${tbrSMPAPG}/mailpass${SITEMAILPASSAPG}/" /etc/dovecot/dovecot-sql.conf.ext
@@ -80,3 +80,8 @@ if [ -e "/etc/httpd/sites-enabled/pfa.${emailTLDURI}.conf" ] && [ -f "/srv/www/e
 The email server data has been restored from the backup and all its backup files removed from this server.
 "
 
+
+
+
+
+if [ -e "/opt/verb/mods/backupinkvmailrestore.after" ]; then . /opt/verb/mods/backupinkvmailrestore.after; fi # Follows this script

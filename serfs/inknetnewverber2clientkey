@@ -39,3 +39,8 @@ wait
 /opt/verb/serfs/showinknetverberclientkey
 wait
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetnewverber2clientkey.after" ]; then . /opt/verb/mods/inknetnewverber2clientkey.after; fi # Follows this script

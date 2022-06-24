@@ -8,3 +8,8 @@
 
 /bin/rm rf /etc/cron.d/vappmysql-vbak
 
+
+
+
+
+if [ -e "/opt/verb/mods/setvappmysqlvbakoff.after" ]; then . /opt/verb/mods/setvappmysqlvbakoff.after; fi # Follows this script

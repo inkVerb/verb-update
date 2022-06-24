@@ -33,3 +33,8 @@ fi
 # Remove mail certs
 /usr/bin/rm -f /etc/ssl/server/mail/${DOMAIN}.crt
 /usr/bin/rm -f /etc/ssl/server/mail/${DOMAIN}.key
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertundosc.after" ]; then . /opt/verb/mods/inkcertundosc.after; fi # Follows this script

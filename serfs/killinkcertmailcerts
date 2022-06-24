@@ -5,14 +5,33 @@
 ## This is run automatically by killinkcertmail and normally should not be run independently
 
 # How to use:
-## ./killinkcertmailcerts [domain]
+## ./killinkcertmailcerts [ domain.tld ]
+
+usagenotes="This removes all inkCert files entirely for inkCert-LE, inkCert-CB, and inkCert-CB-Single"
+usageformat="killinkcertmailcerts [ domain.tld ]"
+usageexample="killinkcertmailcerts inkisaverb.com"
+hierarchy=( tertiary killdomainshell )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=(  )
+prerequesite=( newdomainshell )
+usedby=( killinkcertmail )
+useserfs=(  )
+useconfigs=( inkcertstatus inkdnsconf sitemailpath )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/killinkcertmailcerts.replace" ]; then . /opt/verb/mods/killinkcertmailcerts.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/killinkcertmailcerts.before" ]; then . /opt/verb/mods/killinkcertmailcerts.before; return 0; fi # Replaces this script
 
 
 # Dependencies
-if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcertstatus; then
   /usr/bin/echo "Install inkCert first, I quit."; exit 8
 fi
-if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdnsconf; then
   /usr/bin/echo "Install inkDNS first, I quit."; exit 8
 fi
 if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
@@ -33,3 +52,7 @@ fi
 /bin/rm -f /etc/ssl/server/mail/${DOMAIN}.crt
 /bin/rm -f /etc/ssl/server/mail/${DOMAIN}.key
 
+
+
+
+if [ -e "/opt/verb/mods/killinkcertmailcerts.after" ]; then . /opt/verb/mods/killinkcertmailcerts.after; fi # Follows this script

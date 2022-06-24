@@ -36,7 +36,7 @@ exit 0; fi
 
 # Export the database
 cd /srv/www/vapps/${APPNAME}/
-/opt/verb/serfs/mysqlvappout vapp.${APPNAME}; wait
+/opt/verb/serfs/mysqlvappex vapp.${APPNAME}; wait
 
 # Backup the config
 /bin/cp /opt/verb/conf/vapp.${APPNAME} /srv/www/vapps/${APPNAME}/
@@ -64,3 +64,8 @@ http://${SERVEPATH}/verb.${APPNAME}.${SECNAME}.vbak
 
 Note that the app remains live.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/backup.after" ]; then . /opt/verb/mods/backup.after; fi # Follows this script

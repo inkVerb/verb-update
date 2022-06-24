@@ -20,3 +20,8 @@ wait
 /bin/mkdir -p /opt/ivapp/inknet/sailor/${ADDINIVSAILOR}/.ssh
 /bin/chown -R ${ADDINIVSAILOR}:${ADDINIVSAILOR} /opt/ivapp/inknet/sailor/${ADDINIVSAILOR}
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetivappaddsailor.after" ]; then . /opt/verb/mods/inknetivappaddsailor.after; fi # Follows this script

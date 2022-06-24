@@ -47,3 +47,8 @@ fi
 #Finish
 /opt/verb/serfs/inkvpnclientdl
 /bin/echo "inkVPN port now set to: ${NEWPORTADDR}"
+
+
+
+
+if [ -e "/opt/verb/mods/inkvpnport.after" ]; then . /opt/verb/mods/inkvpnport.after; fi # Follows this script

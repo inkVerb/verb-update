@@ -113,3 +113,8 @@ fi
 
 # Finish
 /bin/echo "The WordPress site duplicated from ${oDOMAIN} is now live and ready for login at: http://${nDOMAIN}/wp-admin/"
+
+
+
+
+if [ -e "/opt/verb/mods/wpdup.after" ]; then . /opt/verb/mods/wpdup.after; fi # Follows this script

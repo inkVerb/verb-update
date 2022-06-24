@@ -1,13 +1,32 @@
 #!/bin/bash
 #inkVerbSerf! verb.ink
 
-# This runs inkcertaddle for all domains and subdomains
-## Prerequesite: Certs must be installed via inkCert or this will do nothing.
+# This runs inkcertremovele for a domain and all its subdomains
+## Prerequesite: inkcertrevokele
 
 # NOTE: This is intended to be run by inkcertundole
 
 # How to use:
-## ./inkcertremoveallle [domain.tld or sub.domain.tld]
+## ./inkcertremoveallle [ domain.tld or sub.domain.tld ]
+
+usagenotes="This runs inkcertremovele for a domain and all its subdomains"
+usageformat="inkcertremoveallle [ domain.tld or sub.domain.tld ]"
+usageexample="inkcertremoveallle inkisaverb.com"
+hierarchy=( tertiary  )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkcertinstall )
+prerequesite=( inkcertrevokele )
+usedby=( inkcertundole )
+useserfs=( inkcertremovele )
+useconfigs=(  )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkcertremoveallle.replace" ]; then . /opt/verb/mods/inkcertremoveallle.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkcertremoveallle.before" ]; then . /opt/verb/mods/inkcertremoveallle.before; return 0; fi # Replaces this script
 
 
 # For the domain
@@ -22,3 +41,8 @@ find . -name "*.${DOMAIN}.conf" | while read findsitesubdomain; do
   /opt/verb/serfs/inkcertremovele ${sitesubdomain}
 wait
 done
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertremoveallle.after" ]; then . /opt/verb/mods/inkcertremoveallle.after; fi # Follows this script

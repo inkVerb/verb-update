@@ -31,3 +31,8 @@ cd ..
 # Finish
 /bin/echo "The droids from \"${CLNDROIDREPO}\" are installed."
 
+
+
+
+
+if [ -e "/opt/verb/mods/installdroid.after" ]; then . /opt/verb/mods/installdroid.after; fi # Follows this script

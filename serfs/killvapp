@@ -9,7 +9,26 @@
 # NOTE: If this is a domain app, such as WordPress or Drupal, etc., installed to a domain, after this, run: killdomain
 
 # How to use:
-## ./killvapp [app namespace]
+## ./killvapp [ app namespace ]
+
+usagenotes="This completely removes a 'vapp' (inkVerb web app), it's database, and it's config file"
+usageformat="killvapp [ app namespace ]"
+usageexample="killvapp wp"
+hierarchy=( primary )
+vsetnames=( "Vapp name" )
+vsettypes=( isazAZ09lines )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=(  )
+prerequesite=( installVAPP )
+usedby=(  )
+useserfs=( killinkdnsonesub )
+useconfigs=( siteurilist )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/killvapp.replace" ]; then . /opt/verb/mods/killvapp.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/killvapp.before" ]; then . /opt/verb/mods/killvapp.before; return 0; fi # Replaces this script
 
 
 # Include the configs
@@ -39,3 +58,7 @@ FLUSH PRIVILEGES;"
 ${APPNAME} is now dead.
 "
 
+
+
+
+if [ -e "/opt/verb/mods/killvapp.after" ]; then . /opt/verb/mods/killvapp.after; fi # Follows this script

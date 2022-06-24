@@ -4,7 +4,7 @@
 # This script removes the server credentials and certificates for inkCert-Certbot certs for a domain and replaces the Snakeoil certificate
 ## It also applies to all subdomains for that domain
 ## Prerequesite: inkcertrevokecb
-## This is intended as a subscript of inkcertundocb
+## This is intended as a subscript of inkcertremoveallcb
 
 # How to use:
 ## ./inkcertremovecb [domain.tld OR subdomain.domain.tld]
@@ -12,6 +12,26 @@
 #Eg:
 ## ./inkcertremovecb inkisaverb.com
 ## ./inkcertremovecb YOURNAME.verb.blue
+
+usagenotes="This script removes the server credentials and certificates for inkCert-Certbot certs for a domain and replaces the Snakeoil certificate"
+usageformat="inkcertremovecb [ domain.tld or sub.domain.tld ]"
+usageexample="inkcertremovecb inkisaverb.com
+inkcertremovecb YOURNAME.verb.blue"
+hierarchy=( tertiary  )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkcertinstall )
+prerequesite=( inkcertrevokecb )
+usedby=( inkcertremoveallcb )
+useserfs=(  )
+useconfigs=( servertype )	# List config files of any kind used in this serf, please preserve order of appearance
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkcertremovecb.replace" ]; then . /opt/verb/mods/inkcertremovecb.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkcertremovecb.before" ]; then . /opt/verb/mods/inkcertremovecb.before; return 0; fi # Replaces this script
 
 
 DOMAIN=$1
@@ -21,17 +41,14 @@ DOMAIN=$1
 
 if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   ## Check Nginx config status
-  if /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
-  /bin/echo "Removing inkCert-CB configs from ${DOMAIN}..."
+  if /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBSINGLE" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
+   /bin/echo "Server configs use inkCert Proper. Use: inkcertremovecbsingle"
+   exit 8
+  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
+   /bin/echo "Removing inkCert-CB configs from ${DOMAIN}..."
   else
-   if /bin/grep -Fq "#INKVERB-INKCERT=DONE_IC" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
-    /bin/echo "Server configs use inkCert Proper. Use: inkcertremove"
-    exit 8
-   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
+   if /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
     /bin/echo "Server configs use inkCert-Letsencrypt. Use: inkcertremovele"
-    exit 8
-   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBWILD" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
-    /bin/echo "Server configs use inkCert Proper. Use: inkcertremovecbwild"
     exit 8
    elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_SC" /opt/verb/conf/webserver/nginx/sites-available/${DOMAIN}.conf ; then
     /bin/echo "Server configs use inkCert Self-Cert. Use: inkcertremovesc"
@@ -44,9 +61,6 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
     exit 6
    fi
   fi
-
-  ## Remove the certs
-  /opt/verb/serfs/inkcertdeletecble ${DOMAIN}
 
   ## Check that the certs are no longer live
   if [ ! -d /etc/inkcert/le/live/${DOMAIN} ]; then
@@ -77,17 +91,14 @@ The certs still seem to be live. Did you first run inkcertrevokele or simply run
 
 elif [ ${SERVERTYPE} = "lamp" ]; then
   ## Check Apache config status
-  if /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
-  /bin/echo "Removing inkCert-CB configs from ${DOMAIN}..."
+  if /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBSINGLE" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
+   /bin/echo "Server configs use inkCert Proper. Use: inkcertremovecbsingle"
+   exit 8
+  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
+   /bin/echo "Removing inkCert-CB configs from ${DOMAIN}..."
   else
-   if /bin/grep -Fq "#INKVERB-INKCERT=DONE_IC" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
-    /bin/echo "Server configs use inkCert Proper. Use: inkcertremove"
-    exit 8
-   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
+   if /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
     /bin/echo "Server configs use inkCert-Letsencrypt. Use: inkcertremovele"
-    exit 8
-   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBWILD" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
-    /bin/echo "Server configs use inkCert Proper. Use: inkcertremovecbwild"
     exit 8
    elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_SC" /opt/verb/conf/webserver/httpd/sites-available/${DOMAIN}.conf ; then
     /bin/echo "Server configs use inkCert Self-Cert. Use: inkcertremovesc"
@@ -100,9 +111,6 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
     exit 6
    fi
   fi
-
-  ## Remove the certs
-  /opt/verb/serfs/inkcertdeletecble ${DOMAIN}
 
   ## Check that the certs are no longer live
   if [ ! -d /etc/inkcert/le/live/${DOMAIN} ]; then
@@ -130,3 +138,8 @@ The certs still seem to be live. Did you first run inkcertrevokele or simply run
   fi
 
 fi
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertremovecb.after" ]; then . /opt/verb/mods/inkcertremovecb.after; fi # Follows this script

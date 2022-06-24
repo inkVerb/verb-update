@@ -25,7 +25,7 @@ FILENAME=$1
 if [ -e "/opt/verb/conf/vapp.nextcloud" ]; then
 . /opt/verb/conf/vapp.nextcloud
 cd /srv/www/vapps/nextcloud/data
-/opt/verb/serfs/mysqlvappout vapp.nextcloud; wait
+/opt/verb/serfs/mysqlvappex vapp.nextcloud; wait
 /bin/cp /opt/verb/conf/vapp.nextcloud .
 cd /srv/www/vapps/nextcloud
 /opt/verb/serfs.txzin data
@@ -69,3 +69,8 @@ A backup of the previous Nextcloud data on this server has been saved in the vip
 
 You will probably need to log into Nextcloud as an admin to disable and re-enable apps that show \"enabled\" but are not working.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/backupnextcloudrestore.after" ]; then . /opt/verb/mods/backupnextcloudrestore.after; fi # Follows this script

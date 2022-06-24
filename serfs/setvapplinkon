@@ -83,3 +83,8 @@ wp.inkblog)
 
 esac
 
+
+
+
+
+if [ -e "/opt/verb/mods/setvapplinkon.after" ]; then . /opt/verb/mods/setvapplinkon.after; fi # Follows this script

@@ -2,15 +2,35 @@
 #inkVerbSerf! verb.ink
 
 # This batch runs inkCert-Certbot request and install scripts for a given domain, including inkVerb namespace domains
-## It also applies to all subdomains for that domain
+## It DOES NOT apply to subdomains for that domain, CB is done on a per-domain basis
 ## Prereqesite: inkcertinstall
 
 # How to use:
-## ./inkcertdocb [domain.tld NO SUBDOMAINS]
+## ./inkcertdocb [ domain.tld NO SUBDOMAINS ]
 
 #Eg:
 ## ./inkcertdocb inkisaverb.com
 ## ./inkcertdocb YOURNAME.verb.blue
+
+usagenotes="This batch runs inkCert-Certbot request and install scripts for a given domain, including inkVerb namespace domains"
+usageformat="inkcertdocb [ domain.tld NO SUBDOMAINS ]"
+usageexample="inkcertdocb inkisaverb.com
+inkcertdocb YOURNAME.verb.one"
+hierarchy=( primary )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkcertinstall )
+prerequesite=( inkcertinstall )
+usedby=( inkcertdo-all-verbs inknetmakeca )
+useserfs=( inkcertreqcb inkcertaddcb setinkcertmailcerts )
+useconfigs=( siteurilist )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkcertdocb.replace" ]; then . /opt/verb/mods/inkcertdocb.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkcertdocb.before" ]; then . /opt/verb/mods/inkcertdocb.before; return 0; fi # Replaces this script
 
 
 DOMAIN=$1
@@ -59,3 +79,8 @@ Verify above exits - IMPORTANT NOTES: ... - Congratulations!
 
 If so, then ${DOMAIN} and all subdomains are now live with inkCert Letsencrypt certificates.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertdocb.after" ]; then . /opt/verb/mods/inkcertdocb.after; fi # Follows this script

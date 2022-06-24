@@ -32,3 +32,8 @@ Email server URI: ${emailTLDURI}
 Email Status: ${SITEMAILSTATUS}
 PFA path: ${SITEPFAPATH}"
 
+
+
+
+
+if [ -e "/opt/verb/mods/showverber.after" ]; then . /opt/verb/mods/showverber.after; fi # Follows this script

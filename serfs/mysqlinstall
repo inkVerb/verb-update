@@ -1,10 +1,30 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This reinstall MySQL with new bosses and passwords after it has been removed via mysqluninstall
+# This reinstall MySQ/MariaDBL with new bosses and passwords after it has been removed via mysqluninstall
 
 # How to use:
 ## ./mysqlinstall
+
+
+usagenotes="This reinstall MySQ/MariaDBL with new bosses and passwords after it has been removed via mysqluninstall"
+usageformat="mysqlinstall"
+usageexample="mysqlinstall"
+hierarchy=( primary )
+vsetnames=(  )
+vsettypes=(  )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( mysqlinstall )
+prerequesite=( mysqluninstall )
+usedby=(  )
+useserfs=(  )
+useconfigs=(  )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/mysqlinstall.replace" ]; then . /opt/verb/mods/mysqlinstall.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/mysqlinstall.before" ]; then . /opt/verb/mods/mysqlinstall.before; return 0; fi # Replaces this script
 
 
 MYSQLPASS=$(/usr/bin/pwgen -0 -1 -A -B 11)
@@ -30,3 +50,8 @@ user = mysqlboss
 password = ${MYSQLBOSSPASS}
 host = localhost" > /opt/verb/conf/mysqlboss.cnf
 
+
+
+
+
+if [ -e "/opt/verb/mods/mysqlinstall.after" ]; then . /opt/verb/mods/mysqlinstall.after; fi # Follows this script

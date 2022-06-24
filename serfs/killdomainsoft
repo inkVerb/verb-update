@@ -1,8 +1,8 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This "soft" kills a domain added with adddomain or adddomaincgi
-## This removes the root Apache file, html/ symlink, root DNS declarations, and the root domain inkCert-LE declaration, but not other entire configs, such as the inkCert-LE config file that may apply to subdomains.
+# This "soft" kills a domain added with adddomain
+## This removes the root Apache file, html/ symlink, root DNS declarations, and the root domain inkCert declaration, but not other entire configs, such as the inkCert cli-ini config file that may apply to subdomains.
 ## This basically turns off the root domain without losing files and retains support for mail, subdomains, and other services.
 
 ## This DOES NOT:
@@ -15,14 +15,33 @@
 ### Remove the entire inkDNS zone file
 
 # How to use:
-## ./killdomainsoft [KILLDOMAIN.tld]
+## ./killdomainsoft [ domaintokill.tld ]
+
+usagenotes="This 'soft' kills a domain's web hosting entries added with adddomain, including Apache/Nginx .conf files, DNS entries, Letsencrypt cli-ini entries, and links in www/html/, but it leaves DNS files, subdomains, mail records, and the web files in www/domains/ or www/vapps/"
+usageformat="killdomainsoft [ domaintokill.tld ]"
+usageexample="killdomainsoft inkisaverb.com"
+hierarchy=( primary )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=(  )
+prerequesite=( adddomain )
+usedby=(  )
+useserfs=(  )
+useconfigs=( sitemailpath inkdnsconf inkcertstatus )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/killdomainsoft.replace" ]; then . /opt/verb/mods/killdomainsoft.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/killdomainsoft.before" ]; then . /opt/verb/mods/killdomainsoft.before; return 0; fi # Replaces this script
 
 
 # Dependencies
-if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcertstatus; then
   /usr/bin/echo "Install inkCert first, I quit."; exit 8
 fi
-if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdnsconf; then
   /usr/bin/echo "Install inkDNS first, I quit."; exit 8
 fi
 if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
@@ -49,9 +68,6 @@ elif [ ${SERVERTYPE} = "laemp" ]; then
   /usr/bin/systemctl restart nginx
 fi
 
-# Remove from inkCert
-/bin/sed -i "s/${KILLDOMAIN}, //g" /opt/verb/conf/inkcert/cli-ini/cli.${KILLDOMAIN}.ini
-
 # Remove Root Site Defaults from inkDNS
 /bin/sed -i "/; Root Site Defaults/,/;; End Root Site Defaults/d" /opt/verb/conf/inkdns/zones/db.${KILLDOMAIN}
 /bin/echo ";;; Root Site Defauls removed" >> /opt/verb/conf/inkdns/zones/db.${KILLDOMAIN}
@@ -63,3 +79,7 @@ fi
 /usr/bin/systemctl restart postfix
 /usr/bin/systemctl restart dovecot
 
+
+
+
+if [ -e "/opt/verb/mods/killdomainsoft.after" ]; then . /opt/verb/mods/killdomainsoft.after; fi # Follows this script

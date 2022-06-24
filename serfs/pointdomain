@@ -28,3 +28,8 @@ ORIG_DEST="$(find /srv/www/html/${FWDDOM} -prune -printf "%l\n")"
 
 # Finish
 /bin/echo "${FWDDOM} now forwarding to ${DEST}"
+
+
+
+
+if [ -e "/opt/verb/mods/pointdomain.after" ]; then . /opt/verb/mods/pointdomain.after; fi # Follows this script

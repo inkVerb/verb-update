@@ -48,3 +48,8 @@ wait
 /bin/echo "The secondary CA Verber credentials have been added for ${NEWCAVERBERNAME} at ${NEWCAVERBERHOST}.${NEWCAVERBERURI} with IP ${NEWCAVERBERIP}
 Now run inknetnewverber2clientkey"
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetaddsecondarycaverber.after" ]; then . /opt/verb/mods/inknetaddsecondarycaverber.after; fi # Follows this script

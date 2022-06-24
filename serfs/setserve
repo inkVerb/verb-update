@@ -101,3 +101,8 @@ find /srv/www/verb/${vTLD}.serve/${sDIR}/* -type d -mmin +30 -exec rm -rf {} \;"
 
 # Finish
 /bin/echo "Service download files set"
+
+
+
+
+if [ -e "/opt/verb/mods/setserve.after" ]; then . /opt/verb/mods/setserve.after; fi # Follows this script

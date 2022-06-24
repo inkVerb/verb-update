@@ -14,3 +14,8 @@
 # Finish
 /bin/echo "SuiteCRM cron job has been added to the system."
 
+
+
+
+
+if [ -e "/opt/verb/mods/postinstallscrm.after" ]; then . /opt/verb/mods/postinstallscrm.after; fi # Follows this script

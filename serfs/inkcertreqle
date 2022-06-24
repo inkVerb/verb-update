@@ -3,18 +3,40 @@
 
 # This requests and gets Letsencrypt certs via inkCert-Letsencrypt for a given domain, including inkVerb namespace domains
 ## It also applies to all subdomains for that domain
-## Prerequesite: inkcertinstall, domains added via newdomain/newdomaincgi or an existing and active verb domain on this Verber
+## Prerequesite: inkcertinstall, domains added via adddomain or an existing and active verb domain on the server
 ## This is intended as a subscript of inkcertdole
 ## Use the "r" option at the end to bypass the normal check for already-done LE certs and refresh the cert, such as to include recently added subdomains.
 
 # How to use:
-## ./inkcertreqle [domain.tld NO SUBDOMAINS] [r (optional)]
+## ./inkcertreqle [ domain.tld NO SUBDOMAINS ] [ r (optional) ]
 
 #Eg:
 ## ./inkcertreqle inkisaverb.com
 ## ./inkcertreqle YOURNAME.verb.blue
 ## ./inkcertreqle inkisaverb.com r
 ## ./inkcertreqle YOURNAME.verb.pink r
+
+usagenotes="This requests and gets Letsencrypt certs via inkCert-Letsencrypt for a given domain, including inkVerb namespace domains"
+usageformat="inkcertreqle [ domain.tld NO SUBDOMAINS ] [ r (optional) ]"
+usageexample="inkcertreqle inkisaverb.com
+inkcertreqle YOURNAME.verb.blue
+inkcertreqle inkisaverb.com r
+inkcertreqle YOURNAME.verb.pink r"
+hierarchy=( tertiary inkcertdole )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=( r )
+voptflagpurpose=( "Refresh if already done (required for domains with certs already installed)" )
+dependencyinstall=( inkcertinstall )
+prerequesite=( inkcertinstall adddomain )
+usedby=( inkcertdole )
+useserfs=(  )
+useconfigs=( sitenameip siteurilist servertype inkcertstatus )	# List config files of any kind used in this serf, please preserve order of appearance
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkcertreqle.replace" ]; then . /opt/verb/mods/inkcertreqle.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkcertreqle.before" ]; then . /opt/verb/mods/inkcertreqle.before; return 0; fi # Replaces this script
 
 
 DOMAIN=$1
@@ -23,7 +45,7 @@ DOMAIN=$1
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
 . /opt/verb/conf/servertype
-. /opt/verb/conf/inkcert/inkcertstatus
+. /opt/verb/conf/inkcertstatus
 
 # Check inkCert installed
 if [ "${INKCERTINSTALLED}" = "NOT_YET" ]; then
@@ -54,19 +76,19 @@ case ${INKCERTED} in
   "
   exit 0
   ;;
-  DONE_IC)
-  /bin/echo $inkcertmsg
-  /bin/echo "inkCert Proper is already setup for ${DOMAIN}.
-
-  To set up certs differently, first run: inkcertrevoke ${DOMAIN}, then run this again.
-  "
-  exit 0
-  ;;
   DONE_LE)
   /bin/echo $inkcertmsg
   /bin/echo "inkCert Letsencrypt is already setup for ${DOMAIN}.
 
   To set up certs differently, first run: inkcertrevokele ${DOMAIN}, then run this again.
+  "
+  exit 0
+  ;;
+  DONE_CBSINGLE)
+  /bin/echo $inkcertmsg
+  /bin/echo "inkCert cert-bot single is already setup for ${DOMAIN}.
+
+  To set up certs differently, first run: inkcertrevokecbsingle ${DOMAIN}, then run this again.
   "
   exit 0
   ;;
@@ -189,3 +211,8 @@ fi
 /bin/echo "
 Finished getting certs. Now to install them with inkcertaddle...
 "
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertreqle.after" ]; then . /opt/verb/mods/inkcertreqle.after; fi # Follows this script

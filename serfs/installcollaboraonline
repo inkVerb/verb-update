@@ -67,3 +67,8 @@ Next:
 2. Finish the settings: Settings > Administration > Collabora Online > Collabora Online server: https://b.${blueURI}:${PORT}
 "
 
+
+
+
+
+if [ -e "/opt/verb/mods/installcollaboraonline.after" ]; then . /opt/verb/mods/installcollaboraonline.after; fi # Follows this script

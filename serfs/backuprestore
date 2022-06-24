@@ -32,7 +32,7 @@ FILENAME=$2
 if [ -e "/opt/verb/conf/vapp.${APPNAME}" ]; then
 . /opt/verb/conf/vapp.${APPNAME}
 cd /srv/www/vapps/${APPNAME}/
-/opt/verb/serfs/mysqlvappout vapp.${APPNAME}; wait
+/opt/verb/serfs/mysqlvappex vapp.${APPNAME}; wait
 /bin/mv /opt/verb/conf/vapp.${APPNAME} .
 cd /srv/www/vapps/
 /opt/verb/serfs.txzin ${APPNAME}
@@ -76,3 +76,8 @@ cd /srv/www/vapps/${APPNAME}
 
 A backup of the previous ${APPNAME} on this server has been saved in the vip folder just in case.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/backuprestore.after" ]; then . /opt/verb/mods/backuprestore.after; fi # Follows this script

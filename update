@@ -19,7 +19,7 @@
 # DEV NOTE: Serfs are automatically copied & updated from ${VUPDATE_REPO}/serfs to the Verber before any patches run, after the verno check.
 
 
-MIN_VERNO=0.88.01
+MIN_VERNO=0.90.00
 VUPDATE_REPO="verb-dev-update"
 
 ## Sample version updater:
@@ -73,14 +73,26 @@ exit 0
 fi
 
 # Update Serfs
-/bin/rm -f /opt/verb/serfs/*
-/bin/cp /opt/verb/${VUPDATE_REPO}/serfs/* /opt/verb/serfs/
+/bin/rm -rf /opt/verb/serfs/*
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/serfs/* /opt/verb/serfs/
 /bin/chmod 750 /opt/verb/serfs/*
 /bin/chmod 750 /opt/verb/donjon/*.sh
 cd /opt/verb
 /bin/rm -f README.md
 /usr/bin/wget https://raw.githubusercontent.com/inkVerb/verb-dev/master/README.md
 /bin/echo "Serfs have been updated."
+
+# Update ink tools
+/bin/rm -rf /opt/verb/ink/inks/*
+/bin/rm -rf /opt/verb/ink/help/*
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/inks/* /opt/verb/ink/inks/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/help/* /opt/verb/ink/help/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/PHPcities.pb /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/actions.pb /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink.functions /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink.opt /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink.run /opt/verb/ink/
 
 # Update inkLists
 . /opt/verb/conf/siteinkget
@@ -138,7 +150,7 @@ fi
 # Run version-by-version updates
 
 
-#UPGRADE_PATCH_VERNO=0.88.02
+#UPGRADE_PATCH_VERNO=0.90.01
 #if [ $(/bin/echo ${UPGRADE_PATCH_VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
 #CLEAN_PATCH_VERNO=$(/bin/echo $UPGRADE_PATCH_VERNO | /bin/sed -e "s/\.//g")
 #PCLdoc="$(/bin/cat <<UPCL

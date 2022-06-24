@@ -90,3 +90,8 @@ All wrapped-up, key and csr for ${DOMAIN} be waitin' in verb/req/ and vip/req/ f
 
 If you plan to give your csr to another Authority than inkCert, you will need: 1. their Root CA & Intermediate CA certificate chain file, 2. your domain's CA-signed certificate named \"${DOMAIN}.cert.pem\", and 3. all three of these PEM encoded files!
 "
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertmakecsr.after" ]; then . /opt/verb/mods/inkcertmakecsr.after; fi # Follows this script

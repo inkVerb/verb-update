@@ -9,3 +9,8 @@
 
 /bin/sed -i "s/INKGET_LIST=.*/INKGET_LIST=\"CUSTOM\"/g" /opt/verb/conf/siteinkget
 
+
+
+
+
+if [ -e "/opt/verb/mods/setrepocust.after" ]; then . /opt/verb/mods/setrepocust.after; fi # Follows this script

@@ -14,10 +14,14 @@
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
 
-/usr/bin/apt-get install vsftpd
+# Install
+/usr/bin/pacman -S --noconfirm vsftpd
+/usr/bin/systemctl enable vsftpd.service
+# Learn more https://wiki.archlinux.org/title/Very_Secure_FTP_Daemon#Installation
 
 # Allow users to upload
-/bin/sed -i "s/#write_enable=YES/write_enable=YES/g" /etc/vsftpd.conf
+sed -i 's/^#write_enable=.*/write_enable=YES/' /etc/vsftpd.conf
+sed -i 's/^write_enable=.*/write_enable=YES/' /etc/vsftpd.conf # Be certain
 
 # Limit users to their respective directories
 /bin/sed -i "s/#chroot_local_user=YES/chroot_local_user=YES/g" /etc/vsftpd.conf
@@ -33,7 +37,7 @@
 #/bin/echo "listen_port=2121" >> /etc/vsftpd.conf
 
 # Set the branding
-/bin/sed -i "s/#ftpd_banner=Welcome to blah FTP service\./ftpd_banner=inkVerb FTP, get inking.../g" /etc/vsftpd.conf
+/bin/sed -i "s/#ftpd_banner=Welcome to blah FTP service\./ftpd_banner=ink FTP/g" /etc/vsftpd.conf
 
 # Enable SSL
 ## Comment the snakeoil settings
@@ -49,7 +53,13 @@
 # Put the default ftp user to another directory
 /bin/mkdir /srv/vsftpd
 /bin/mkdir /srv/vsftpd/ftp
-usermod -d /srv/vsftpd/ftp ftp
+/usr/bin/usermod -d /srv/vsftpd/ftp ftp
+
+# Files web folder link
+rm -rf /srv/www/verb/vip.files
+/bin/ln -sfn /srv/vip/files /srv/www/verb/vip.files
+/bin/chown -R www:www /srv/www/verb/vip.files
+/bin/chmod -R 750 /srv/www/verb/vip.files
 
 # Start the service
 ## This is expirimental
@@ -64,3 +74,8 @@ usermod -d /srv/vsftpd/ftp ftp
 . /opt/verb/conf/siteport
 /usr/bin/ufw allow from any to any port ${SITEPORT}
 
+
+
+
+
+if [ -e "/opt/verb/mods/installvsftpd.after" ]; then . /opt/verb/mods/installvsftpd.after; fi # Follows this script

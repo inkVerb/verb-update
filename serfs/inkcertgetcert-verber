@@ -32,3 +32,8 @@ fi
 # Tell the inkCert Server to do its job
 # inkNet run on Inker: verber-inkcertreceivecsr
 
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertgetcert-verber.after" ]; then . /opt/verb/mods/inkcertgetcert-verber.after; fi # Follows this script

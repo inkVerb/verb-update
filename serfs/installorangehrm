@@ -86,3 +86,8 @@ Database user password: ${DBPASSWORD}
 
 Go to http://hrm.${redURI} to install.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installorangehrm.after" ]; then . /opt/verb/mods/installorangehrm.after; fi # Follows this script

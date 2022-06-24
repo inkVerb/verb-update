@@ -37,3 +37,8 @@ ssh-keygen -s ~/.ssh/inknet/ca/in_ca_${IAMCANAME}_key -N "" -I in_cav_${IAMCANAM
 # Finish
 /bin/echo "A new hostkey has been created and signed for this CA Verber."
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetnewcahostkey.after" ]; then . /opt/verb/mods/inknetnewcahostkey.after; fi # Follows this script

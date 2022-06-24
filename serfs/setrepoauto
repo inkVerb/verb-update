@@ -9,3 +9,8 @@
 
 /bin/sed -i "s/INKGET_LIST=.*/INKGET_LIST=\"AUTO_UPDATE\"/g" /opt/verb/conf/siteinkget
 
+
+
+
+
+if [ -e "/opt/verb/mods/setrepoauto.after" ]; then . /opt/verb/mods/setrepoauto.after; fi # Follows this script

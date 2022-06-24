@@ -25,3 +25,8 @@ fi
 
 #Finish
 /bin/echo "inkVPN email now set to: ${NEWEMAILADDR}"
+
+
+
+
+if [ -e "/opt/verb/mods/inkvpnemail.after" ]; then . /opt/verb/mods/inkvpnemail.after; fi # Follows this script

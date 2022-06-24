@@ -47,3 +47,8 @@ exit 6; fi
 /bin/echo "http://${WPDOMAIN} is ready to install WP Multisite. Log in again, make sure all plugins are disabled, then go to Tools > Network Setup and follow instructions.
 Then, when instructed to modify the wp-config.php and .htaccess files, just run: wpmuhtaccess & wpmusetconfig, which will complete that setup for you."
 
+
+
+
+
+if [ -e "/opt/verb/mods/wpmuseton.after" ]; then . /opt/verb/mods/wpmuseton.after; fi # Follows this script

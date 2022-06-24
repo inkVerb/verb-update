@@ -149,3 +149,8 @@ If you wish to connect Vrk Stations to this Verber (perhaps), run inknetinstallc
 If you wish to connect this Verber to the CA Inker you just added (probably should), run inknetnewverberclientkey
 "
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetmakeverberclient.after" ]; then . /opt/verb/mods/inknetmakeverberclient.after; fi # Follows this script

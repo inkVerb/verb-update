@@ -53,3 +53,8 @@ fi
 
 ## DEV NOTE: Other secure methods are planned in the roadmap
 # SSH
+
+
+
+
+if [ -e "/opt/verb/mods/inkget.after" ]; then . /opt/verb/mods/inkget.after; fi # Follows this script

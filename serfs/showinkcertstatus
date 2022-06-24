@@ -18,3 +18,8 @@ DOMAIN=$1
 # Display info
 /bin/echo "${DOMAIN} inkCert SSL status: ${INKCERTED}"
 
+
+
+
+
+if [ -e "/opt/verb/mods/showinkcertstatus.after" ]; then . /opt/verb/mods/showinkcertstatus.after; fi # Follows this script

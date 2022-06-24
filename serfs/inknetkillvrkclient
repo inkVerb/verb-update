@@ -36,3 +36,8 @@ userdel -r ${CLIENTUSERNAME}
 # Finish
 /bin/echo "Done. ${KILLVRKCLIENT} pushed overboard and fed to the sharks."
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetkillvrkclient.after" ]; then . /opt/verb/mods/inknetkillvrkclient.after; fi # Follows this script

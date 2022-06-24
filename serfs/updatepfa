@@ -30,7 +30,7 @@ if [ -d /srv/www/email/postfixadmin.vbak ]; then
 /bin/cp /srv/www/email/postfixadmin.vbak/config.local.php /srv/www/email/postfixadmin/config.local.php
 
 # Copy the branding files
-/bin/cp /opt/verb/conf/lab/vmail/postfixadmin/pfapics/images/logo-ink.png /srv/www/email/postfixadmin/public/images/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfixadmin/pfapics/images/logo-ink.png /srv/www/email/postfixadmin/public/images/
 
 # Own
 /bin/chown -R www:www /srv/www/email/postfixadmin
@@ -89,3 +89,8 @@ Now, you NEED to run the database upgrade at:
 If all works well, you may delete the backup wtih updatepfarmvbak before updating again.
 "
 
+
+
+
+
+if [ -e "/opt/verb/mods/updatepfa.after" ]; then . /opt/verb/mods/updatepfa.after; fi # Follows this script

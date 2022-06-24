@@ -4,14 +4,33 @@
 # This removes all inkDKIM (OpenDKIM) records for a specific domain
 
 # How to use:
-## ./killinkdkim [domain.tld or subdomain.domain.tld etc]
+## ./killinkdkim [ domain.tld or subdomain.domain.tld etc ]
+
+usagenotes="This removes all inkDKIM (OpenDKIM) records for a specific domain"
+usageformat="killinkdkim [ domain.tld or subdomain.domain.tld etc ]"
+usageexample="killinkdkim inkisaverb.com"
+hierarchy=( tertiary killdomainshell )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=(  )
+prerequesite=( newinkdkim inkdnsaddinkdkim )
+usedby=( killinkcertmail )
+useserfs=(  )
+useconfigs=( inkcertstatus inkdnsconf sitemailpath )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/killinkdkim.replace" ]; then . /opt/verb/mods/killinkdkim.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/killinkdkim.before" ]; then . /opt/verb/mods/killinkdkim.before; return 0; fi # Replaces this script
 
 
 # Dependencies
-if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcertstatus; then
   /usr/bin/echo "Install inkCert first, I quit."; exit 8
 fi
-if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdnsconf; then
   /usr/bin/echo "Install inkDNS first, I quit."; exit 8
 fi
 if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
@@ -32,3 +51,8 @@ KILLDKIMDOMAIN=$1
 /usr/bin/systemctl restart opendkim
 /usr/bin/systemctl restart postfix
 /usr/bin/systemctl restart dovecot
+
+
+
+
+if [ -e "/opt/verb/mods/killinkdkim.after" ]; then . /opt/verb/mods/killinkdkim.after; fi # Follows this script

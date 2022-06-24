@@ -122,3 +122,8 @@ Database password: ${DBPASSWORD}
 
 Go to http://${DOMAIN}/wp-admin/index.php to install.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installwpinkbb.after" ]; then . /opt/verb/mods/installwpinkbb.after; fi # Follows this script

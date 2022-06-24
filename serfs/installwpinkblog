@@ -119,3 +119,8 @@ Database password: ${DBPASSWORD}
 
 Go to http://blog.${inkURI}/wp-admin/index.php to install.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installwpinkblog.after" ]; then . /opt/verb/mods/installwpinkblog.after; fi # Follows this script

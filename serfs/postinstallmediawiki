@@ -19,3 +19,8 @@
 
 /bin/echo "
 Post install finished."
+
+
+
+
+if [ -e "/opt/verb/mods/postinstallmediawiki.after" ]; then . /opt/verb/mods/postinstallmediawiki.after; fi # Follows this script

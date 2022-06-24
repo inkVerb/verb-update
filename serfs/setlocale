@@ -23,3 +23,8 @@ LC_MEASUREMENT="en_US.UTF-8"
 " > /etc/default/locale
 
 sudo reboot
+
+
+
+
+if [ -e "/opt/verb/mods/setlocale.after" ]; then . /opt/verb/mods/setlocale.after; fi # Follows this script

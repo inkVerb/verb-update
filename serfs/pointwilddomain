@@ -35,3 +35,8 @@ EOF
 
 # Finish
 /bin/echo "${FWDDOM} now wildly forwarding subdomains and paths to *.${DEST}/*"
+
+
+
+
+if [ -e "/opt/verb/mods/pointwilddomain.after" ]; then . /opt/verb/mods/pointwilddomain.after; fi # Follows this script

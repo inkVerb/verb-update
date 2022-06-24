@@ -62,3 +62,8 @@ wait
 inkNet has been installed as a CA Verber and is ready to add Verber and Vrk Clients.
 "
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetinstallca.after" ]; then . /opt/verb/mods/inknetinstallca.after; fi # Follows this script

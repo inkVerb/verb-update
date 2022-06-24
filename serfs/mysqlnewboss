@@ -1,15 +1,36 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This creates a new MySQL database root user with password
+# This creates a new MySQL/MariaDB database root user with password
 
 # How to use:
-## ./mysqlnewboss [dbruser] [dbpassword - optional]
+## ./mysqlnewboss [ database username ] [ database user password - optional ]
+
+usagenotes="This creates a new MySQL/MariaDB database root user with password"
+usageformat="mysqlnewboss [ database username ] [ database user password - optional]"
+usageexample="mysqlnewboss myGreatDBuser99
+mysqlnewboss myGreatDBuser99 Secret12345%@"
+hierarchy=( primary )
+vsetnames=( "Database username" )
+vsettypes=( isSQLUserCredential )
+voptnames=( "Database password" )
+vopttypes=( isSQLUserCredential )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( mysqlinstall )
+prerequesite=(  )
+usedby=(  )
+useserfs=(  )
+useconfigs=(  )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/mysqlnewboss.replace" ]; then . /opt/verb/mods/mysqlnewboss.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/mysqlnewboss.before" ]; then . /opt/verb/mods/mysqlnewboss.before; return 0; fi # Replaces this script
 
 
 DBBUSER=$1
 if [ -z ${2} ]; then
 DBBPASSWORD=$(/usr/bin/pwgen -s -1 10)
+serfOUT="New Password: ${DBPASSWORD}"
 else
 DBBPASSWORD=$2
 fi
@@ -27,3 +48,8 @@ user = ${DBBUSER}
 password = ${DBBPASSWORD}
 host = localhost
 " > /opt/verb/conf/mysqlnewboss.${DBBUSER}.cnf
+
+
+
+
+if [ -e "/opt/verb/mods/mysqlnewboss.after" ]; then . /opt/verb/mods/mysqlnewboss.after; fi # Follows this script

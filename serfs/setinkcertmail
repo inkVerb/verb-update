@@ -2,18 +2,18 @@
 #inkVerbSerf! verb.ink
 
 # This sets up basic mail certificates and subdomain dummy sites for inkCert-LE
-## This is run automatically by setupverb, installpostfixvmail, and newdomainshell, and normally should not be run independently
+## This is run automatically by setupverb, inkvmailinstall, and newdomainshell, and normally should not be run independently
 
 # How to use:
 ## ./setinkcertmail somedomain.tld
-## ./setinkcertmail name.verb.ink verber (skip inkCert cli.ini, used by installpostfixvmail)
+## ./setinkcertmail name.verb.ink verber (skip inkCert cli.ini, used by inkvmailinstall)
 
 
 # Dependencies
-if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcertstatus; then
   /usr/bin/echo "Install inkCert first, I quit."; exit 8
 fi
-if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdnsconf; then
   /usr/bin/echo "Install inkDNS first, I quit."; exit 8
 fi
 if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
@@ -53,7 +53,7 @@ local_name imap.${DOMAIN} {
 }
 EOF
 ## Own
-/bin/chown vmail:dovecot /etc/dovecot/crt.d/${DOMAIN}.conf
+/bin/chown inkvmail:dovecot /etc/dovecot/crt.d/${DOMAIN}.conf
 /bin/chmod o-rwx /etc/dovecot/crt.d/${DOMAIN}.conf
 
 # Postfix
@@ -98,3 +98,8 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   /opt/verb/serfs/ensiteapache mail.${DOMAIN} smtp.${DOMAIN} imap.${DOMAIN} pop3.${DOMAIN} pop2.${DOMAIN} pop.${DOMAIN}
 
 fi
+
+
+
+
+if [ -e "/opt/verb/mods/setinkcertmail.after" ]; then . /opt/verb/mods/setinkcertmail.after; fi # Follows this script

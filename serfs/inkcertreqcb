@@ -2,7 +2,8 @@
 #inkVerbSerf! verb.ink
 
 # This requests and gets Letsencrypt-Certbot wildcard certs via inkCert-Certbot for a given domain
-## Prerequesite: inkcertinstall, domains added via newdomain/newdomaincgi or an existing and active verb domain on this Verber
+## This requests a wildcard certificate, good for the domain and a wildcard for all subdomains
+## Prerequesite: inkcertinstall, domains added via newdomain/newdomaincgi or an existing and active verb domain on the server
 ## This is intended as a subscript of inkcertdocb
 ### BUT...
 ###
@@ -10,11 +11,31 @@
 ###
 
 # How to use:
-## ./inkcertreqcb [domain.tld NO SUBDOMAINS]
+## ./inkcertreqcb [ domain.tld NO SUBDOMAINS ]
 
 #Eg:
 ## ./inkcertreqcb inkisaverb.com
 ## ./inkcertreqcb YOURNAME.verb.blue
+
+usagenotes="This requests and gets Letsencrypt-Certbot wildcard certs via inkCert-Certbot for a given domain"
+usageformat="inkcertreqcb [ domain.tld NO SUBDOMAINS ]"
+usageexample="inkcertreqcb inkisaverb.com
+inkcertreqcb YOURNAME.verb.blue"
+hierarchy=( tertiary  )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=( r )
+voptflagpurpose=( "Refresh if already done (required for domains with certs already installed)" )
+dependencyinstall=( inkcertinstall )
+prerequesite=( inkcertinstall adddomain 'Certbot DNS Keys installed or CLI interaction' )
+usedby=( inkcertdocb )
+useserfs=(  )
+useconfigs=( sitenameip siteurilist servertype inkcertstatus )	# List config files of any kind used in this serf, please preserve order of appearance
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkcertreqcb.replace" ]; then . /opt/verb/mods/inkcertreqcb.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkcertreqcb.before" ]; then . /opt/verb/mods/inkcertreqcb.before; return 0; fi # Replaces this script
 
 
 DOMAIN=$1
@@ -23,7 +44,7 @@ DOMAIN=$1
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
 . /opt/verb/conf/servertype
-. /opt/verb/conf/inkcert/inkcertstatus
+. /opt/verb/conf/inkcertstatus
 
 # Check inkCert installed
 if [ "${INKCERTINSTALLED}" = "NOT_YET" ]; then
@@ -54,19 +75,19 @@ case ${INKCERTED} in
   "
   exit 0
   ;;
-  DONE_IC)
-  /bin/echo $inkcertmsg
-  /bin/echo "inkCert Proper is already setup for ${DOMAIN}.
-
-  To set up certs differently, first run: inkcertrevoke ${DOMAIN}, then run this again.
-  "
-  exit 0
-  ;;
   DONE_LE)
   /bin/echo $inkcertmsg
   /bin/echo "inkCert Letsencrypt is already setup for ${DOMAIN}.
 
   To set up certs differently, first run: inkcertrevokele ${DOMAIN}, then run this again.
+  "
+  exit 0
+  ;;
+  DONE_CBSINGLE)
+  /bin/echo $inkcertmsg
+  /bin/echo "inkCert cert-bot single is already setup for ${DOMAIN}.
+
+  To set up certs differently, first run: inkcertrevokecbsingle ${DOMAIN}, then run this again.
   "
   exit 0
   ;;
@@ -157,8 +178,8 @@ fi
 # Get the certs
 ##NOTE make the system wait before and after Certbot because sometimes CB can stumble over it's own feet.
 sleep 1
-#DEV: This currently does only the domain and wildcard domains interactively, not according to cli.ini files; this needs to be automated to modify inkDNS zone files with --preferred-challenges=dns
-#/usr/bin/certbot certonly --dns-rfc2136 --dns-rfc2136-credentials /etc/letsencrypt/rfc2136.ini --email ${INKCERTEMAIL} --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --force-renewal -d "${DOMAIN}" -d "*.${DOMAIN}"
+#DEV: This currently does only the domain interactively, not according to cli.ini files; this needs to be automated to modify inkDNS zone files with --preferred-challenges=dns
+#/usr/bin/certbot certonly --dns-rfc2136 --dns-rfc2136-credentials /etc/letsencrypt/rfc2136.ini --email ${INKCERTEMAIL} --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --force-renewal -d "${DOMAIN}" -d *.${DOMAIN}
 #DEV: The above shell command should work, once the on-server Named zones are synced with other nameservers, such as ns1.inkisaverb.com
 if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   /usr/bin/certbot --nginx certonly --preferred-challenges=dns --email ${INKCERTEMAIL} --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --renew-by-default -d "${DOMAIN}" -d *.${DOMAIN}
@@ -171,11 +192,11 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   fi
   /bin/systemctl restart nginx; wait
 elif [ ${SERVERTYPE} = "lamp" ]; then
-  /usr/bin/certbot --apache certonly --preferred-challenges=dns --email ${INKCERTEMAIL} --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --renew-by-default -d "${DOMAIN}" -d "*.${DOMAIN}"
+  /usr/bin/certbot --apache certonly --preferred-challenges=dns --email ${INKCERTEMAIL} --server https://acme-v02.api.letsencrypt.org/directory --agree-tos --no-eff-email --renew-by-default -d "${DOMAIN}" -d *.${DOMAIN}
   if [ "$?" != "0" ]; then
     /bin/echo "Certs not installed, cannot proceed."
-    certsuccess="false"
-    export exit 4
+    export certsuccess="false"
+    exit 4
   else
     export certsuccess="true"
   fi
@@ -197,3 +218,8 @@ fi
 /bin/echo "
 Finished getting certs. Now to install them with inkcertaddcb...
 "
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertreqcb.after" ]; then . /opt/verb/mods/inkcertreqcb.after; fi # Follows this script

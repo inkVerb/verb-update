@@ -266,3 +266,8 @@ if [ "$1" = "scm.red" ]; then
 exit 0
 fi
 
+
+
+
+
+if [ -e "/opt/verb/mods/pointink.after" ]; then . /opt/verb/mods/pointink.after; fi # Follows this script

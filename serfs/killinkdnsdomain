@@ -1,0 +1,66 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This removes an existing domain inkDNS zone file from this Verber
+
+# How to use:
+## ./killinkdnsdomain [ domain.tld ]
+
+usagenotes="This removes an existing domain inkDNS zone file from this Verber"
+usageformat="killinkdnsdomain [ domain.tld or subdomain.domain.tld etc ]"
+usageexample="killinkdnsdomain inkisaverb.com"
+hierarchy=( tertiary killdomainshell )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=( "verber" )
+vopttypes=( string_match )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=(  )
+prerequesite=( inkdnsadddomain )
+usedby=( killdomainshell )
+useserfs=( inkdnsrefreshbind )
+useconfigs=( inkcertstatus inkdnsconf sitemailpath )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/killinkdnsdomain.replace" ]; then . /opt/verb/mods/killinkdnsdomain.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/killinkdnsdomain.before" ]; then . /opt/verb/mods/killinkdnsdomain.before; return 0; fi # Replaces this script
+
+
+# Dependencies
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcertstatus; then
+  /usr/bin/echo "Install inkCert first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdnsconf; then
+  /usr/bin/echo "Install inkDNS first, I quit."; exit 8
+fi
+if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
+  /usr/bin/echo "Install Postfix Vmail first, I quit."; exit 8
+fi
+
+DNSDOMAIN="$1"
+
+# Include the configs
+. /opt/verb/conf/sitenameip
+
+# Check if added
+if [ ! -e "/opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}" ]; then
+/bin/echo "The domain ${DNSDOMAIN} zone file has not been created. Use inkdnsadddomain to add it."
+exit 0; fi
+
+# Remove the records
+/bin/rm -f /opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}
+/bin/rm -f /opt/verb/conf/inkdns/zones/nv.${DNSDOMAIN}
+
+# Refresh zones & delete the global rDNS entry
+if [ -f "/opt/verb/conf/inkdnsconf" ]; then
+  . /opt/verb/conf/inkdnsconf
+  if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
+/opt/verb/serfs/inkdnsrefreshbind; fi; fi
+
+# Finish
+/bin/echo "${DNSDOMAIN} DNS zone file removed."
+
+
+
+
+if [ -e "/opt/verb/mods/killinkdnsdomain.after" ]; then . /opt/verb/mods/killinkdnsdomain.after; fi # Follows this script

@@ -95,16 +95,16 @@ if /bin/grep -Fq "INKCERTED=DONE_LE" /opt/verb/conf/inkcert/cli-ini/siteinkcert.
 /opt/verb/serfs/inkcertaddle ${DOMAIN}
 wait
 fi
-### inkCert-CB DONE
-if /bin/grep -Fq "INKCERTED=DONE_CB" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
-/bin/echo "inkCert-IC is already setup for ${DOMAIN}. Updating the Apache configs..."
-/opt/verb/serfs/inkcertaddcb ${DOMAIN}
+### inkCert-CBSINGLE DONE
+if /bin/grep -Fq "INKCERTED=DONE_CBSINGLE" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+/bin/echo "inkCert-CBSINGLE is already setup for ${DOMAIN}. Updating the Apache configs..."
+/opt/verb/serfs/inkcertaddcbsingle ${DOMAIN}
 wait
 fi
-### inkCert-IC DONE
-if /bin/grep -Fq "INKCERTED=DONE_IC" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
-/bin/echo "inkCert-IC is already setup for ${DOMAIN}. Updating the Apache configs..."
-/opt/verb/serfs/inkcertadd ${DOMAIN}
+### inkCert-CB DONE
+if /bin/grep -Fq "INKCERTED=DONE_CB" /opt/verb/conf/inkcert/cli-ini/siteinkcert.${DOMAIN}; then
+/bin/echo "inkCert-CB is already setup for ${DOMAIN}. Updating the Apache configs..."
+/opt/verb/serfs/inkcertaddcb ${DOMAIN}
 wait
 fi
 
@@ -152,3 +152,7 @@ cd /srv/www/ghost/ghostblog && NODE_ENV=production forever start index.js
 /bin/echo "Ghost is setup.
 Go to http://${DOMAIN}/ghost/ghost to install."
 
+
+
+
+if [ -e "/opt/verb/mods/installghostinkblog.after" ]; then . /opt/verb/mods/installghostinkblog.after; fi # Follows this script

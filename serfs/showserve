@@ -11,3 +11,8 @@
 
 # Show the info
 /bin/echo "https://${SERVEPATH}"
+
+
+
+
+if [ -e "/opt/verb/mods/showserve.after" ]; then . /opt/verb/mods/showserve.after; fi # Follows this script

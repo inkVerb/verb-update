@@ -446,3 +446,8 @@ ex ()
 }
 EOF
 fi
+
+
+
+
+if [ -e "/opt/verb/mods/setbashrc.after" ]; then . /opt/verb/mods/setbashrc.after; fi # Follows this script

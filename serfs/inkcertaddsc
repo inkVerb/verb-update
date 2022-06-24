@@ -1,7 +1,7 @@
 #!/bin/bash
 #inkVerbSerf! verb.ink
 
-# This installs inkCert Self-Cert Apache/NGINX credentials for a given domain, including inkVerb namespace domains
+# This installs inkCert Self-Cert Apache/Nginx credentials for a given domain, including inkVerb namespace domains
 ## It applies only to one domain/subdomain at a time
 ## Prerequesite: inkcertreqsc
 ## This is intended as a subscript of inkcertdosc
@@ -24,7 +24,7 @@ CERTDOMAIN=$2
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
 . /opt/verb/conf/servertype
-. /opt/verb/conf/inkcert/inkcertstatus
+. /opt/verb/conf/inkcertstatus
 
 # Check inkCert installed
 if [ "${INKCERTINSTALLED}" = "NOT_YET" ]; then
@@ -67,14 +67,11 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-CB: ${SITEDOMAIN}. Moving on..."
    exit 0
-  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBWILD" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
-   /bin/echo "Already certified by inkCert-CBWILD: ${SITEDOMAIN}. Moving on..."
+  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBSINGLE" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
+   /bin/echo "Already certified by inkCert-CBSINGLE: ${SITEDOMAIN}. Moving on..."
    exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-LE: ${SITEDOMAIN}. Moving on..."
-   exit 0
-  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_IC" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
-   /bin/echo "Already certified by inkCert-IC: ${SITEDOMAIN}. Moving on..."
    exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=NA" /opt/verb/conf/webserver/nginx/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "inkCert certs do not apply here: ${SITEDOMAIN}. Moving on..."
@@ -96,7 +93,7 @@ if [ ${SERVERTYPE} = "lemp" ] || [ ${SERVERTYPE} = "laemp" ]; then
   ## inkCert status & exit
   if [ "${FIRSTINKCERTADD}" = "NOT_YET" ]; then
     ### Config status: first inkCert done
-    /bin/sed -i "s/FIRSTINKCERTADD=\"NOT_YET\"/FIRSTINKCERTADD=\"DONE\"/g" /opt/verb/conf/inkcert/inkcertstatus
+    /bin/sed -i "s/FIRSTINKCERTADD=\"NOT_YET\"/FIRSTINKCERTADD=\"DONE\"/g" /opt/verb/conf/inkcertstatus
     ### Create the cron job
     #### Add inkCertLE's auto updater to the cron
     /bin/echo '3 3 * * * root /opt/verb/donjon/inkcert-renew-allsc.sh' > /etc/cron.d/inkcertrenewcronsc
@@ -117,14 +114,11 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CB" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-CB: ${SITEDOMAIN}. Moving on..."
    exit 0
-  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBWILD" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
-   /bin/echo "Already certified by inkCert-CBWILD: ${SITEDOMAIN}. Moving on..."
+  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_CBSINGLE" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
+   /bin/echo "Already certified by inkCert-CBSINGLE: ${SITEDOMAIN}. Moving on..."
    exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_LE" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "Already certified by inkCert-LE: ${SITEDOMAIN}. Moving on..."
-   exit 0
-  elif /bin/grep -Fq "#INKVERB-INKCERT=DONE_IC" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
-   /bin/echo "Already certified by inkCert-IC: ${SITEDOMAIN}. Moving on..."
    exit 0
   elif /bin/grep -Fq "#INKVERB-INKCERT=NA" /opt/verb/conf/webserver/httpd/sites-available/${SITEDOMAIN}.conf ; then
    /bin/echo "inkCert certs do not apply here: ${SITEDOMAIN}. Moving on..."
@@ -147,7 +141,7 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   ## inkCert status & exit
   if [ "${FIRSTINKCERTADD}" = "NOT_YET" ]; then
     ### Config status: first inkCert done
-    /bin/sed -i "s/FIRSTINKCERTADD=\"NOT_YET\"/FIRSTINKCERTADD=\"DONE\"/g" /opt/verb/conf/inkcert/inkcertstatus
+    /bin/sed -i "s/FIRSTINKCERTADD=\"NOT_YET\"/FIRSTINKCERTADD=\"DONE\"/g" /opt/verb/conf/inkcertstatus
     ### Create the cron job
     #### Add inkCertLE's auto updater to the cron
     /bin/echo '3 3 * * * root /opt/verb/donjon/inkcert-renew-allsc.sh' > /etc/cron.d/inkcertrenewcronsc
@@ -167,3 +161,8 @@ fi
 /bin/echo "
 ${SITEDOMAIN} certs installed.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertaddsc.after" ]; then . /opt/verb/mods/inkcertaddsc.after; fi # Follows this script

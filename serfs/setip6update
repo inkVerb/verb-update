@@ -135,3 +135,8 @@ if [ -e /opt/verb/conf/inkdns/zones/nv.* ]; then
 # Finish
 /opt/verb/serfs/inkdnsrefreshbind
 /bin/echo "IPv6 now set to: ${NEWCMPIP6}"
+
+
+
+
+if [ -e "/opt/verb/mods/setip6update.after" ]; then . /opt/verb/mods/setip6update.after; fi # Follows this script

@@ -37,3 +37,8 @@ SAILCOMMAND=$2
 runuser -l ${CLIENTSAILOR} -c "ssh -o HostName=${CAVERBERHOST} -p ${CLIENTPORT} ${CLIENTUSERNAME}@${CAVERBERIP}"
 /bin/echo "Done."
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetlogin.after" ]; then . /opt/verb/mods/inknetlogin.after; fi # Follows this script

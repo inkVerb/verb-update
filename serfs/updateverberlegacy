@@ -21,3 +21,8 @@ cd /opt/verb/
 # Remove the entire updater
 /bin/rm -rf /opt/verb/verber.update.legacy
 
+
+
+
+
+if [ -e "/opt/verb/mods/updateverberlegacy.after" ]; then . /opt/verb/mods/updateverberlegacy.after; fi # Follows this script

@@ -40,3 +40,8 @@ exit 8; fi
 ## Finish
 /bin/echo "WP Multisite for http://${WPDOMAIN} is now off. You may need to log in again."
 
+
+
+
+
+if [ -e "/opt/verb/mods/wpmuunsetconfig.after" ]; then . /opt/verb/mods/wpmuunsetconfig.after; fi # Follows this script

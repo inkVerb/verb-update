@@ -24,3 +24,8 @@ RCFOLDER=$1
 /bin/chown -R www:www /srv/www/html/${SITEEMAILTLD}.rc
 /bin/sed -i "s/SITERCPATH=.*/SITERCPATH=\"${RCFOLDER}\"/g" /opt/verb/conf/sitemailpass
 /bin/sed -i "s/\$CONF\['footer_link'\] = 'https:\/\/.*/\$CONF\['footer_link'\] = 'https:\/\/rc\.${SITENAME}\.verb\.${SITEEMAILTLD}\/${RCFOLDER}';/g" /srv/www/email/postfixadmin/config.inc.php
+
+
+
+
+if [ -e "/opt/verb/mods/setrcpath.after" ]; then . /opt/verb/mods/setrcpath.after; fi # Follows this script

@@ -6,7 +6,7 @@
 # All options are optional, but must are sequential, omit last options first.
 
 # How to use:
-## ./installnextcloudpac [latest/repo (optional, default latest, needed for following settings)] [dbase] [dbuser] [dbpassword]
+## ./installnextcloudpac [dbase] [dbuser] [dbpassword]
 
 # Eg:
 ## ./installnextcloudpac
@@ -153,11 +153,11 @@ case ${INKCERTED} in
   DONE_SC)
   /opt/verb/serfs/inkcertaddsc ${blueURI}
   ;;
-  DONE_IC)
-  /opt/verb/serfs/inkcertadd ${blueURI}
-  ;;
   DONE_LE)
   /opt/verb/serfs/inkcertaddle ${blueURI}
+  ;;
+  DONE_CBSINGLE)
+  /opt/verb/serfs/inkcertaddcbsingle ${blueURI}
   ;;
   DONE_CB)
   /opt/verb/serfs/inkcertaddcb ${blueURI}
@@ -194,7 +194,7 @@ sed -i "s/if (PHP_VERSION_ID >=.*/if (PHP_VERSION_ID >= 90000) {/" /usr/share/we
 
 # Apps
 #/usr/bin/su www -c 'php /usr/share/webapps/nextcloud/occ app:disable recommendation'
-#/usr/bin/su www -c 'php /usr/share/webapps/nextcloud/occ app:install notes bookmarks calendar contacts spreed tasks files_markdown news audioplayer mail'
+#/usr/bin/su www -c 'php /usr/share/webapps/nextcloud/occ app:install notes bookmarks onlyoffice calendar contacts spreed tasks files_markdown news audioplayer mail'
 
 ## Set up cron for updates (manage the crontab files directly)
 /bin/echo '*/15 * * * *  www-data php -f /usr/share/webapps/nextcloud/cron.php' > /etc/cron.d/nextcloud
@@ -228,3 +228,8 @@ After installing, do important Admin settings at https://${blueURI}/index.php/se
 
 After, you may want to run setnextcloudbfdoff to disable brute force detection in order to allow some client apps to work. You can always turn it on again with setnextcloudbfdon
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installnextcloudpac.after" ]; then . /opt/verb/mods/installnextcloudpac.after; fi # Follows this script

@@ -2,7 +2,7 @@
 #inkVerbSerf! verb.ink
 
 # This installs SpamAssassin with ClamAV and Razor, integrated with Postfix and Dovecot
-## This is intended to be used only by installpostfixvmail and not used by itself
+## This is intended to be used only by inkvmailinstall and not used by itself
 ## This is in separate development because ClamAV can be quirky
 
 # How to use:
@@ -48,7 +48,7 @@ Persistent=true
 [Install]
 WantedBy=timers.target
 EOF
-# Run by installpostfixvmail
+# Run by inkvmailinstall
 #/usr/bin/systemctl enable spamassassin.service; wait
 #/usr/bin/systemctl start spamassassin.service; wait
 #/usr/bin/systemctl enable spamassassin-update.timer; wait
@@ -56,8 +56,8 @@ EOF
 
 # ClamAV
 ## Config files
-/bin/cp /opt/verb/conf/lab/vmail/clamav/clamav.cf /etc/mail/spamassassin/
-/bin/cp /opt/verb/conf/lab/vmail/clamav/clamav.pm /etc/mail/spamassassin/
+/bin/cp /opt/verb/conf/lab/inkvmail/clamav/clamav.cf /etc/mail/spamassassin/
+/bin/cp /opt/verb/conf/lab/inkvmail/clamav/clamav.pm /etc/mail/spamassassin/
 /usr/bin/chown spamd:spamd /etc/mail/spamassassin/clamav.cf /etc/mail/spamassassin/clamav.pm
 /usr/bin/mkdir -p /var/lib/clamav
 /usr/bin/chmod 755 /var/lib/clamav
@@ -101,7 +101,7 @@ cd $OLDPWD
 /usr/bin/killall freshclam 2>/dev/null
 /usr/bin/freshclam
 ## Service
-# Run by installpostfixvmail
+# Run by inkvmailinstall
 # /usr/bin/systemctl enable clamav-daemon.service; wait
 # /usr/bin/systemctl start clamav-daemon.service; wait
 # /usr/bin/systemctl restart spamassassin.service; wait
@@ -182,10 +182,15 @@ EOF
 # Install ClamAV (after installing perl-cpanplus-dist-arch, which we did)
 /usr/bin/freshclam
 /usr/bin/vendor_perl/cpanp -i File::Scan::ClamAV; wait
-/bin/cp /opt/verb/conf/lab/vmail/clamav/clamav.cf /etc/mail/spamassassin/
-/bin/cp /opt/verb/conf/lab/vmail/clamav/clamav.pm /etc/mail/spamassassin/
+/bin/cp /opt/verb/conf/lab/inkvmail/clamav/clamav.cf /etc/mail/spamassassin/
+/bin/cp /opt/verb/conf/lab/inkvmail/clamav/clamav.pm /etc/mail/spamassassin/
 /usr/bin/systemctl enable clamav-daemon.service
 /usr/bin/systemctl start clamav-daemon.service
 ### Old
 #killall freshclam 2>/dev/null
 #freshclam
+
+
+
+
+if [ -e "/opt/verb/mods/installspamassassin.after" ]; then . /opt/verb/mods/installspamassassin.after; fi # Follows this script

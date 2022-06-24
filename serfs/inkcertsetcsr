@@ -41,3 +41,8 @@ COMPANYNAME=\"${COMPANYNAME}\"
 Ready to go. Run newinkcertcsr ${INFPROFILE}... to use this profile.
 "
 
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertsetcsr.after" ]; then . /opt/verb/mods/inkcertsetcsr.after; fi # Follows this script

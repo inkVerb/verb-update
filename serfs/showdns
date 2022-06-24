@@ -15,3 +15,8 @@
 ${hostURI}
 ${SITEINKERDNS}
 ${SITE2INKERDNS}"
+
+
+
+
+if [ -e "/opt/verb/mods/showdns.after" ]; then . /opt/verb/mods/showdns.after; fi # Follows this script

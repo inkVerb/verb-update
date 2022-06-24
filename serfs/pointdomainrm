@@ -35,3 +35,8 @@ else
 /bin/echo "${FWDDOM} is no longer forwarding to ${FORWARD}, back to ${OLD_DEST}."
 
 fi
+
+
+
+
+if [ -e "/opt/verb/mods/pointdomainrm.after" ]; then . /opt/verb/mods/pointdomainrm.after; fi # Follows this script

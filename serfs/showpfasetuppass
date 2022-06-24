@@ -11,3 +11,8 @@
 
 # Show the info
 /usr/bin/echo "${PFASETUPTPASS}"
+
+
+
+
+if [ -e "/opt/verb/mods/showpfasetuppass.after" ]; then . /opt/verb/mods/showpfasetuppass.after; fi # Follows this script

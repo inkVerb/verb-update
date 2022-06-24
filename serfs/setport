@@ -39,3 +39,8 @@ NEWPORT=$1
 
 # Reload the settings
 /bin/systemctl reload ssh
+
+
+
+
+if [ -e "/opt/verb/mods/setport.after" ]; then . /opt/verb/mods/setport.after; fi # Follows this script

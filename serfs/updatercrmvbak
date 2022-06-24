@@ -14,3 +14,8 @@
 Roudcube update backup removed.
 "
 
+
+
+
+
+if [ -e "/opt/verb/mods/updatercrmvbak.after" ]; then . /opt/verb/mods/updatercrmvbak.after; fi # Follows this script

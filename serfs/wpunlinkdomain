@@ -15,3 +15,8 @@ DOMAIN=$1
 /bin/ln -s /srv/www/domains/${DOMAIN} /srv/www/html/${DOMAIN}
 /bin/chown -R www:www /srv/www/html/${DOMAIN}
 
+
+
+
+
+if [ -e "/opt/verb/mods/wpunlinkdomain.after" ]; then . /opt/verb/mods/wpunlinkdomain.after; fi # Follows this script

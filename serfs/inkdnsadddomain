@@ -1,17 +1,36 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This creates a domain inkDNS zone file on this Verber
+# This creates a domain inkDNS zone file on the server
 
 # How to use:
-## ./inkdnsadddomain [domain]
+## ./inkdnsadddomain [ domain.tld ]
+
+usagenotes="This creates a domain inkDNS zone file on the server"
+usageformat="inkdnsadddomain [ domain.tld ]"
+usageexample="inkdnsadddomain inkisaverb.com"
+hierarchy=( tertiary newdomainshell )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkdnsinstall )
+prerequesite=(  )
+usedby=( newdomainshell )
+useserfs=( inkdnsserial inkdnsrefreshbind )
+useconfigs=( sitenameip )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkdnsadddomain.replace" ]; then . /opt/verb/mods/inkdnsadddomain.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkdnsadddomain.before" ]; then . /opt/verb/mods/inkdnsadddomain.before; return 0; fi # Replaces this script
 
 
 # Dependencies
-if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcertstatus; then
   /usr/bin/echo "Install inkCert first, I quit."; exit 8
 fi
-if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdnsconf; then
   /usr/bin/echo "Install inkDNS first, I quit."; exit 8
 fi
 if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
@@ -25,7 +44,7 @@ DNSDOMAIN="$1"
 
 # Check if already added
 if [ -e "/opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}" ]; then
-/bin/echo "The domain ${DNSDOMAIN} zone file has already been created. Use inkdnskilldomain to remove it."
+/bin/echo "The domain ${DNSDOMAIN} zone file has already been created. Use killinkdnsdomain to remove it."
 exit 0; fi
 
 # DNS zone file
@@ -41,10 +60,15 @@ ${SITEARPAIP6}		IN  PTR  ${DNSDOMAIN}." > /opt/verb/conf/inkdns/zones/nv.${DNSDO
 /opt/verb/serfs/inkdnsserial ${DNSDOMAIN}
 
 # Refresh zones
-if [ -f "/opt/verb/conf/inkdns/inkdnsconf" ]; then
-  . /opt/verb/conf/inkdns/inkdnsconf
+if [ -f "/opt/verb/conf/inkdnsconf" ]; then
+  . /opt/verb/conf/inkdnsconf
   if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
 /opt/verb/serfs/inkdnsrefreshbind; fi; fi
 
 # Finish
 /bin/echo "${DNSDOMAIN} DNS zone file created."
+
+
+
+
+if [ -e "/opt/verb/mods/inkdnsadddomain.after" ]; then . /opt/verb/mods/inkdnsadddomain.after; fi # Follows this script

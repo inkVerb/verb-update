@@ -23,3 +23,8 @@ wait
 # Remove the entire updater
 /bin/rm -rf /opt/verb/${SITEUPDATEREPO}
 
+
+
+
+
+if [ -e "/opt/verb/mods/updateverber.after" ]; then . /opt/verb/mods/updateverber.after; fi # Follows this script

@@ -1,0 +1,35 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This runs installpostfix and some extra scripts to setup a backup email server on the server
+## Prerequisite: setupverb of course, and verbemail if you wish an email tld other than .email
+## Prerequisite: this Verber should be linked to the backup server already.
+## Roundcube and PostfixAdmin will be disallowed by running this.
+
+# DEV NOTE: This is by no means finished. It is only a start to set config files.
+
+# How to use:
+## ./inkvmailbackmxinstall
+
+# Eg:
+## ./inkvmailbackmxinstall
+
+SERVER=$1
+
+/opt/verb/serfs/inkvmailinstall
+
+# Config settings
+/bin/sed -i "s/RC_NOT_INSTALLED/RC_NOT_ALLOWED/g" /opt/verb/conf/sitemailpath
+/bin/sed -i "s/RC_NOT_INSTALLED/RC_NOT_ALLOWED/g" /opt/verb/conf/sitemailpass
+/bin/sed -i "s/PFA_NOT_INSTALLED/PFA_NOT_ALLOWED/g" /opt/verb/conf/sitemailpath
+/bin/sed -i "s/VMAIL_SERVER/EMAIL_BACKUP_MX/g" /opt/verb/conf/sitemailpath
+
+# Finished
+/bin/echo "
+All set. This is now a backup email server for $SERVER.
+"
+
+
+
+
+if [ -e "/opt/verb/mods/inkvmailinstallbackmx.after" ]; then . /opt/verb/mods/inkvmailinstallbackmx.after; fi # Follows this script

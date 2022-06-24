@@ -20,3 +20,8 @@ KILLCAVERBERNAME=$(/bin/echo $FULLKILLNAME | cut -c1-18)
 # Finish
 /bin/echo "The secondary CA Verber credentials for ${KILLCAVERBERNAME} have been deleted."
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetkillsecondarycaverber.after" ]; then . /opt/verb/mods/inknetkillsecondarycaverber.after; fi # Follows this script

@@ -9,3 +9,8 @@
 
 # Fix the setting in basic.config.php, searching for both true and false
 /bin/sed -i "s/'auth\.bruteforce\.protection\.enabled' => true/'auth\.bruteforce\.protection\.enabled' => false/" /srv/www/vapps/nextcloud/config/basic.config.php
+
+
+
+
+if [ -e "/opt/verb/mods/setnextcloudbfdoff.after" ]; then . /opt/verb/mods/setnextcloudbfdoff.after; fi # Follows this script

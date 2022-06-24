@@ -36,3 +36,8 @@ Name: ${IAMCANAME}
 IP:   ${SITEIP}
 "
 
+
+
+
+
+if [ -e "/opt/verb/mods/showinknetcainfo.after" ]; then . /opt/verb/mods/showinknetcainfo.after; fi # Follows this script

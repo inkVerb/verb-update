@@ -12,3 +12,8 @@ for vapp in wp.*; do
 /opt/verb/serfs/backup $vapp 123 -nl
 done
 
+
+
+
+
+if [ -e "/opt/verb/mods/wpvappbackupall.after" ]; then . /opt/verb/mods/wpvappbackupall.after; fi # Follows this script

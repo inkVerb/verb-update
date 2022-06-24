@@ -32,7 +32,7 @@ exit 0; fi
 
 # Export the database
 cd /srv/www/vapps/nextcloud/data
-/opt/verb/serfs/mysqlvappout vapp.nextcloud; wait
+/opt/verb/serfs/mysqlvappex vapp.nextcloud; wait
 
 # Backup the config
 /bin/cp /opt/verb/conf/vapp.nextcloud /srv/www/vapps/nextcloud/data/
@@ -60,3 +60,8 @@ http://${SERVEPATH}/verb.nextcloud.${SECNAME}.vbak
 
 Note that the app remains live.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/backupnextcloud.after" ]; then . /opt/verb/mods/backupnextcloud.after; fi # Follows this script

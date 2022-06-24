@@ -79,3 +79,8 @@ Database password: ${DBPASSWORD}
 
 Go to the http://crm.${redURI} site to install.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installsuitecrm.after" ]; then . /opt/verb/mods/installsuitecrm.after; fi # Follows this script

@@ -15,3 +15,8 @@ INKSSHCA=$1
 
 /bin/sed -i "s/INKNETSSHCA=.*/INKNETSSHCA=\"${INKSSHCA}\"/g" /opt/verb/conf/inknet/inknetinfo
 
+
+
+
+
+if [ -e "/opt/verb/mods/setinknetsshca.after" ]; then . /opt/verb/mods/setinknetsshca.after; fi # Follows this script

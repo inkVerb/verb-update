@@ -13,3 +13,8 @@
 /bin/rm -f /srv/www/vip/*.vbak
 /bin/rm -f /srv/www/html/${SITETLD}/*.vbak -f
 
+
+
+
+
+if [ -e "/opt/verb/mods/backupdel.after" ]; then . /opt/verb/mods/backupdel.after; fi # Follows this script

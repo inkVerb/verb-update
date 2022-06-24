@@ -1,7 +1,7 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This completely removes MySQL
+# This completely removes MySQL/MariaDBL
 ## WARNING: This WILL cause the Apocalypse!
 ## WARNING: Only use this if the Apocalypse already began and you are ready for fallout.
 ## WARNING: Your mail server, if installed, will permanently break and you'll have to install the entire server again.
@@ -9,6 +9,25 @@
 
 # How to use:
 ## ./mysqluninstall
+
+usagenotes="This completely removes MySQL/MariaDBL and WILL bring the Apocalypse on the server; use only if the server Apocalypse has already begone"
+usageformat="mysqlinstall"
+usageexample="mysqlinstall"
+hierarchy=( primary )
+vsetnames=(  )
+vsettypes=(  )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( mysqlinstall )
+prerequesite=(  )
+usedby=(  )
+useserfs=(  )
+useconfigs=(  )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/mysqluninstall.replace" ]; then . /opt/verb/mods/mysqluninstall.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/mysqluninstall.before" ]; then . /opt/verb/mods/mysqluninstall.before; return 0; fi # Replaces this script
 
 
 /bin/systemctl stop mysql
@@ -22,3 +41,8 @@ killall -KILL mysql mysqld_safe mysqld
 updatedb
 exit
 
+
+
+
+
+if [ -e "/opt/verb/mods/mysqluninstall.after" ]; then . /opt/verb/mods/mysqluninstall.after; fi # Follows this script

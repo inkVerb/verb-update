@@ -1,7 +1,7 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This "hard" kills a domain added with adddomain or adddomaincgi
+# This "hard" kills a domain added with adddomain
 ## This removes everything. The server probably wouldn't even know that the domain existed, except for any connected vapp
 
 ## This DOES NOT:
@@ -16,14 +16,33 @@
 ### Remove the inkDNS zone file
 
 # How to use:
-## ./killdomainhard [KILLDOMAIN.tld]
+## ./killdomainhard [ domaintokill.tld ]
+
+usagenotes="This 'hard' kills a domain added with adddomain, removing every trace of the domain except a connected vapp"
+usageformat="killdomainhard [ domaintokill.tld ]"
+usageexample="killdomainhard inkisaverb.com"
+hierarchy=( primary )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=(  )
+prerequesite=( adddomain )
+usedby=(  )
+useserfs=( killdomainshell )
+useconfigs=( sitemailpath inkdnsconf inkcertstatus )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/killdomainhard.replace" ]; then . /opt/verb/mods/killdomainhard.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/killdomainhard.before" ]; then . /opt/verb/mods/killdomainhard.before; return 0; fi # Replaces this script
 
 
 # Dependencies
-if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcertstatus; then
   /usr/bin/echo "Install inkCert first, I quit."; exit 8
 fi
-if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdnsconf; then
   /usr/bin/echo "Install inkDNS first, I quit."; exit 8
 fi
 if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
@@ -57,9 +76,11 @@ fi
 # Other services
 /opt/verb/serfs/killdomainshell ${KILLDOMAIN}; wait
 
-# Restart
-
 # Finish
 /bin/echo "${KILLDOMAIN} is all gone, bye bye. Some vapps might remain.
 "
 
+
+
+
+if [ -e "/opt/verb/mods/killdomainhard.after" ]; then . /opt/verb/mods/killdomainhard.after; fi # Follows this script

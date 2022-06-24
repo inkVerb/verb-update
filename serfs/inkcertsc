@@ -20,7 +20,7 @@ DOMAIN="${1}"
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
 . /opt/verb/conf/sitetldstatus
-. /opt/verb/conf/inkcert/inkcertstatus
+. /opt/verb/conf/inkcertstatus
 
 if [ "${INKCERTSCINSTALLED}" != "DONE" ]; then
 /bin/echo "inkCert-SC must be installed first, run: inkcertinstallsc"
@@ -161,3 +161,8 @@ cd /etc/inkcert/sc/intrm
 /bin/ln -sfn /etc/inkcert/sc/pub/${DOMAIN}.chain.cert.pem /etc/inkcert/sc/live/${DOMAIN}/chain.cert.pem
 /bin/ln -sfn /etc/inkcert/sc/pub/${DOMAIN}.cert.pem /etc/inkcert/sc/live/${DOMAIN}/cert.pem
 /bin/ln -sfn /etc/inkcert/sc/keys/${DOMAIN}.key.pem /etc/inkcert/sc/live/${DOMAIN}/key.pem
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertsc.after" ]; then . /opt/verb/mods/inkcertsc.after; fi # Follows this script

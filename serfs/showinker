@@ -24,3 +24,8 @@ Name: ${CAVERBERNAME}
 URI: ${CAVERBERURI}
 "
 
+
+
+
+
+if [ -e "/opt/verb/mods/showinker.after" ]; then . /opt/verb/mods/showinker.after; fi # Follows this script

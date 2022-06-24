@@ -7,12 +7,31 @@
 # How to use:
 ## ./killinkcertmail [domain]
 
+usagenotes="This removes basic mail certificates and subdomain dummy sites for inkCert-LE setup by setinkcertmail"
+usageformat="killinkcertmail [ domain.tld ]"
+usageexample="killinkcertmail inkisaverb.com"
+hierarchy=( tertiary killdomainhard )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=(  )
+prerequesite=( adddomain )
+usedby=( killdomainshell )
+useserfs=( killinkcertmailsubdomains killinkcertmailcerts killinkdnsmail )
+useconfigs=( sitemailpath inkdnsconf inkcertstatus )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/killinkcertmail.replace" ]; then . /opt/verb/mods/killinkcertmail.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/killinkcertmail.before" ]; then . /opt/verb/mods/killinkcertmail.before; return 0; fi # Replaces this script
+
 
 # Dependencies
-if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcert/inkcertstatus; then
+if ! /bin/grep -q 'INKCERTINSTALLED="DONE"' /opt/verb/conf/inkcertstatus; then
   /usr/bin/echo "Install inkCert first, I quit."; exit 8
 fi
-if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdns/inkdnsconf; then
+if ! /bin/grep -q 'INKDNSSTAT="INSTALLED"' /opt/verb/conf/inkdnsconf; then
   /usr/bin/echo "Install inkDNS first, I quit."; exit 8
 fi
 if ! /bin/grep -q 'SITEMAILSTATUS="VMAIL_SERVER"' /opt/verb/conf/sitemailpath; then
@@ -37,7 +56,10 @@ fi
 /opt/verb/serfs/killinkcertmailcerts ${DOMAIN}
 
 # Mail DNS zone entries
-/opt/verb/serfs/inkdnskillmail ${DOMAIN}
+/opt/verb/serfs/killinkdnsmail ${DOMAIN}
+
+# OpenDKIM Mail DNS zone entries
+/opt/verb/serfs/killinkdkim ${DOMAIN}
 
 # Dovecot
 /bin/rm -f /etc/dovecot/crt.d/${DOMAIN}.conf
@@ -85,3 +107,8 @@ elif [ ${SERVERTYPE} = "lamp" ]; then
   /bin/systemctl restart httpd
 
 fi
+
+
+
+
+if [ -e "/opt/verb/mods/killinkcertmail.after" ]; then . /opt/verb/mods/killinkcertmail.after; fi # Follows this script

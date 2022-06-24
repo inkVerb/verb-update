@@ -5,7 +5,7 @@
 ## PostfixAdmin setup secure option: use "secure" for a password required, otherwise anything else including empty
 ## If using 'secure', you must set the hash via setpfapass
 ## Prerequisite: verbemail IF using a verb domain other than verb.email
-## Prerequisite: installpostfixvmail, installrc
+## Prerequisite: inkvmailinstall, installrc
 
 # How to use:
 ## ./installpfa [path folder] [setup password option]
@@ -69,10 +69,10 @@ if [ "$?" = 4 ]; then
 /bin/mkdir -p /srv/www/email/postfixadmin/templates_c
 
 # Copy the branding files
-/bin/cp /opt/verb/conf/lab/vmail/postfixadmin/pfapics/images/logo-ink.png /srv/www/email/postfixadmin/public/images/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfixadmin/pfapics/images/logo-ink.png /srv/www/email/postfixadmin/public/images/
 
 # Settings
-/usr/bin/cp /opt/verb/conf/lab/vmail/postfixadmin/postfixadmin286-config.local.php /srv/www/email/postfixadmin/config.local.php
+/usr/bin/cp /opt/verb/conf/lab/inkvmail/postfixadmin/postfixadmin286-config.local.php /srv/www/email/postfixadmin/config.local.php
 /bin/sed -i "s/emailTLDURI286/${emailTLDURI}/g" /srv/www/email/postfixadmin/config.local.php
 /bin/sed -i "s/nameURI286/${nameURI}/g" /srv/www/email/postfixadmin/config.local.php
 /bin/sed -i "s/mailpassword/mailpass${SITEMAILPASSAPG}/g" /srv/www/email/postfixadmin/config.local.php
@@ -89,8 +89,8 @@ if [ "$?" = 4 ]; then
 /bin/sed -i "s/pfafolder286/${PFAFOLDER}/g" /srv/www/email/postfixadmin/config.local.php
 
 # Copy the branding files
-/bin/cp /opt/verb/conf/lab/vmail/postfixadmin/pfapics/images/logo-ink.png /srv/www/email/postfixadmin/public/images/
-/bin/cp /opt/verb/conf/lab/vmail/postfixadmin/pfapics/images/favicon-ink.ico /srv/www/email/postfixadmin/public/images/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfixadmin/pfapics/images/logo-ink.png /srv/www/email/postfixadmin/public/images/
+/bin/cp /opt/verb/conf/lab/inkvmail/postfixadmin/pfapics/images/favicon-ink.ico /srv/www/email/postfixadmin/public/images/
 
 # Webserver
 /usr/bin/mkdir -p /srv/www/verb/${SITEEMAILTLD}.pfa
@@ -136,3 +136,8 @@ Set up all this at:
  https://pfa.${emailTLDURI}/${PFAFOLDER}/setup.php
 - Then run ./postinstallpfa
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installpfa.after" ]; then . /opt/verb/mods/installpfa.after; fi # Follows this script

@@ -12,3 +12,8 @@ DOMAIN=$1
 
 /bin/echo $(/bin/cat /etc/opendkim/keys/${DOMAIN}/inkdkim.txt)
 
+
+
+
+
+if [ -e "/opt/verb/mods/showinkdkim.after" ]; then . /opt/verb/mods/showinkdkim.after; fi # Follows this script

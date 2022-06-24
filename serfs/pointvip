@@ -75,3 +75,8 @@ NEWONESUB=$1
     sed -i "s/newvipsub/${NEWONESUB}/g" /srv/www/verb/vip/index.php
     /bin/echo "Pointing to http://${NEWONESUB}.${vipURI}, done."
 exit 0
+
+
+
+
+if [ -e "/opt/verb/mods/pointvip.after" ]; then . /opt/verb/mods/pointvip.after; fi # Follows this script

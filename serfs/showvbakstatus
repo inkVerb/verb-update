@@ -8,3 +8,8 @@
 
 ls /etc/cron.d/*-vbak
 
+
+
+
+
+if [ -e "/opt/verb/mods/showvbakstatus.after" ]; then . /opt/verb/mods/showvbakstatus.after; fi # Follows this script

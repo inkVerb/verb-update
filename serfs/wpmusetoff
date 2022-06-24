@@ -27,3 +27,8 @@ exit 8; fi
 # Finish
 /bin/echo "WP Multisite for http://${WPDOMAIN} is now disabled."
 
+
+
+
+
+if [ -e "/opt/verb/mods/wpmusetoff.after" ]; then . /opt/verb/mods/wpmusetoff.after; fi # Follows this script

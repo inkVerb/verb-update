@@ -123,3 +123,8 @@ fi
 
 # Finish
 /bin/sed -i "s/INKVPNINSTALLED=.*/INKVPNINSTALLED=\"INSTALLED_OPENVPN\"/" /opt/verb/conf/inkvpn/inkvpnstatus
+
+
+
+
+if [ -e "/opt/verb/mods/inkvpninstall.after" ]; then . /opt/verb/mods/inkvpninstall.after; fi # Follows this script

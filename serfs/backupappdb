@@ -50,3 +50,8 @@ https://${SERVEPATH}/verb.${APPDBASE}.${SECNAME}.vbak.sql
 
 Note that the app remains live.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/backupappdb.after" ]; then . /opt/verb/mods/backupappdb.after; fi # Follows this script

@@ -101,3 +101,8 @@ Now, you need to run inknetpackclientpkg
 
 Follow the instructions."
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetaddclientkey.after" ]; then . /opt/verb/mods/inknetaddclientkey.after; fi # Follows this script

@@ -90,3 +90,8 @@ Next page: All info should be correct already
 
 Go to http://ampache.${kiwiURI} to install.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/installampache.after" ]; then . /opt/verb/mods/installampache.after; fi # Follows this script

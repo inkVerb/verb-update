@@ -10,5 +10,10 @@
 
 NEWEMAIL=$1
 
-/bin/sed -i "s/INKCERTEMAIL=.*/INKCERTEMAIL=${NEWEMAIL}/g" /opt/verb/conf/inkcert/inkcertstatus
+/bin/sed -i "s/INKCERTEMAIL=.*/INKCERTEMAIL=${NEWEMAIL}/g" /opt/verb/conf/inkcertstatus
 
+
+
+
+
+if [ -e "/opt/verb/mods/setinkcertemail.after" ]; then . /opt/verb/mods/setinkcertemail.after; fi # Follows this script

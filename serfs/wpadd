@@ -39,3 +39,8 @@ exit 0; fi
 /bin/echo "
 ${DOMAIN} now has the ${WPADDNAME} pack."
 
+
+
+
+
+if [ -e "/opt/verb/mods/wpadd.after" ]; then . /opt/verb/mods/wpadd.after; fi # Follows this script

@@ -118,3 +118,8 @@ else
 "
 fi
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetpackclientpkg.after" ]; then . /opt/verb/mods/inknetpackclientpkg.after; fi # Follows this script

@@ -37,3 +37,8 @@ IP:   ${SITEIP}
 Type: \"verber\"
 "
 
+
+
+
+
+if [ -e "/opt/verb/mods/showinknetclientinfo.after" ]; then . /opt/verb/mods/showinknetclientinfo.after; fi # Follows this script

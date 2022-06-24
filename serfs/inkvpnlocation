@@ -46,3 +46,8 @@ ${INKVPNPROVIN}
 ${INKVPNCITY}
 ${INKVPNORG}
 ${INKVPNOU}"
+
+
+
+
+if [ -e "/opt/verb/mods/inkvpnlocation.after" ]; then . /opt/verb/mods/inkvpnlocation.after; fi # Follows this script

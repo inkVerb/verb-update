@@ -59,3 +59,8 @@ Verify above exits - IMPORTANT NOTES: ... - Congratulations!
 
 If so, then ${DOMAIN} and all subdomains are now live with inkCert Letsencrypt certificates.
 "
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertdosc.after" ]; then . /opt/verb/mods/inkcertdosc.after; fi # Follows this script

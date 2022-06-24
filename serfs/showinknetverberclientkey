@@ -21,3 +21,8 @@ exit 8; fi
 "
 /bin/cat /opt/ivapp/inknet/sailor/${CLIENTSAILOR}/.ssh/in_cli_${CLIENTNAME}_key.pub
 
+
+
+
+
+if [ -e "/opt/verb/mods/showinknetverberclientkey.after" ]; then . /opt/verb/mods/showinknetverberclientkey.after; fi # Follows this script

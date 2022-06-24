@@ -6,11 +6,30 @@
 # How to use:
 ## ./inkdnsrefreshbind
 
+usagenotes="This installs the inkDNS Bind package for managing DNS records on the server"
+usageformat="inkdnsrefreshbind"
+usageexample="inkdnsrefreshbind"
+hierarchy=( secondary )
+vsetnames=(  )
+vsettypes=(  )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkdnsinstall )
+prerequesite=(  )
+usedby=( inkdnsadddomain inkdnsaddinkdkim inkdnsaddmail inkdnsaddonesub inkdnsaddslave inkdnsaddsub inkdnsaddvipsub inkdnsinstall inkdnssetinker inkdnssetinker2 killinkdnsdomain killinkdnsinkdkim killinkdnsmail killinkdnsonesub killinkdnsslavedns killinkdnssub killinkdnsvipsub setip4update setip6update )
+useserfs=(  )
+useconfigs=( sitenameip siteurilist inkdnsconf )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkdnsrefreshbind.replace" ]; then . /opt/verb/mods/inkdnsrefreshbind.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkdnsrefreshbind.before" ]; then . /opt/verb/mods/inkdnsrefreshbind.before; return 0; fi # Replaces this script
+
 
 # Include the configs
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
-. /opt/verb/conf/inkdns/inkdnsconf
+. /opt/verb/conf/inkdnsconf
 
 if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
 
@@ -147,3 +166,8 @@ EOF
 
 else /bin/echo "inkDNS not installed, run inkdnsinstall first."; exit 0
 fi
+
+
+
+
+if [ -e "/opt/verb/mods/inkdnsrefreshbind.after" ]; then . /opt/verb/mods/inkdnsrefreshbind.after; fi # Follows this script

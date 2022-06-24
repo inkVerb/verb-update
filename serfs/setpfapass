@@ -21,3 +21,8 @@ EOF
 
 # Make a record so it can be called
 /usr/bin/echo "PFASETUPTPASS=\"${PFAPASS}\"" > /opt/verb/conf/pfasetuppass
+
+
+
+
+if [ -e "/opt/verb/mods/setpfapass.after" ]; then . /opt/verb/mods/setpfapass.after; fi # Follows this script

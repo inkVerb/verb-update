@@ -11,6 +11,26 @@
 ## ./activatefiles on
 ## ./activatefiles off
 
+usagenotes="This activates the files....verb.vip folder so the web will provide an index"
+usageformat="activatefiles [on/off]"
+usageexample="activatefiles on
+activatefiles off"
+hierarchy=( primary )
+vsetnames=( "On/Off" )
+vsettypes=( string_match )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=(  )
+prerequesite=(  )
+usedby=(  )
+useserfs=(  )
+useconfigs=(  )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/activatefiles.replace" ]; then . /opt/verb/mods/activatefiles.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/activatefiles.before" ]; then . /opt/verb/mods/activatefiles.before; return 0; fi # Replaces this script
+
 
 # Include the config
 . /opt/verb/conf/siteurilist
@@ -31,3 +51,7 @@ then
 exit 0
 fi
 
+
+
+
+if [ -e "/opt/verb/mods/activatefiles.after" ]; then . /opt/verb/mods/activatefiles.after; fi # Follows this script

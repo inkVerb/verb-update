@@ -15,3 +15,8 @@ NEWINKREPO=$1
 
 /bin/sed -i "s/INKGET_REPO=.*/INKGET_REPO=\"${NEWINKREPO}\"/g" /opt/verb/conf/siteinkget
 
+
+
+
+
+if [ -e "/opt/verb/mods/setinkgetrepo.after" ]; then . /opt/verb/mods/setinkgetrepo.after; fi # Follows this script

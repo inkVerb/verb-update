@@ -9,10 +9,10 @@
 # This will OVERWRITE any .txz destination file by the same name!
 
 # How to use:
-## ..txzin [directory]
+## ./vtxzin [directory]
 
 # Eg:
-## ..txzin mystuff
+## ./vtxzin mystuff
 
 
 DIR=$1
@@ -21,3 +21,8 @@ DIR=$1
 /bin/tar c ${DIR} | /usr/bin/xz > ${DIR}.tar.xz
 /bin/mv ${DIR}.tar.xz ${DIR}.txz
 /usr/bin/echo "Done."
+
+
+
+
+if [ -e "/opt/verb/mods/vtxzin.after" ]; then . /opt/verb/mods/vtxzin.after; fi # Follows this script

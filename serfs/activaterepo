@@ -10,6 +10,26 @@
 ## ./activaterepo on
 ## ./activaterepo off
 
+usagenotes="This activates the repo....verb.vip folder so the web will provide an index"
+usageformat="activaterepo [on/off]"
+usageexample="activaterepo on
+activaterepo off"
+hierarchy=( primary )
+vsetnames=( "On/Off" )
+vsettypes=( string_match )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=(  )
+prerequesite=(  )
+usedby=(  )
+useserfs=(  )
+useconfigs=(  )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/activaterepo.replace" ]; then . /opt/verb/mods/activaterepo.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/activaterepo.before" ]; then . /opt/verb/mods/activaterepo.before; return 0; fi # Replaces this script
+
 
 # Include the configs
 . /opt/verb/conf/sitenameip
@@ -31,3 +51,7 @@ then
 exit 0
 fi
 
+
+
+
+if [ -e "/opt/verb/mods/activaterepo.after" ]; then . /opt/verb/mods/activaterepo.after; fi # Follows this script

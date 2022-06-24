@@ -44,3 +44,8 @@ if [ $VERBkiwi=true ]; then
 wait
 if [ $VERBred=true ]; then
 /opt/verb/serfs/inkcertdosc ${redURI}; fi
+
+
+
+
+if [ -e "/opt/verb/mods/inkcertdosc-all-verbs.after" ]; then . /opt/verb/mods/inkcertdosc-all-verbs.after; fi # Follows this script

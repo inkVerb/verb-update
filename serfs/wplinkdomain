@@ -15,3 +15,8 @@ DOMAIN=$1
 /bin/ln -s /srv/www/vapps/wp.${DOMAIN} /srv/www/html/${DOMAIN}
 /bin/chown -R www:www /srv/www/html/${DOMAIN}
 
+
+
+
+
+if [ -e "/opt/verb/mods/wplinkdomain.after" ]; then . /opt/verb/mods/wplinkdomain.after; fi # Follows this script

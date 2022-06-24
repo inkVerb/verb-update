@@ -35,3 +35,8 @@ find /srv/www/html/${IAMCAHOST}/inknet/* -type d -mmin +30 -exec rm -rf {} \;
 # Finish
 /bin/echo "This server is now keeping the web inknet/ folder cleaned at 14 and 44 minutes past each hour."
 
+
+
+
+
+if [ -e "/opt/verb/mods/inknetsecuredldircron.after" ]; then . /opt/verb/mods/inknetsecuredldircron.after; fi # Follows this script

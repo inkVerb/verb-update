@@ -1,10 +1,29 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This adds the inkDKIM key to an existing DNS TXT record in the inkDNS zone file on this Verber
+# This adds the inkDKIM key to an existing DNS TXT record in the inkDNS zone file on the server
 
 # How to use:
-## ./inkdnsaddinkdkim [domain]
+## ./inkdnsaddinkdkim [ domain.tld ]
+
+usagenotes="This adds the inkDKIM key to an existing DNS TXT record in the inkDNS zone file on the server"
+usageformat="inkdnsaddinkdkim [ domain.tld ]"
+usageexample="inkdnsaddinkdkim inkisaverb.com"
+hierarchy=( tertiary adddomain )
+vsetnames=( "Domain" )
+vsettypes=( isDomain )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkdnsinstall )
+prerequesite=( newinkdkim )
+usedby=( newdomainshell inkvmailinstall )
+useserfs=(  )
+useconfigs=(  )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkdnsaddinkdkim.replace" ]; then . /opt/verb/mods/inkdnsaddinkdkim.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkdnsaddinkdkim.before" ]; then . /opt/verb/mods/inkdnsaddinkdkim.before; return 0; fi # Replaces this script
 
 
 DNSDOMAIN="$1"
@@ -19,7 +38,7 @@ fi
 
 # Check if already added
 if /bin/grep -Fq "; inkDKIM key" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}; then
-/bin/echo "The inkDKIM key for ${DNSDOMAIN} has already been added. Use inkdnskillinkdkim to remove it."
+/bin/echo "The inkDKIM key for ${DNSDOMAIN} has already been added. Use killinkdnsinkdkim to remove it."
 exit 0; fi
 if /bin/grep -Fq "dkim._domainkey" /opt/verb/conf/inkdns/${ZONEDIR}/db.${DNSDOMAIN}; then
 /bin/echo "The ${DNSDOMAIN} zone file seems to have been tampered with. It should say nothing about DKIM keys at this point, but it does. Fix that first."
@@ -41,10 +60,15 @@ sed -i "/;; End inkDKIM key ${DNSDOMAIN}/d" /opt/verb/conf/inkdns/${ZONEDIR}/db.
 /opt/verb/serfs/inkdnsserial ${DNSDOMAIN} verber
 
 # Refresh zones
-if [ -f "/opt/verb/conf/inkdns/inkdnsconf" ]; then
-  . /opt/verb/conf/inkdns/inkdnsconf
+if [ -f "/opt/verb/conf/inkdnsconf" ]; then
+  . /opt/verb/conf/inkdnsconf
   if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
 /opt/verb/serfs/inkdnsrefreshbind; fi; fi
 
 # Finish
 /bin/echo "The inkDKIM key has been added to the ${DNSDOMAIN} DNS zone file."
+
+
+
+
+if [ -e "/opt/verb/mods/inkdnsaddinkdkim.after" ]; then . /opt/verb/mods/inkdnsaddinkdkim.after; fi # Follows this script

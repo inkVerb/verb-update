@@ -12,3 +12,8 @@
 /usr/bin/apt-get upgrade -y
 /usr/bin/dpkg --configure -a
 /usr/bin/apt-get autoremove -y
+
+
+
+
+if [ -e "/opt/verb/mods/updateapt.after" ]; then . /opt/verb/mods/updateapt.after; fi # Follows this script

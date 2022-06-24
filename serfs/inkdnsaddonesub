@@ -1,10 +1,29 @@
 #!/bin/sh
 #inkVerbSerf! verb.ink
 
-# This adds a subdomain A & AAAA records to an existing ONE DNS record in the inkDNS zone file on this Verber
+# This adds a subdomain A & AAAA records to an existing ONE DNS record in the inkDNS zone file on the server
 
 # How to use:
-## ./inkdnsaddonesub [subdomain]
+## ./inkdnsaddonesub [ subdomain ]
+
+usagenotes="This adds a subdomain A & AAAA records to an existing ONE DNS record in the inkDNS zone file on the server"
+usageformat="inkdnsaddonesub [ subdomain ]"
+usageexample="inkdnsaddonesub subdomain"
+hierarchy=( tertiary newonesub )
+vsetnames=( "Subdomain" )
+vsettypes=( isDomainPart )
+voptnames=(  )
+vopttypes=(  )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkdnsinstall )
+prerequesite=(  )
+usedby=( newonesub )
+useserfs=( inkdnsserial inkdnsrefreshbind )
+useconfigs=( sitenameip siteurilist inkdnsconf )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkdnsaddonesub.replace" ]; then . /opt/verb/mods/inkdnsaddonesub.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkdnsaddonesub.before" ]; then . /opt/verb/mods/inkdnsaddonesub.before; return 0; fi # Replaces this script
 
 
 DNSSUBDOM="$1"
@@ -16,7 +35,7 @@ ZONEDIR="inkzones"
 
 # Check if already added
 if /bin/grep -Fq "${DNSSUBDOM}.${oneURI}" /opt/verb/conf/inkdns/${ZONEDIR}/db.${oneURI}; then
-/bin/echo "The subdomain ${DNSSUBDOM} has already been added to ${oneURI}. Use inkdnskillsub to remove it."
+/bin/echo "The subdomain ${DNSSUBDOM} has already been added to ${oneURI}. Use killinkdnssub to remove it."
 exit 0; fi
 
 # Echo the record
@@ -33,10 +52,15 @@ exit 0; fi
 /opt/verb/serfs/inkdnsserial ${oneURI} verber
 
 # Refresh zones
-if [ -f "/opt/verb/conf/inkdns/inkdnsconf" ]; then
-  . /opt/verb/conf/inkdns/inkdnsconf
+if [ -f "/opt/verb/conf/inkdnsconf" ]; then
+  . /opt/verb/conf/inkdnsconf
   if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
 /opt/verb/serfs/inkdnsrefreshbind; fi; fi
 
 # Finish
 /bin/echo "The ONE subdomain ${DNSSUBDOM} has been added to the DNS zone file."
+
+
+
+
+if [ -e "/opt/verb/mods/inkdnsaddonesub.after" ]; then . /opt/verb/mods/inkdnsaddonesub.after; fi # Follows this script

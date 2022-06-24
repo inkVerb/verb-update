@@ -11,3 +11,8 @@
 
 /bin/echo "${SERVEPATH}"
 
+
+
+
+
+if [ -e "/opt/verb/mods/showservepath.after" ]; then . /opt/verb/mods/showservepath.after; fi # Follows this script
