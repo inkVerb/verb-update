@@ -42,9 +42,24 @@ while getopts "${optSerf}" Flag; do
         SOt="user"
       fi
     ;;
+    # Standard flags
+    c)
+      SOcli="true"
+    ;;
+    v)
+      SOverbose="true"
+    ;;
+    h)
+      SOh="true"
+    ;;
+    r)
+      richtext="true"
+    ;;
+    *)
+      inkFail
+    ;;
  esac
 done
-. $INKOPT
 
 # Check requirements or defaults
 ## HELP

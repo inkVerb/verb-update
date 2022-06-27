@@ -33,9 +33,24 @@ while getopts "${optSerf}" Flag; do
   n)
     SOyn="off"
   ;;
+  # Standard flags
+  c)
+    SOcli="true"
+  ;;
+  v)
+    SOverbose="true"
+  ;;
+  h)
+    SOh="true"
+  ;;
+  r)
+    richtext="true"
+  ;;
+  *)
+    inkFail
+  ;;
  esac
 done
-. $INKOPT
 
 # Message prep
 success_message="FTP folder vip/cgi active with CGI, hosted at: v.${vipURI}/cgi/"

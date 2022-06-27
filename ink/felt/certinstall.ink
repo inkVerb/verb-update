@@ -19,12 +19,26 @@ declare -A optName
 declare -A optDesc
 
 # Check the variables
-# while getopts "${optSerf}" Flag; do
-#  case "${Flag}" in
-#
-#  esac
-# done
-. $INKOPT
+while getopts "${optSerf}" Flag; do
+ case "${Flag}" in
+   # Standard flags
+   c)
+     SOcli="true"
+   ;;
+   v)
+     SOverbose="true"
+   ;;
+   h)
+     SOh="true"
+   ;;
+   r)
+     richtext="true"
+   ;;
+   *)
+     inkFail
+   ;;
+ esac
+done
 
 # Message prep
 # Success message

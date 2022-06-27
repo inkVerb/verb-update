@@ -28,9 +28,24 @@ while getopts "${optSerf}" Flag; do
     isWWWdomain "${OPTARG}" "Hosted domain ${OPTARG}"
     SOd="${OPTARG}"
   ;;
+  # Standard flags
+  c)
+    SOcli="true"
+  ;;
+  v)
+    SOverbose="true"
+  ;;
+  h)
+    SOh="true"
+  ;;
+  r)
+    richtext="true"
+  ;;
+  *)
+    inkFail
+  ;;
  esac
 done
-. $INKOPT
 
 # Message prep
 # Success message

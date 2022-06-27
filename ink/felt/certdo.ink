@@ -72,9 +72,24 @@ while getopts "${optSerf}" Flag; do
     SOd="Verb domains"
     SUFFIX="-all-verbs"
   ;;
+  # Standard flags
+  c)
+    SOcli="true"
+  ;;
+  v)
+    SOverbose="true"
+  ;;
+  h)
+    SOh="true"
+  ;;
+  r)
+    richtext="true"
+  ;;
+  *)
+    inkFail
+  ;;
  esac
 done
-. $INKOPT
 
 # Status
 # Message prep

@@ -27,9 +27,24 @@ while getopts "${optSerf}" Flag; do
      isVappConfig "${OPTARG}" "${optName[a]}"
      SOa="${OPTARG}"
    ;;
+   # Standard flags
+   c)
+     SOcli="true"
+   ;;
+   v)
+     SOverbose="true"
+   ;;
+   h)
+     SOh="true"
+   ;;
+   r)
+     richtext="true"
+   ;;
+   *)
+     inkFail
+   ;;
  esac
 done
-. $INKOPT
 
 # Message prep
 # Success message

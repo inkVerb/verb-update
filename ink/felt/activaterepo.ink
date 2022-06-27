@@ -38,9 +38,24 @@ while getopts "${optSerf}" Flag; do
     SuccessMessage="VIP repo deactivated."
     FailMessage="VIP files repo to deactivate."
   ;;
+  # Standard flags
+  c)
+    SOcli="true"
+  ;;
+  v)
+    SOverbose="true"
+  ;;
+  h)
+    SOh="true"
+  ;;
+  r)
+    richtext="true"
+  ;;
+  *)
+    inkFail
+  ;;
  esac
 done
-. $INKOPT
 
 # Message prep
 # Success message

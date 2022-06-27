@@ -91,7 +91,6 @@ cd /opt/verb
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/actions.pb /opt/verb/ink/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink /opt/verb/ink/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink.functions /opt/verb/ink/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink.opt /opt/verb/ink/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink.run /opt/verb/ink/
 
 # Update inkLists

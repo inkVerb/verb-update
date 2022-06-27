@@ -11,8 +11,7 @@
 . /opt/verb/conf/siteurilist
 
 # Show the info
-/bin/echo "Set DNS nameservers to:
-${hostURI}
+/bin/echo "${hostURI}
 ${SITERINKDNS}
 ${SITE2RINKDNS}"
 

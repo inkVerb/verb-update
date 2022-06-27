@@ -34,9 +34,24 @@ while getopts "${optSerf}" Flag; do
   p)
    SUFFIX="hard"
   ;;
+  # Standard flags
+  c)
+    SOcli="true"
+  ;;
+  v)
+    SOverbose="true"
+  ;;
+  h)
+    SOh="true"
+  ;;
+  r)
+    richtext="true"
+  ;;
+  *)
+    inkFail
+  ;;
  esac
 done
-. $INKOPT
 
 # Hard/soft kill and message prep
 if [ -n "${SUFFIX}" ] && [ "${SUFFIX}" = "hard" ]; then

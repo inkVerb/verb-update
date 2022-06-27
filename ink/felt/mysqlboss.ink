@@ -27,9 +27,24 @@ while getopts "${optSerf}" Flag; do
      isSQLUserCredential "${OPTARG}" "${optName[u]}"
      SOu="${OPTARG}"
    ;;
+   # Standard flags
+   c)
+     SOcli="true"
+   ;;
+   v)
+     SOverbose="true"
+   ;;
+   h)
+     SOh="true"
+   ;;
+   r)
+     richtext="true"
+   ;;
+   *)
+     inkFail
+   ;;
  esac
 done
-. $INKOPT
 
 # Message prep
 # Messages not needed for simple SQL terminal entry

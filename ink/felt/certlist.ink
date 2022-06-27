@@ -23,9 +23,24 @@ optDesc[d]="The domain (or parent domain, not subdomain) to list child domains f
 # Check the variables
 while getopts "${optSerf}" Flag; do
  case "${Flag}" in
+   # Standard flags
+   c)
+     SOcli="true"
+   ;;
+   v)
+     SOverbose="true"
+   ;;
+   h)
+     SOh="true"
+   ;;
+   r)
+     richtext="true"
+   ;;
+   *)
+     inkFail
+   ;;
  esac
 done
-. $INKOPT
 
 # Message prep
 # Success message

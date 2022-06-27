@@ -29,9 +29,24 @@ while getopts "${optSerf}" Flag; do
     isDomain "${OPTARG}" "${optName[d]}"
     SOd="${OPTARG}"
   ;;
+  # Standard flags
+  c)
+    SOcli="true"
+  ;;
+  v)
+    SOverbose="true"
+  ;;
+  h)
+    SOh="true"
+  ;;
+  r)
+    richtext="true"
+  ;;
+  *)
+    inkFail
+  ;;
  esac
 done
-. $INKOPT
 
 # Message prep
 # Success message
