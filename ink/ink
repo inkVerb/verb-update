@@ -52,4 +52,8 @@ getSchemas "${ACTION}"
 exit 0; fi
 
 # Run the .ink file
-${FELT}/${ACTION}${SCHEMA}.ink ${ALLARGS}
+if [ -f ${FELT}/${ACTION}${SCHEMA}.ink ]; then
+  ${FELT}/${ACTION}${SCHEMA}.ink ${ALLARGS}
+else
+  echo "Action and schema unknown. Use: ink -h"
+fi

@@ -10,6 +10,7 @@ datenow=$(date)
 # Run the serf
 if [ "${SOcli}" = "true" ]; then
   echo "$serfcommand"
+  exit 0
 elif [ "${SOverbose}" = "true" ]; then
   # We don't want a serf exit to exit this script, so run it as an if statement; thank you https://stackoverflow.com/a/66585275/10343144
   if "$serfcommand"; then vsuccess="true"; fi
