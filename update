@@ -20,7 +20,7 @@
 
 
 MIN_VERNO=0.90.00
-VUPDATE_REPO="verb-dev-update"
+VUPDATE_REPO="verb-update"
 
 ## Sample version updater:
 #UPGRADE_PATCH_VERNO=0.88.02
