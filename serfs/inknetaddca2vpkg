@@ -38,7 +38,7 @@ if [ -z "$SECPATH" ]; then
 /opt/verb/serfs.txzout ${CLIENTNAME}
 /bin/rm -f ${CLIENTNAME}.txz
 . ~/${CLIENTNAME}/verbername
-/bin/cp ~/${CLIENTNAME}/client.verber.${CLIENTNAME}.cnf /opt/verb/conf/inknet/client.${VERBERNAME}.inker.login.cnf
+/bin/cp ~/${CLIENTNAME}/client.verber.${CLIENTNAME}.cnf /opt/verb/conf/inknet/client.${VERBERNAME}.rink.login.cnf
 /bin/rm -rf ${CLIENTNAME}
 
 # Finish

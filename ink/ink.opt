@@ -1,6 +1,9 @@
 #!/bin/bash
 # These are options that are included in all getopts loops for .ink files
 
+while getopts "${optSerf}" Flag; do
+ case "${Flag}" in
+
 # CLI script output
 c)
   SOcli="true"
@@ -20,3 +23,6 @@ r)
 *)
   inkFail
 ;;
+
+esac
+done

@@ -37,11 +37,11 @@ fi
 
 # Set the Inkers to defaults (only if not already set)
 . /opt/verb/conf/sitenameip
-if [ "${SITEINKERDNS}" = "NOT_SET" ] || [ "${SITEINKERIP4}" = "NOT_SET" ] || [ "${SITEINKERIP6}" = "NOT_SET" ]; then
-  /opt/verb/serfs/inkdnssetinker
+if [ "${SITERINKDNS}" = "NOT_SET" ] || [ "${SITERINKIP4}" = "NOT_SET" ] || [ "${SITERINKIP6}" = "NOT_SET" ]; then
+  /opt/verb/serfs/inkdnssetrink
 fi
-if [ "${SITE2INKERDNS}" = "NOT_SET" ] || [ "${SITE2INKERIP4}" = "NOT_SET" ] || [ "${SITE2INKERIP6}" = "NOT_SET" ]; then
-  /opt/verb/serfs/inkdnssetinker2
+if [ "${SITE2RINKDNS}" = "NOT_SET" ] || [ "${SITE2RINKIP4}" = "NOT_SET" ] || [ "${SITE2RINKIP6}" = "NOT_SET" ]; then
+  /opt/verb/serfs/inkdnssetrink2
 fi
 
 # Include the configs
@@ -68,15 +68,15 @@ fi
 
 # Set the NS domains
 ## Verber Domains
-/bin/sed -i "s/ns1\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/inkzones/db.*
-/bin/sed -i "s/ns2\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/inkzones/db.*
+/bin/sed -i "s/ns1\.DNSDOMAIN286/${SITERINKDNS}/g" /opt/verb/conf/inkdns/inkzones/db.*
+/bin/sed -i "s/ns2\.DNSDOMAIN286/${SITE2RINKDNS}/g" /opt/verb/conf/inkdns/inkzones/db.*
 ## Hosted domain template
-/bin/sed -i "s/ns1\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/db.dnsdomain
-/bin/sed -i "s/ns2\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/db.dnsdomain
+/bin/sed -i "s/ns1\.DNSDOMAIN286/${SITERINKDNS}/g" /opt/verb/conf/inkdns/db.dnsdomain
+/bin/sed -i "s/ns2\.DNSDOMAIN286/${SITE2RINKDNS}/g" /opt/verb/conf/inkdns/db.dnsdomain
 ## Any hosted domains
 if [ -f "/opt/verb/conf/inkdns/zones/db.*" ]; then
-  /bin/sed -i "s/ns1\.DNSDOMAIN286/${SITEINKERDNS}/g" /opt/verb/conf/inkdns/zones/db.*
-  /bin/sed -i "s/ns2\.DNSDOMAIN286/${SITE2INKERDNS}/g" /opt/verb/conf/inkdns/zones/db.*
+  /bin/sed -i "s/ns1\.DNSDOMAIN286/${SITERINKDNS}/g" /opt/verb/conf/inkdns/zones/db.*
+  /bin/sed -i "s/ns2\.DNSDOMAIN286/${SITE2RINKDNS}/g" /opt/verb/conf/inkdns/zones/db.*
 fi
 
 # DNS serial number

@@ -8,9 +8,9 @@ datenow=$(date)
 /usr/bin/logger -p local6.info -t verber.ink "::ink# $serfcommand"
 
 # Run the serf
-if [ ${SOcli} = "true" ]; then
+if [ "${SOcli}" = "true" ]; then
   echo "$serfcommand"
-elif [ ${SOverbose} = "true" ]; then
+elif [ "${SOverbose}" = "true" ]; then
   # We don't want a serf exit to exit this script, so run it as an if statement; thank you https://stackoverflow.com/a/66585275/10343144
   if "$serfcommand"; then vsuccess="true"; fi
 else
@@ -18,7 +18,7 @@ else
   then vsuccess="true"; fi
 fi
 
-Serf output
+# Serf output
 if [ -n "${serfOUT}" ] && [ -n "${success_message}" ]; then
   success_message="${success_message}
   ${serfOUT}"
@@ -36,7 +36,7 @@ fi
 # if [ -z "$success_log" ] && [ -n "$success_message" ]; then
 #   success_log="$success_message"; fi
 
-Richtext
+# Richtext
 if [ "$richtext" = "true" ]; then
   if [ -n "$success_message" ]; then success_message="<span class=\"vsuccess\">$success_message</span>"; fi
   if [ -n "$fail_message" ]; then fail_message="<span class=\"verror\">$fail_message</span>"; fi

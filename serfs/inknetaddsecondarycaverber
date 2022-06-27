@@ -14,7 +14,7 @@
 
 
 # Verify that this Verber candidate is already a Client Verber
-if [ ! -f /opt/verb/conf/inknet/inker.client.cnf ]; then
+if [ ! -f /opt/verb/conf/inknet/rink.client.cnf ]; then
 /bin/echo "Not bad, Bucko. But, this must be a Verber Client, even to itself if need be, before it can become a CA to anything else.
 
 First run, according to instructions: inknetmakeverberclient

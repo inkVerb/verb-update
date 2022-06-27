@@ -83,9 +83,9 @@ cd /opt/verb
 /bin/echo "Serfs have been updated."
 
 # Update ink tools
-/bin/rm -rf /opt/verb/ink/inks/*
+/bin/rm -rf /opt/verb/ink/felt/*
 /bin/rm -rf /opt/verb/ink/help/*
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/inks/* /opt/verb/ink/inks/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/felt/* /opt/verb/ink/felt/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/help/* /opt/verb/ink/help/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/PHPcities /opt/verb/ink/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/actions.pb /opt/verb/ink/
@@ -97,9 +97,9 @@ cd /opt/verb
 # Update inkLists
 . /opt/verb/conf/siteinkget
 if [ "${INKGET_LIST}" = "AUTO_UPDATE" ]; then
-  /bin/cp /opt/verb/${VUPDATE_REPO}/inklists/repoverlist /opt/verb/conf/inklists/
-  /bin/cp /opt/verb/${VUPDATE_REPO}/inklists/repolinks /opt/verb/conf/inklists/
-  /bin/cp /opt/verb/${VUPDATE_REPO}/inkdns/inkdnsinkers /opt/verb/conf/inkdns/
+  /bin/cp -f /opt/verb/${VUPDATE_REPO}/inklists/repoverlist /opt/verb/conf/inklists/
+  /bin/cp -f /opt/verb/${VUPDATE_REPO}/inklists/repolinks /opt/verb/conf/inklists/
+  /bin/cp -f /opt/verb/${VUPDATE_REPO}/inkdns/inklists/inkdnsrinks /opt/verb/conf/inklists/
   /bin/echo "Repo version list is up-to-date."
 else
   /bin/echo "Repo version list unchanged because this is a custom Verber."

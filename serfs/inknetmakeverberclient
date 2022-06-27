@@ -17,7 +17,7 @@
 ## ./inknetmakeverberclient ink2.ink.inkisaverb.com 999.999.99.999 (for Domain Verber mod)
 
 # How to use as Inker: (follow exactly, this is NEVER for a normal Verber, only inkVerb corporate servers or supergeeks who know what this means)
-## ./inknetmakeverberclient I_AM_INKER
+## ./inknetmakeverberclient I_AM_RINK
 
 
 # Include the configs
@@ -46,31 +46,31 @@ Check with your hosting provider if you still have trouble.
 I quit."
 exit 8; fi
 ## To make this an CA Verber on an Inker (This server must already be an Inker)
-if [ "${1}" = "I_AM_INKER" ]; then
+if [ "${1}" = "I_AM_RINK" ]; then
 ### Make sure it really is an Inker
  if [ ! -d /opt/ink/conf ]; then
  /bin/echo "No, you're not. Don't even pose."
  exit 8
  fi
 ### Set special Inker settings
-NEWCAVERBERHOST="I_AM_INKER"
-NEWCAVERBERURI="I_AM_INKER"
-NEWCAVERBERNAME="I_AM_INKER"
-NEWCAVERBERIP="I_AM_INKER"
-NEWINIVSAILORNAME="I_AM_INKER"
-/opt/verb/serfs/setinkcertsslca "I_AM_INKER"
+NEWCAVERBERHOST="I_AM_RINK"
+NEWCAVERBERURI="I_AM_RINK"
+NEWCAVERBERNAME="I_AM_RINK"
+NEWCAVERBERIP="I_AM_RINK"
+NEWINIVSAILORNAME="I_AM_RINK"
+/opt/verb/serfs/setinkcertsslca "I_AM_RINK"
 wait
-/opt/verb/serfs/setinkcertsshca "I_AM_INKER"
+/opt/verb/serfs/setinkcertsshca "I_AM_RINK"
 wait
-/opt/verb/serfs/setinkgetrepo "I_AM_INKER"
+/opt/verb/serfs/setinkgetrepo "I_AM_RINK"
 wait
-/opt/verb/serfs/setinknetsslca "I_AM_INKER"
+/opt/verb/serfs/setinknetsslca "I_AM_RINK"
 wait
-/opt/verb/serfs/setinknetsshca "I_AM_INKER"
+/opt/verb/serfs/setinknetsshca "I_AM_RINK"
 wait
-/opt/verb/serfs/setinknetrepo "I_AM_INKER"
+/opt/verb/serfs/setinknetrepo "I_AM_RINK"
 wait
-/bin/sed -i "s/INKGET_METHOD=.*/INKGET_METHOD=\"INKER_CP\"/g" /opt/verb/conf/siteinkget
+/bin/sed -i "s/INKGET_METHOD=.*/INKGET_METHOD=\"RINK_CP\"/g" /opt/verb/conf/siteinkget
 else
 
 ## To make this a standard CA Verber
@@ -108,7 +108,7 @@ CLIENTHOST=\"${NEWCLIENTHOST}\"
 CLIENTURI=\"${NEWCLIENTURI}\"
 CLIENTNAME=\"${NEWCLIENTNAME}\"
 CLIENTSAILOR=\"NOT_SET\"
-" > /opt/verb/conf/inknet/inker.client.cnf
+" > /opt/verb/conf/inknet/rink.client.cnf
 ## For the system
 ### Prepare /etc/ssh/ssh_config
 if [ ! -d /etc/ssh/inknet ]; then
@@ -124,7 +124,7 @@ Host *
 /opt/verb/serfs/inknetinstallivapp
 wait
 ## inkNet ivApp Sailor (to login to the CA Verber)
-if [ "${1}" != "I_AM_INKER" ]; then
+if [ "${1}" != "I_AM_RINK" ]; then
 /opt/verb/serfs/inknetivappnewclientsailor
 wait
 fi
@@ -134,7 +134,7 @@ fi
 /bin/systemctl reload sshd
 
 # Don't get CA Inker keys if this is an Inker
-if [ "${1}" = "I_AM_INKER" ]; then
+if [ "${1}" = "I_AM_RINK" ]; then
 /bin/echo "
 I am Inker!
 Now, run inknetinstallca

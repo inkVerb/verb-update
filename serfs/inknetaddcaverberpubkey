@@ -26,7 +26,7 @@ SECONDARYCAVNAME="$(/bin/echo ${CA2URI} | sed 's/\./_/g')"
 
 # Include the config
 if [ -z ${1} ]; then
-. /opt/verb/conf/inknet/inker.client.cnf
+. /opt/verb/conf/inknet/rink.client.cnf
 else
 . /opt/verb/conf/inknet/2cav.${SECONDARYCAVNAME}.cnf
 fi

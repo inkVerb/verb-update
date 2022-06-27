@@ -1,0 +1,89 @@
+#!/bin/sh
+#inkVerbSerf! verb.ink
+
+# This sets the main Inker as the backup DNS for on this server
+## The default backup nameservers are already ns1.inkisaverb.com and ns2.inkisaverb.com
+## This can replace ns1.inkisaverb.com, but is not recommended
+## To replace ns1.inkisaverb.com, use inkdnssetrink2
+
+# How to use:
+## ./inkdnssetrink [ -d OR domain.tld - optional, rare ] [ -d OR IPv4 Address - optional ] [ IPv6 Address - optional ]
+
+# Eg:
+## ./inkdnssetrink
+## ./inkdnssetrink -d 111.222.333.444 0000:ef89::2001
+## ./inkdnssetrink -d 111.222.333.444
+## ./inkdnssetrink -d -d 0000:ef89::2001
+## ./inkdnssetrink ns2.inkisaverb.com
+## ./inkdnssetrink ns.poetryiscode.com
+## ./inkdnssetrink ns2.inkisaverb.com 111.222.333.444
+## ./inkdnssetrink ns2.inkisaverb.com -d 0000:ef89::2001
+## ./inkdnssetrink ns.poetryiscode.com 555.555.555.555 8001:0056::489a
+
+usagenotes="This sets the main Inker as the backup DNS for on this server"
+usageformat="inkdnssetrink [ -d OR domain.tld - optional, rare ] [ -d OR IPv4 Address - optional ] [ IPv6 Address - optional ]"
+usageexample="inkdnssetrink
+inkdnssetrink -d 111.222.333.444 0000:ef89::2001
+inkdnssetrink -d 111.222.333.444
+inkdnssetrink -d -d 0000:ef89::2001
+inkdnssetrink ns2.inkisaverb.com
+inkdnssetrink ns.poetryiscode.com
+inkdnssetrink ns2.inkisaverb.com 111.222.333.444
+inkdnssetrink ns2.inkisaverb.com -d 0000:ef89::2001
+inkdnssetrink ns.poetryiscode.com 555.555.555.555 8001:0056::489a"
+hierarchy=( secondary )
+vsetnames=(  )
+vsettypes=(  )
+voptnames=( "-d || Domain" "-d || IPv4" "-d || IPv6" )
+vopttypes=( "string_match || isDomain" "string_match || isIP4" "isIP6" )
+voptflags=(  )
+voptflagpurpose=(  )
+dependencyinstall=( inkdnsinstall )
+prerequesite=(  )
+usedby=( inkdnsinstall )
+useserfs=( inkdnsrefreshbind )
+useconfigs=( inklists/inkdnsrinks )
+if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -e "/opt/verb/mods/inkdnssetrink.replace" ]; then . /opt/verb/mods/inkdnssetrink.replace; return 0; fi # Precedes this script
+if [ -e "/opt/verb/mods/inkdnssetrink.before" ]; then . /opt/verb/mods/inkdnssetrink.before; return 0; fi # Replaces this script
+
+
+# Defaults
+. /opt/verb/conf/inklists/inkdnsrinks
+
+# Check variables present
+## Domain
+if [ -z "$1" ] || [ -d "$1" ]; then
+  /bin/echo "Inkder domain not specified; using default."
+  NSDOMAIN="${DEFAULTns1}"
+else
+  NSDOMAIN="$1"
+fi
+## IP4
+if [ -z "$2" ] || [ -d "$2" ]; then
+  /bin/echo "IP4 not specified; using default."
+  NSIP4="${RINK1ip4}"
+else
+  NSIP4="$2"
+fi
+## IP6
+if [ -z "$3" ] || [ -d "$3" ]; then
+  /bin/echo "IP6 not specified; using default."
+  NSIP6="${INKDER1ip6}"
+else
+  NSIP6="$3"
+fi
+
+# Set the changes
+/bin/sed -i "s/SITERINKDNS.*/SITERINKDNS=\"${NSDOMAIN}\"/" /opt/verb/conf/sitenameip
+/bin/sed -i "s/SITERINKIP4.*/SITERINKIP4=\"${NSIP4}\"/" /opt/verb/conf/sitenameip
+/bin/sed -i "s/SITERINKIP6.*/SITERINKIP6=\"${NSIP6}\"/" /opt/verb/conf/sitenameip
+
+# Finish
+/opt/verb/serfs/inkdnsrefreshbind
+/bin/echo "Primary DNS Inker set to: ${NSIP4} & ${NSIP6} for ${NSDOMAIN}"
+
+
+
+
+if [ -e "/opt/verb/mods/inkdnssetrink.after" ]; then . /opt/verb/mods/inkdnssetrink.after; fi # Follows this script

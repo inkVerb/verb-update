@@ -36,8 +36,8 @@ if [ $INKGET_METHOD = "USE_WGET" ]; then
   /usr/bin/wget https://${INKGET_REPO}/repo/${APPNAME}.txz --no-check-certificate
 fi
 
-# inker
-if [ $INKGET_METHOD = "INKER_CP" ]; then
+# rink
+if [ $INKGET_METHOD = "RINK_CP" ]; then
   /bin/cp /opt/ink/repo/${APPNAME}.txz .
   if [ $INKGET_REPO = "TEMP" ]; then
     /bin/rm /opt/verb/repo/${APPNAME}.txz

@@ -13,15 +13,15 @@
 
 
 # Check & include the config
-if [ ! -f /opt/verb/conf/inknet/inker.client.cnf ]; then
+if [ ! -f /opt/verb/conf/inknet/rink.client.cnf ]; then
 /bin/echo "This is not yet connected to a CA Verber via inkNet."
 exit 8; fi
 
 # Include the correct configs
-. /opt/verb/conf/inknet/inker.client.cnf
+. /opt/verb/conf/inknet/rink.client.cnf
 ## Add secondary CA Verber credentials if present
 if [ "$1" = "CA1" ]; then
-. /opt/verb/conf/inknet/client.${CAVERBERNAME}.inker.login.cnf
+. /opt/verb/conf/inknet/client.${CAVERBERNAME}.rink.login.cnf
 else
 CAV2HOST=$1
 CAV2NAME="$(/bin/echo ${CAV2HOST} | sed 's/\./_/g')"

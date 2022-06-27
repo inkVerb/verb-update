@@ -247,7 +247,7 @@ local VALIDregex="^[[:lower:][:digit:]_-]*$"
 if [[ "${az09lines}" =~ ${VALIDregex} ]]; then
 isaz09lines="true"; else
 isaz09lines="false"; fi
-
+}
 
 ## azAZ09lines
 isazAZ09lines() {
@@ -271,7 +271,7 @@ local VALIDregex="^[[:alnum:]_]*$"
 if [[ "${azAZ09underscore}" =~ ${VALIDregex} ]]; then
 isazAZ09underscore="true"; else
 isazAZ09underscore="false"; fi
-
+}
 
 ## azAZ09punct
 isazAZ09punct() {
@@ -689,8 +689,6 @@ else
   exit 0
 fi
 }
-
-elif [ ${SERVERTYPE} = "lamp" ]; then
 
 ## webServerCAPStype
 ### =LAMP; =LAEMP; =LEMP
@@ -1158,9 +1156,9 @@ fi
 ## inkCertInstallStatus
 ### Checks for SSL install status in inkCert sitestatus.domain.tld file
 inkCertInstallStatus() {
-. ${CONF}/inkcert/inkcertstatus
+. ${CONF}/inkcertstatus
 # Check the site config
-if [ "${INKCERTINSTALLED}" = "DONE" ] && [ -e `/etc/inkcert/le` ]; then
+if [ "${INKCERTINSTALLED}" = "DONE" ] && [ -e "/etc/inkcert/le" ]; then
   inkCertInstallStatus="Installed"
 else
   inkCertInstallStatus="Not yet installed"
@@ -1310,8 +1308,8 @@ cat ${INKPB}
 getSchemas() {
 ACTION="$1"
 if grep -q "${ACTION}" ${INKPB}; then
-  for SUBNAME in ${SERFS}/${ACTION}*.ink; do
-  listSubName=$(/bin/echo "${SUBNAME}" | sed s:${SERFS}/:: | sed "s/${ACTION}//" | sed "s/\.ink//")
+  for SUBNAME in ${FELT}/${ACTION}*.ink; do
+  listSubName=$(/bin/echo "${SUBNAME}" | sed s:${FELT}/:: | sed "s/${ACTION}//" | sed "s/\.ink//")
   /bin/echo "${listSubName}"
   done
 fi

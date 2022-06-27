@@ -16,7 +16,7 @@ SECONDARYCACFG="$(/bin/echo ${CA2URICFG} | sed 's/\./_/g')"
 
 # Set the Client config
 if [ -z ${1} ]; then
-CLIENTCFG=/opt/verb/conf/inknet/inker.client.cnf
+CLIENTCFG=/opt/verb/conf/inknet/rink.client.cnf
 else
 CLIENTCFG=/opt/verb/conf/inknet/2cav.${SECONDARYCACFG}.cnf
 fi

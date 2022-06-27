@@ -11,7 +11,7 @@ if [ "$(id -u)" -ne 0 ]; then echo "The 'ink' command must be run with sudo or a
 ## ink action schema setting1 setting2 setting3 setting4 -o option1 option2 option3
 
 # Put the path to the setting file here
-INKSET=/opt/verb/ink/ink.set
+export INKSET=/opt/verb/ink/ink.set
 ## Include the settings & functions
 . ${INKSET}
 . ${iDir}/ink.functions
@@ -52,4 +52,4 @@ getSchemas "${ACTION}"
 exit 0; fi
 
 # Run the .ink file
-${INKS}/${ACTION}${SCHEMA}.ink ${ALLARGS}
+${FELT}/${ACTION}${SCHEMA}.ink ${ALLARGS}

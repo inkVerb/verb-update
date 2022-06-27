@@ -108,6 +108,13 @@ $usageexample"
 		done
 	fi
 
+	if [ -n ${installedpackages[0]} ]; then
+		echo "Installed Linux packages (installedpackages):"
+		for Var in ${installedpackages[@]}; do
+			echo "  # $Var"
+		done
+	fi
+
 	if [ -n ${prerequesite[0]} ]; then
 		echo "Prerequesite (prerequesite):"
 		for Var in ${prerequesite[@]}; do
