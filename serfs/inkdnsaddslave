@@ -157,8 +157,11 @@ SIP6CMP="${SIPV6CMP}"
 SIP6ARPA="${SIPV6ARPA}"
 EOF
 
+# Refresh Bind
+/opt/verb/serfs/inkdnsrefreshbind
+
 # Finish
-/bin/echo "${DOMAIN} added to this DNS server. Run inkdnsrefreshbind to apply changes."
+/bin/echo "${DOMAIN} added to this DNS slave server."
 
 
 
