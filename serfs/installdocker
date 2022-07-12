@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This installs Docker, which is used by various apps, including Collabora Online for Nextcloud

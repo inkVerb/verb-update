@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #IVapp installer! verb.ink
 
 # This installs the IVapp submodule with settings to be used by inkNet

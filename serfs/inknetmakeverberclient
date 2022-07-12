@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This sets the settings for this Verber to be an inkNet Verber Client to a Inker CA Verber
@@ -96,7 +96,7 @@ fi
 
 # Set configs
 ## For the Client and primary CA Verber
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 # inkNet config, verb.ink
 ## This contains information about this Client Verber's credentials used in signing SSH keys for inkNet on another CA Verber
 

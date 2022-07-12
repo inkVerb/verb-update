@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This copies all original verb folders to www/html if they don't exist
@@ -16,7 +16,7 @@
 
 # Make the commute to where we will work
 /bin/mkdir -p /srv/www/verb
-cd /srv/www/verb
+cd /srv/www/verb || exit 0
 
 # Remove broken links
 /usr/bin/find -L . -name . -o -type d -prune -o -type l -exec rm {} +

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #IVapp installer! verb.ink
 
 # This adds an IVapp user with settings for an inkNet Sailor

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This drops (deletes) a MySQL/MariaDB  user
@@ -21,7 +21,7 @@ prerequesite=( mysqlnewdbuser 'or' mysqlnewboss )
 usedby=(  )
 useserfs=(  )
 useconfigs=(  )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/mysqlkilluser.replace" ]; then . /opt/verb/mods/mysqlkilluser.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/mysqlkilluser.before" ]; then . /opt/verb/mods/mysqlkilluser.before; return 0; fi # Replaces this script
 

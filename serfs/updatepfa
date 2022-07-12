@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This updates an existing Postfix Admin installation once it has been updated in the inkVerb repo
@@ -16,7 +16,7 @@ PFAPASS=$1
 . /opt/verb/conf/sitemailpath
 
 # Download and unpack
-cd /srv/www/email
+cd /srv/www/email || exit 0
 if [ -d /srv/www/email/postfixadmin.vbak ]; then
 /bin/rm -rf /srv/www/email/postfixadmin.vbak; fi
 /bin/mv /srv/www/email/postfixadmin /srv/www/email/postfixadmin.vbak

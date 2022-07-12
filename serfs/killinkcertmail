@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This removes basic mail certificates and subdomain dummy sites for inkCert-LE setup by setinkcertmail
@@ -22,7 +22,7 @@ prerequesite=( adddomain )
 usedby=( killdomainshell )
 useserfs=( killinkcertmailsubdomains killinkcertmailcerts killinkdnsmail )
 useconfigs=( sitemailpath inkdnsconf inkcertstatus )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/killinkcertmail.replace" ]; then . /opt/verb/mods/killinkcertmail.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/killinkcertmail.before" ]; then . /opt/verb/mods/killinkcertmail.before; return 0; fi # Replaces this script
 

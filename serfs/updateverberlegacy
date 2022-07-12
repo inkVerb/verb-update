@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This downloads and updates the Verber™ core files, including serfs and inklists
@@ -11,7 +11,7 @@
 
 
 # Download and unpack the latest checked version from the Inkver repo
-cd /opt/verb/
+cd /opt/verb/ || exit 0
 /opt/verb/serfs/inkget verber.update.legacy; wait
 /opt/verb/serfs.txzout verber.update.legacy; wait
 

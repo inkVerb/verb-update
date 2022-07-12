@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This creates a new MySQL/MariaDB database and a limited-permissions (client: data & structure) user with password
@@ -21,7 +21,7 @@ prerequesite=(  )
 usedby=(  )
 useserfs=(  )
 useconfigs=(  )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/mysqlnewdb.replace" ]; then . /opt/verb/mods/mysqlnewdb.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/mysqlnewdb.before" ]; then . /opt/verb/mods/mysqlnewdb.before; return 0; fi # Replaces this script
 

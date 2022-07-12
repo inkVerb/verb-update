@@ -85,7 +85,7 @@ fi
 /bin/chmod -R 750 /srv/www/verb/${vTLD}.serve
 
 # Create cron to delete download directories
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 # inkNet cron, verb.ink
 find /srv/www/verb/${vTLD}.serve/${sDIR}/* -type d -mmin +30 -exec rm -rf {} \;" > /opt/verb/donjon/rmdldirs.sh
 /bin/chmod 750 /opt/verb/donjon/rmdldirs.sh

@@ -24,7 +24,7 @@ prerequesite=( inkcertrevokele )
 usedby=( inkcertundocb )
 useserfs=( inkcertremovecbsingle )
 useconfigs=(  )	# List config files of any kind used in this serf, please preserve order of appearance
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkcertremoveallcbsingle.replace" ]; then . /opt/verb/mods/inkcertremoveallcbsingle.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkcertremoveallcbsingle.before" ]; then . /opt/verb/mods/inkcertremoveallcbsingle.before; return 0; fi # Replaces this script
 

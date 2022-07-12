@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # inkVerb serf/surfer, verb.ink
 
 # This creates an Verber Client key to be signed by a CA Verber that will be used to sign into the CA Verber

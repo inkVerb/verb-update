@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This script runs inkcertdosc for all native Verber domains... verb.ink, verb.blue, etc.

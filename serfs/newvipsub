@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds a new subdomain to become newsub.NAME.verb.vip, accessible in the vip/_subs.vip folder
@@ -22,7 +22,7 @@ prerequesite=( newftpvip )
 usedby=(  )
 useserfs=( ensiteapache ensitenginx inkdnsaddvipsub inkcertaddcb )
 useconfigs=( sitenameip siteurilist servertype )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/newvipsub.replace" ]; then . /opt/verb/mods/newvipsub.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/newvipsub.before" ]; then . /opt/verb/mods/newvipsub.before; return 0; fi # Replaces this script
 

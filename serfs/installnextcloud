@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This downloads and installs Nextcloud manually from inkisaverb.com/repo and linnks it to ....verb.blue
@@ -37,7 +37,7 @@ DBPASSWORD=$3
 CLEANNAME=$(/bin/echo $CVAPPNAME | sed -e 's/\.//g')
 
 # Download as webapp
-cd /srv/www/vapps
+cd /srv/www/vapps || exit 0
 /opt/verb/serfs/inkget ${CVAPPNAME} check
 ## Check
 if [ "$?" = 4 ]; then

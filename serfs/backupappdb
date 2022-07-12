@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This backs up a database for a specific app
@@ -29,7 +29,7 @@ fi
 . /opt/verb/conf/vapp.${APPNAME}
 
 # Export the database
-cd /srv/www/vip
+cd /srv/www/vip || exit 0
 /opt/verb/serfs/mysqlex ${APPDBASE}; wait
 /bin/mv /srv/www/vip/sql/${APPDBASE}.sql /srv/www/vip/sql/verb.${APPDBASE}.${SECNAME}.vbak.sql
 

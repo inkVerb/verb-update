@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This unpacks the certificates from the CA and moves files where they need to go
@@ -17,7 +17,7 @@ DOMAIN=$1
 ICTFILENAME=$2
 
 # Unpack the file
-cd /etc/inkcert
+cd /etc/inkcert || exit 0
 /bin/mv ${ICTFILENAME} ${DOMAIN}.txz
 /opt/verb/serfs.txzout ${DOMAIN}
 /bin/mv ${DOMAIN} req/

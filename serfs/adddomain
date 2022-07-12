@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 # This adds a new domain, complete with OpenDKIM profiles and keys and inkCert Letsencrypt cli-ini entries and Apache/Nginx configs and folders in www/domains that link to www/html
 ## This also creates a folder for the domain in www/domains which an ftpvip can access
@@ -22,7 +22,7 @@ prerequesite=(  )
 usedby=(  )
 useserfs=( newdomainshell ensitenginx ensiteapache )
 useconfigs=( inkcertstatus inkdnsconf sitemailpath sitenameip servertype )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/adddomain.replace" ]; then . /opt/verb/mods/adddomain.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/adddomain.before" ]; then . /opt/verb/mods/adddomain.before; return 0; fi # Replaces this script
 

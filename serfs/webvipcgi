@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This turns on/off the www/cgi folder and links it to v.verb.vip/cgi

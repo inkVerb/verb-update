@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This removes an existing domain inkDNS zone file from this Verber
@@ -21,7 +21,7 @@ prerequesite=( inkdnsadddomain )
 usedby=( killdomainshell )
 useserfs=( inkdnsrefreshbind )
 useconfigs=( inkcertstatus inkdnsconf sitemailpath )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/killinkdnsdomain.replace" ]; then . /opt/verb/mods/killinkdnsdomain.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/killinkdnsdomain.before" ]; then . /opt/verb/mods/killinkdnsdomain.before; return 0; fi # Replaces this script
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This sets inkCert csr information in a named file
@@ -23,7 +23,7 @@ EMAIL=$7
 COMPANYNAME=$8
 
 # Write the csr info file
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 ## inkVerb's inkCert SSL csr information profile file
 
 COUNTRY=\"${COUNTRY}\"

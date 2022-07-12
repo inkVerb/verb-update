@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This sets a new serial number for an existing DNS record in the inkDNS zone file on the server
@@ -23,7 +23,7 @@ prerequesite=(  )
 usedby=( inkdnsadddomain  )
 useserfs=( inkdnsserial inkdnsaddinkdkim inkdnsaddmail inkdnsaddonesub inkdnsaddvipsub killinkdnsinkdkim killinkdnsmail killinkdnsonesub killinkdnssub killinkdnsvipsub setserve )
 useconfigs=( sitenameip )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkdnsserial.replace" ]; then . /opt/verb/mods/inkdnsserial.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkdnsserial.before" ]; then . /opt/verb/mods/inkdnsserial.before; return 0; fi # Replaces this script
 

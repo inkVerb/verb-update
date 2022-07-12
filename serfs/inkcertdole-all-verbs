@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This script runs inkcertdole for all native Verber domains... verb.ink, verb.blue, etc.
@@ -21,7 +21,7 @@ prerequesite=( inkcertinstall )
 usedby=(  )
 useserfs=( inkcertdole )
 useconfigs=( sitenameip siteurilist sitetldstatus )	# List config files of any kind used in this serf, please preserve order of appearance
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkcertdole-all-verbs.replace" ]; then . /opt/verb/mods/inkcertdole-all-verbs.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkcertdole-all-verbs.before" ]; then . /opt/verb/mods/inkcertdole-all-verbs.before; return 0; fi # Replaces this script
 

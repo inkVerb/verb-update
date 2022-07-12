@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This "hard" kills a domain added with adddomain
@@ -33,7 +33,7 @@ prerequesite=( adddomain )
 usedby=(  )
 useserfs=( killdomainshell )
 useconfigs=( sitemailpath inkdnsconf inkcertstatus )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/killdomainhard.replace" ]; then . /opt/verb/mods/killdomainhard.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/killdomainhard.before" ]; then . /opt/verb/mods/killdomainhard.before; return 0; fi # Replaces this script
 

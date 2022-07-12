@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This communicates with the inkCert CA Inker to send the csr and retrieve the cert package

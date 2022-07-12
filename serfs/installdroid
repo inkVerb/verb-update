@@ -18,14 +18,14 @@ CLNDROIDREPO1=$(/bin/echo $DROIDREPO | cut -d'/' -f5-)
 CLNDROIDREPO=$(/bin/echo $CLNDROIDREPO1 | sed 's/\.git//')
 
 # Clone it
-cd /opt/verb/droids
+cd /opt/verb/droids || exit 0
 git clone ${DROIDREPO}
 
 # Clean up and install
-cd ${CLNDROIDREPO}
+cd ${CLNDROIDREPO} || exit 0
 /bin/chmod 750 vd*
 /bin/mv vd* ../
-cd ..
+cd .. || exit 0
 /bin/rm -rf ${CLNDROIDREPO}
 
 # Finish

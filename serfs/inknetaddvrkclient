@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds a Vrk Client for this inkNet CA Verber to host
@@ -63,7 +63,7 @@ fi
 # Create the config
 . /opt/verb/conf/siteport
 ADDLOGINPORT=${SITEPORT}
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 # inkNet config, verb.ink
 ## This contains information about a Vrk Client's credentials used in signing SSH keys for inkNet on this CA Verber
 ## Note that a local Vrk Station only uses the local username as the URI for SSH key and cert purposes

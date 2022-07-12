@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This displays the inkDKIM information in OpenDKIM for a specific domain so it can be added to an opendkim txt record in the DNS file

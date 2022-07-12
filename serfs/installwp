@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This downloads and installs WordPress as a vapp with www/html/DOMAIN.TLD link from adddomain
@@ -45,7 +45,7 @@ wait
 fi
 
 # Download and establish wordpress in the server to pre-created domain
-cd /srv/www/vapps
+cd /srv/www/vapps || exit 0
 /opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
@@ -73,13 +73,13 @@ GRANT ALL PRIVILEGES ON ${DBASE}.* TO '${DBUSER}'@'localhost' IDENTIFIED BY '${D
 FLUSH PRIVILEGES;"
 
 # Write the config for backup
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 APPDBASE=${DBASE}
 APPDDBUSR=${DBUSER}
 APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}.${DOMAIN}
 
 # Put the settings in the WordPress config file
-cd wp.${DOMAIN}
+cd wp.${DOMAIN} || exit 0
 /bin/cp wp-config-sample.php wp-config.php
 /bin/sed -i "s/database_name_here/${DBASE}/g" wp-config.php
 /bin/sed -i "s/username_here/${DBUSER}/g" wp-config.php

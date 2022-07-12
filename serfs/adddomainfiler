@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 # This adds an existing domain to an existing ftpfiler's home ~/domains folder
 ## Prerequesite: newftpfiler used to create an ftpfiler
@@ -21,7 +21,7 @@ prerequesite=( newftpfiler )
 usedby=(  )
 useserfs=(  )
 useconfigs=(  )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/adddomainfiler.replace" ]; then . /opt/verb/mods/adddomainfiler.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/adddomainfiler.before" ]; then . /opt/verb/mods/adddomainfiler.before; return 0; fi # Replaces this script
 

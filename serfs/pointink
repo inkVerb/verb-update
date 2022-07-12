@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This script allows all of a user's main inkVerb subdomains to point to preferred apps, 

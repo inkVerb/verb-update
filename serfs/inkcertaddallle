@@ -32,7 +32,7 @@ prerequesite=( inkcertinstall inkcertreqle )
 usedby=( inkcertdole )
 useserfs=( inkcertaddle )
 useconfigs=(  )	# List config files of any kind used in this serf, please preserve order of appearance
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkcertaddallle.replace" ]; then . /opt/verb/mods/inkcertaddallle.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkcertaddallle.before" ]; then . /opt/verb/mods/inkcertaddallle.before; return 0; fi # Replaces this script
 

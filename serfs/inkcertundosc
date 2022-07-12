@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This batch runs a revoke and uninstall of inkCert Self-Cert certs for a domain and replaces the Snakeoil certificate

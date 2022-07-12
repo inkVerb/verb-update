@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This removes a subdomain A & AAAA records from an existing ONE DNS record in the inkDNS zone file on the server
@@ -21,7 +21,7 @@ prerequesite=( inkdnsaddonesub )
 usedby=( killonesub )
 useserfs=( inkdnsserial inkdnsrefreshbind )
 useconfigs=( sitenameip siteurilist )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/killinkdnsonesub.replace" ]; then . /opt/verb/mods/killinkdnsonesub.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/killinkdnsonesub.before" ]; then . /opt/verb/mods/killinkdnsonesub.before; return 0; fi # Replaces this script
 

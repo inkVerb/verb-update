@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This installs the inkCert-Letsencrypt SSL certificate framework
@@ -23,7 +23,7 @@ prerequesite=(  )
 usedby=(  )
 useserfs=(  )
 useconfigs=( sitenameip servertype inkcertstatus )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkcertinstall.replace" ]; then . /opt/verb/mods/inkcertinstall.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkcertinstall.before" ]; then . /opt/verb/mods/inkcertinstall.before; return 0; fi # Replaces this script
 
@@ -50,7 +50,7 @@ exit 0; fi
 
 ## inkCert proper
 /bin/mkdir -p /etc/inkcert
-cd /etc/inkcert
+cd /etc/inkcert || exit 0
 /bin/mkdir -p client live csr req
 /bin/cp -f /opt/verb/conf/inkcert/verber-openssl.cnf /etc/inkcert/client/openssl.cnf
 ## Symlinks for Letsencrypt

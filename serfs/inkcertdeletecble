@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This deletes the inkCert LE or CB certs for a specified domain
@@ -32,7 +32,7 @@ prerequesite=( inkcertdole 'or' inkcertdocb 'or' inkcertreqle inkcertaddle 'or' 
 usedby=( inkcertrevokele inkcertrevokecb inkcertdeletecble )
 useserfs=(  )
 useconfigs=(  )	# List config files of any kind used in this serf, please preserve order of appearance
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkcertdeletecble.replace" ]; then . /opt/verb/mods/inkcertdeletecble.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkcertdeletecble.before" ]; then . /opt/verb/mods/inkcertdeletecble.before; return 0; fi # Replaces this script
 

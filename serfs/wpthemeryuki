@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds/updates the Ryuki child theme of Ryu to an existing WordPress installation
@@ -22,7 +22,7 @@ if [ ! -d /srv/www/html/${DOMAIN}/wp-content ]; then
 fi
 
 # Do the Git clone
-cd /srv/www/html/${DOMAIN}/wp-content/themes
+cd /srv/www/html/${DOMAIN}/wp-content/themes || exit 0
 git clone https://github.com/cfinke/Ryuki.git
 
 # Finish

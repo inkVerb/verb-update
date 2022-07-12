@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This sets the locale after creating the inkVerb server or restoring the VPS from a saved backup

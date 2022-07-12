@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This prepares core framework config files for a domain, with OpenDKIM profiles and keys, inkCert, and inkDNS, WITHOUT including the actual SSL certificates, www/domain folder itself or its Apache/Nginx configs or html www/folder
@@ -28,7 +28,7 @@ prerequesite=( newftpvip 'or' newftpfiler )
 usedby=( adddomain addsubdomain )
 useserfs=( setinkcertmail inkdnsadddomain newinkdkim inkvmaildomain inkdnsaddmail inkdnsaddinkdkim )
 useconfigs=( sitenameip sitemailpath inkcertstatus )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/newdomainshell.replace" ]; then . /opt/verb/mods/newdomainshell.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/newdomainshell.before" ]; then . /opt/verb/mods/newdomainshell.before; return 0; fi # Replaces this script
 
@@ -88,6 +88,9 @@ if [ "${SITEMAILSTATUS}" != "EMAIL_NOT_INSTALLED" ]; then
   fi
 
 fi
+
+# Notify the NS slave servers
+/opt/verb/serfs/rinkadddomain ${NEWDOMAIN}; wait
 
 # Finish
 /bin/echo "Great! With no error messages, ${NEWDOMAIN} is ready on the Verber."

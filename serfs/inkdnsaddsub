@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds a subdomain A & AAAA records to an existing DNS record in the inkDNS zone file on the server
@@ -21,7 +21,7 @@ prerequesite=(  )
 usedby=( addsubdomain )
 useserfs=( inkdnsserial inkdnsrefreshbind )
 useconfigs=( inkcertstatus inkdnsconf sitemailpath )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkdnsaddsub.replace" ]; then . /opt/verb/mods/inkdnsaddsub.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkdnsaddsub.before" ]; then . /opt/verb/mods/inkdnsaddsub.before; return 0; fi # Replaces this script
 
@@ -51,12 +51,12 @@ exit 0; fi
 # Echo the records
 ## db.DOM
 /bin/echo "; Subdomain Records Added by inkDNS ${DNSSUBDOM}.${DNSDOMAIN}" >> /opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}
-/bin/echo "${DNSSUBDOM}.${DNSDOMAIN}   IN  A    ${SITEIP}" >> /opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}
-/bin/echo "${DNSSUBDOM}.${DNSDOMAIN}   IN  AAAA   ${SITEIPV6}" >> /opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}
+/bin/echo "${DNSSUBDOM}.${DNSDOMAIN}.   IN  A    ${SITEIPV4}" >> /opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}
+/bin/echo "${DNSSUBDOM}.${DNSDOMAIN}.   IN  AAAA   ${SITEIPV6}" >> /opt/verb/conf/inkdns/zones/db.${DNSDOMAIN}
 ## nv.DOM
 /bin/echo "; PTR Subdomain Records Added by inkDNS ${DNSSUBDOM}.${DNSDOMAIN}" >> /opt/verb/conf/inkdns/zones/nv.${DNSDOMAIN}
-/bin/echo "${SITEARPAIP4}		IN  PTR  ${DNSSUBDOM}.${DNSDOMAIN}" >> /opt/verb/conf/inkdns/zones/nv.${DNSDOMAIN}
-/bin/echo "${SITEARPAIP6}		IN  PTR  ${DNSSUBDOM}.${DNSDOMAIN}" >> /opt/verb/conf/inkdns/zones/nv.${DNSDOMAIN}
+/bin/echo "${SITEARPAIP4}		IN  PTR  ${DNSSUBDOM}.${DNSDOMAIN}." >> /opt/verb/conf/inkdns/zones/nv.${DNSDOMAIN}
+/bin/echo "${SITEARPAIP6}		IN  PTR  ${DNSSUBDOM}.${DNSDOMAIN}." >> /opt/verb/conf/inkdns/zones/nv.${DNSDOMAIN}
 
 # Set the Serial No
 /opt/verb/serfs/inkdnsserial ${DNSDOMAIN}

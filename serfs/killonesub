@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This kills a subdomain Apache/Nginx .conf file, Letsencrypt cli-ini entry, and DNS Zone entry after it has been added with addsubdomain
@@ -28,7 +28,7 @@ prerequesite=( newonesub )
 usedby=(  )
 useserfs=( killinkdnsonesub )
 useconfigs=( siteurilist )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/killonesub.replace" ]; then . /opt/verb/mods/killonesub.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/killonesub.before" ]; then . /opt/verb/mods/killonesub.before; return 0; fi # Replaces this script
 

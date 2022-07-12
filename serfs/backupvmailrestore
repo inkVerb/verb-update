@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This restores a back up of the entire email server, including folders and database, that was made using backupinkvmail
@@ -30,7 +30,7 @@ FILENAME=$1
 tbrSMPAPG=${SITEMAILPASSAPG}
 
 # Unpack the file
-cd /srv/www/vip
+cd /srv/www/vip || exit 0
 /bin/mv ${FILENAME} inkvmail.txz
 /opt/verb/serfs.txzout inkvmail
 
@@ -43,13 +43,13 @@ cd /srv/www/vip
 /opt/verb/serfs/mysqlkilldb mail; wait
 /opt/verb/serfs/mysqlkilluser mail; wait
 /opt/verb/serfs/mysqlnewdb mail mail mailpass${SITEMAILPASSAPG}; wait
-cd inkvmail
+cd inkvmail || exit 0
 /opt/verb/serfs/mysqlin mail; wait
 /bin/rm -f mail.sql
 /bin/rm -f sitemailpass-old
 /bin/rm -f sitemailpath-old
 /bin/rm -f sitenameip-old
-cd ..
+cd .. || exit 0
 
 # Move the inkvmail directory into place
 /bin/cp -rf inkvmail /var/

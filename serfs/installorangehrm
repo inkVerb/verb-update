@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This downloads and installs OrangeHRM manually from inkisaverb.com/repo and linnks it to ....verb.blue
@@ -31,7 +31,7 @@ if [ -d /srv/www/vapps/${CVAPPNAME} ]; then
 exit 8; fi
 
 # Download and unpack the latest checked version from inkisaverb.com/repo
-cd /srv/www/vapps
+cd /srv/www/vapps || exit 0
 /opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
@@ -69,7 +69,7 @@ FLUSH PRIVILEGES;"
 /usr/bin/ufw allow 3306
 
 # Write the config for backup
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 APPDBASE=${DBASE}
 APPDDBUSR=${DBUSER}
 APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}

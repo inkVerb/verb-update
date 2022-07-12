@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This backs up all wordpress vapps into the vip folder
@@ -7,7 +7,7 @@
 ## ./wpvappbackupall
 
 
-cd /srv/www/vapps
+cd /srv/www/vapps || exit 0
 for vapp in wp.*; do
 /opt/verb/serfs/backup $vapp 123 -nl
 done

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds inkDKIM (OpenDKIM) records for a specific domain in the inkDKIM records
@@ -25,7 +25,7 @@ prerequesite=(  )
 usedby=( newdomainshell )
 useserfs=(  )
 useconfigs=(  )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/newinkdkim.replace" ]; then . /opt/verb/mods/newinkdkim.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/newinkdkim.before" ]; then . /opt/verb/mods/newinkdkim.before; return 0; fi # Replaces this script
 
@@ -39,7 +39,7 @@ exit 0; fi
 
 # Create the declared domain key
 /bin/mkdir -p /etc/opendkim/keys/${DKIMDOMAIN}
-cd /etc/opendkim/keys/${DKIMDOMAIN}
+cd /etc/opendkim/keys/${DKIMDOMAIN} || exit 0
 /usr/bin/opendkim-genkey -r -S -s inkdkim -d ${DKIMDOMAIN}
 /bin/chmod 660 inkdkim.private
 /bin/chown -R opendkim:opendkim /etc/opendkim

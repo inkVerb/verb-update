@@ -21,7 +21,7 @@ prerequesite=( newdomainshell )
 usedby=( killdomainshell )
 useserfs=(  )
 useconfigs=( inkcertstatus inkdnsconf sitemailpath )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/killinkcertdomain.replace" ]; then . /opt/verb/mods/killinkcertdomain.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/killinkcertdomain.before" ]; then . /opt/verb/mods/killinkcertdomain.before; return 0; fi # Replaces this script
 

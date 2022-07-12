@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds a verb domain, already created, to the OpenDKIM library so it can be used in email on the DNS
@@ -26,7 +26,7 @@ prerequesite=(  )
 usedby=(  )
 useserfs=(  )
 useconfigs=( sitenameip )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/newverbdkim.replace" ]; then . /opt/verb/mods/newverbdkim.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/newverbdkim.before" ]; then . /opt/verb/mods/newverbdkim.before; return 0; fi # Replaces this script
 
@@ -39,7 +39,7 @@ VERBDOMAIN=$1
 # OpenDKIM
 ## This creates the declared domain key
 /bin/mkdir -p /etc/opendkim/keys/${VERBDOMAIN}
-cd /etc/opendkim/keys/${VERBDOMAIN}
+cd /etc/opendkim/keys/${VERBDOMAIN} || exit 0
 /usr/bin/opendkim-genkey -r -d ${VERBDOMAIN}
 /bin/chown -R opendkim:opendkim /etc/opendkim
 ## This adds the new domain key to the config files

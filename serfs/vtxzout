@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This decompresses a .tvxz file and places its contents in same directory, all in the PWD

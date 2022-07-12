@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This backs up the entire email server, including folders and database
@@ -22,7 +22,7 @@ fi
 . /opt/verb/conf/siteurilist
 
 # Export the database
-cd /var/inkvmail
+cd /var/inkvmail || exit 0
 /opt/verb/serfs/mysqlex mail; wait
 
 # Copy the config
@@ -31,7 +31,7 @@ cd /var/inkvmail
 /bin/cp /opt/verb/conf/sitenameip /var/inkvmail/sitenameip-old
 
 # Zip the directory
-cd /var
+cd /var || exit 0
 /opt/verb/serfs.txzin inkvmail
 /bin/mv inkvmail.txz verb.inkvmail.${SECNAME}.vbak
 

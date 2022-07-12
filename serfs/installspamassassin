@@ -68,7 +68,7 @@ EOF
 /usr/bin/wget https://inkisaverb.com/${CLAMDL}/main.cvd -P /var/lib/clamav/
 /usr/bin/wget https://inkisaverb.com/${CLAMDL}/daily.cvd -P /var/lib/clamav/
 /usr/bin/wget https://inkisaverb.com/${CLAMDL}/bytecode.cvd -P /var/lib/clamav/
-cd /var/lib/clamav/
+cd /var/lib/clamav/ || exit 0
 if [ -f "/var/lib/clamav/main.cvd" ] && [ "$(/usr/bin/sha256sum main.cvd)" = "${SHAmain}" ]; then
   /usr/bin/chown clamav:clamav /var/lib/clamav/main.cvd
   /usr/bin/chmod 644 /var/lib/clamav/main.cvd
@@ -87,7 +87,7 @@ if [ -f "/var/lib/clamav/bytecode.cvd" ] && [ "$(/usr/bin/sha256sum bytecode.cvd
 else
   /usr/bin/rm -f /var/lib/clamav/bytecode.cvd
 fi
-cd $OLDPWD
+cd $OLDPWD || exit 0
 /usr/bin/chown -R clamav:clamav /var/lib/clamav
 /usr/bin/touch /run/clamav/clamd.ctl
 /usr/bin/chown clamav:clamav /run/clamav/clamd.ctl
@@ -109,11 +109,11 @@ cd $OLDPWD
 # Razor
 /usr/bin/mkdir -p /etc/mail/spamassassin/razor
 /usr/bin/chown spamd:spamd /etc/mail/spamassassin/razor
-cd /etc/mail/spamassassin/razor
+cd /etc/mail/spamassassin/razor || exit 0
 /usr/bin/sudo -u spamd razor-admin -home=/etc/mail/spamassassin/razor -register
 /usr/bin/sudo -u spamd razor-admin -home=/etc/mail/spamassassin/razor -create
 /usr/bin/sudo -u spamd razor-admin -home=/etc/mail/spamassassin/razor -discover
-cd $OLDPWD
+cd $OLDPWD || exit 0
 
 # Finish
 /bin/echo "SASTATUS=\"INSTALLED\"" >> /opt/verb/conf/sitemailpath

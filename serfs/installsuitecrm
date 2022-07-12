@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This downloads and installs the current verified version of suiteCRM from inkisaverb.com/repo to crm.your-name.verb.red
@@ -35,13 +35,13 @@ exit 8; fi
 # This does not create a database, only an administrator since suiteCRM will create that automatically
 
 # Download and unpack the latest checked version from inkisaverb.com/repo
-cd /srv/www/vapps
+cd /srv/www/vapps || exit 0
 /opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
 exit 4; fi
 
-cd /srv/www/html
+cd /srv/www/html || exit 0
 /opt/verb/serfs/setvapplinkon ${CVAPPNAME}; wait
 /bin/chown -R www:www /srv/www/verb/red.crm; wait
 /bin/chown -R www:www /srv/www/vapps/${CVAPPNAME}; wait
@@ -61,7 +61,7 @@ GRANT ALL PRIVILEGES ON *.* TO '${DBUSER}'@'localhost' IDENTIFIED BY '${DBPASSWO
 FLUSH PRIVILEGES;"
 
 # Write the config for backup
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 APPDBASE=${DBASE}
 APPDDBUSR=${DBUSER}
 APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}

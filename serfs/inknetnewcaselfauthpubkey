@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This creates the CA Verber/Inker master "authority" keys that this CA Verber/Inker uses to sign the host key on the same CA Verber/Inker itself and that Clients recognize
@@ -24,7 +24,7 @@ fi
 . /opt/verb/conf/inknet/ca.verber.cnf
 
 # CA Client signing keys
-cd ~/.ssh/inknet/ca/
+cd ~/.ssh/inknet/ca/ || exit 0
 /bin/rm -f in_ca_${IAMCANAME}_key
 ssh-keygen -N "" -f in_ca_${IAMCANAME}_key
 ## Link to the download web folder

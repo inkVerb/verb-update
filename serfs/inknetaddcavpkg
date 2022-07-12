@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This puts the login credentials into the right place for a Verber
@@ -14,7 +14,7 @@ SECPATH=$1
 . /opt/verb/conf/inknet/rink.client.cnf
 
 # Verify working home directory
-cd ~/
+cd ~/ || exit 0
 
 # If sec path not specified in command line
 if [ -z ${1} ]; then

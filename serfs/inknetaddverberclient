@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds a Verber Client for this inkNet CA Verber to host
@@ -67,7 +67,7 @@ if [ ! -d "/opt/verb/conf/inknet/verber" ]; then
 /bin/mkdir -p /opt/verb/conf/inknet/verber; fi
 . /opt/verb/conf/siteport
 ADDLOGINPORT=${SITEPORT}
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 # inkNet config, verb.ink
 ## This contains information about a Verber Client's credentials used in signing SSH keys for inkNet on this CA Verber
 

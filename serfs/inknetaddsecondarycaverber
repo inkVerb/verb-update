@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This creates config files for this Verber to connect to a secondary CA Verber, such as other than the Inker
@@ -29,7 +29,7 @@ NEWCAVERBERIP=$2
 
 # Set configs
 ## For the secondary CA Verber
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 # inkNet config, verb.ink
 ## This contains information about this a secondary CA Verber
 

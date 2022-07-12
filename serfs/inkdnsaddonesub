@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds a subdomain A & AAAA records to an existing ONE DNS record in the inkDNS zone file on the server
@@ -21,7 +21,7 @@ prerequesite=(  )
 usedby=( newonesub )
 useserfs=( inkdnsserial inkdnsrefreshbind )
 useconfigs=( sitenameip siteurilist inkdnsconf )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkdnsaddonesub.replace" ]; then . /opt/verb/mods/inkdnsaddonesub.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkdnsaddonesub.before" ]; then . /opt/verb/mods/inkdnsaddonesub.before; return 0; fi # Replaces this script
 

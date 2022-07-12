@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This exports a MySQL/MariaDB database using an existing vapp config
@@ -26,7 +26,7 @@ prerequesite=(  )
 usedby=(  )
 useserfs=(  )
 useconfigs=(  )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/mysqlvappex.replace" ]; then . /opt/verb/mods/mysqlvappex.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/mysqlvappex.before" ]; then . /opt/verb/mods/mysqlvappex.before; return 0; fi # Replaces this script
 

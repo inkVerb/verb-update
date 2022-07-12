@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This should be run after SuiteCRM has successfully been installed at crm.your-name.verb.red

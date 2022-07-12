@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This creates the package with username and password for the Client to download and install.
@@ -65,15 +65,15 @@ SECPATH=$(/usr/bin/pwgen -1 -s 10)
 ## Add the Client username configs
 if [ "${VTYPE}" = "vrk" ]; then
 /bin/cp /opt/verb/conf/inknet/vrk/client.vrk.${VCNAME}.cnf ~/.ssh/inknet/${VCNAME}/
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 VERBERNAME=${IAMCANAME}" > ~/.ssh/inknet/${VCNAME}/verbername
 fi
 if [ "${VTYPE}" = "verber" ]; then
 /bin/cp /opt/verb/conf/inknet/verber/client.verber.${VCNAME}.cnf ~/.ssh/inknet/${VCNAME}/
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 VERBERNAME=${IAMCANAME}" > ~/.ssh/inknet/${VCNAME}/verbername
 fi
-cd ~/.ssh/inknet/
+cd ~/.ssh/inknet/ || exit 0
 /opt/verb/serfs.txzin ${VCNAME}
 /bin/rm -rf ${VCNAME}
 /bin/mkdir /srv/www/html/${IAMCAHOST}/inknet/${SECPATH}

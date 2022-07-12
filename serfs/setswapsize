@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This sets or activates swap to a set size
@@ -13,7 +13,7 @@ SWAPSIZENO=$1
 # Prepare
 ## Make sure it's off, quietly
 swapoff /var/swap.img 2>/dev/null
-cd /var
+cd /var || exit 0
 /usr/bin/touch swap.img
 /bin/chmod 600 swap.img
 

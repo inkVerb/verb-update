@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This creates a user with more powers than a normal ftp user, owning a unique ftp folder containing a symlink to the global vip/_filecabinet and the "files.vip" web accessible folder available at files.NAME.verb.vip/FTPFILERUSERNAME
@@ -23,7 +23,7 @@ prerequesite=(  )
 usedby=(  )
 useserfs=( newftpuser )
 useconfigs=(  )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/newftpfiler.replace" ]; then . /opt/verb/mods/newftpfiler.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/newftpfiler.before" ]; then . /opt/verb/mods/newftpfiler.before; return 0; fi # Replaces this script
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds/updates the secure salts to owa-config.php files of a pre-installed (or installing) OWA site

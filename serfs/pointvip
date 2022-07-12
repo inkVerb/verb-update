@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This script points your-name.verb.one subdomains to custom-made subdomains, 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This duplicates a domain-based WordPress site at another domain
@@ -65,13 +65,13 @@ FLUSH PRIVILEGES;"
 /bin/rm ${DBASE}.sql
 
 ## Write the config for backup
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 APPDBASE=${DBASE}
 APPDDBUSR=${DBUSER}
 APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.wp.${nDOMAIN}
 
 ## Put the settings in the WordPress config file
-cd /srv/www/vapps/wp.${nDOMAIN}
+cd /srv/www/vapps/wp.${nDOMAIN} || exit 0
 /bin/cp wp-config-sample.php wp-config.php
 /bin/sed -i "s/database_name_here/${DBASE}/g" wp-config.php
 /bin/sed -i "s/username_here/${DBUSER}/g" wp-config.php

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This deletes a boss and its home folder.
@@ -21,7 +21,7 @@ prerequesite=( newboss )
 usedby=(  )
 useserfs=(  )
 useconfigs=( sitemailpath inkdnsconf inkcertstatus )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/killboss.replace" ]; then . /opt/verb/mods/killboss.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/killboss.before" ]; then . /opt/verb/mods/killboss.before; return 0; fi # Replaces this script
 

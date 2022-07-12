@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This downloads and installs MediaWiki from the inkisaverb.com repository and links it to wiki.your-name.verb.ink
@@ -26,7 +26,7 @@ if [-f /opt/verb/conf/vapp.${CVAPPNAME} ]; then
 exit 0; fi
 
 # Download and establish mediawiki from the inkVerb repo
-cd /srv/www/vapps
+cd /srv/www/vapps || exit 0
 /opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
@@ -51,7 +51,7 @@ GRANT ALL PRIVILEGES ON ${DBASE}.* TO '${DBUSER}'@'localhost' IDENTIFIED BY '${D
 FLUSH PRIVILEGES;"
 
 # Write the config for backup
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 APPDBASE=${DBASE}
 APPDDBUSR=${DBUSER}
 APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}

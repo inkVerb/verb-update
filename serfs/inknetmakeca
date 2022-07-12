@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This sets the settings for this Verber to be an inkNet CA Verber
@@ -176,7 +176,7 @@ fi
 /bin/systemctl reload sshd
 
 # Write the CA inkNet configs
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 # inkNet config, verb.ink
 ## This contains information about this CA Verber's credentials used in signing Verber/Vrk Client SSH keys for inkNet
 

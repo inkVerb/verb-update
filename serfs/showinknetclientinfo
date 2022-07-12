@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This displays the inkNet Client info to be used by a Client by inknetaddverberclient

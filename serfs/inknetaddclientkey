@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds a Vrk/Verber Client's public SSH key to "authorized_hosts" on the CA Verber

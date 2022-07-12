@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This downloads and installs net2ftp manually from inkisaverb.com/repo and linnks it to net2ftp....verb.vip
@@ -15,7 +15,7 @@ CVAPPNAME=net2ftp
 . /opt/verb/conf/siteurilist
 
 # Download and unpack
-cd /srv/www/vapps
+cd /srv/www/vapps || exit 0
 /opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
@@ -26,7 +26,7 @@ exit 4; fi
 /bin/chown -R www:www /srv/www/verb/vip.net2ftp; wait
 
 # Settings
-cd net2ftp
+cd net2ftp || exit 0
 /bin/cp settings.inc.php settings.inc.php.dist
 /bin/cp settings_authorizations.inc.php settings_authorizations.inc.php.dist
 /bin/cp settings_screens.inc.php settings_screens.inc.php.dist

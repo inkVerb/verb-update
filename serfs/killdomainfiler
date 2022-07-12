@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This removes an existing domain link from an existing ftpfiler's home ~/domains/ folder
@@ -21,7 +21,7 @@ prerequesite=( adddomain )
 usedby=(  )
 useserfs=( killdomainshell )
 useconfigs=( sitemailpath inkdnsconf inkcertstatus )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/killdomainfiler.replace" ]; then . /opt/verb/mods/killdomainfiler.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/killdomainfiler.before" ]; then . /opt/verb/mods/killdomainfiler.before; return 0; fi # Replaces this script
 

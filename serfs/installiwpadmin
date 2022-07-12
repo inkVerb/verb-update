@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This downloads and installs the InfiniteWP Server to a new directory to an existing domain in the .../html/ folder
@@ -42,7 +42,7 @@ exit 8; fi
 . /opt/verb/conf/sitenameip
 
 # Download and establish IWPAdmin in the server to pre-created domain
-cd /srv/www/vapps
+cd /srv/www/vapps || exit 0
 /opt/verb/serfs/inkget ${CVAPPNAME} ${REMAIL}; wait
 ### Check
 /opt/verb/serfs/inkget ${CVAPPNAME} check
@@ -71,7 +71,7 @@ GRANT ALL PRIVILEGES ON ${DBASE}.* TO '${DBUSER}'@'localhost' IDENTIFIED BY '${D
 FLUSH PRIVILEGES;"
 
 # Write the config for backup
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 APPDBASE=${DBASE}
 APPDDBUSR=${DBUSER}
 APPDDBPAS=${DBPASSWORD}

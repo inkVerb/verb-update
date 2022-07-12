@@ -59,7 +59,7 @@ else
 fi
 
 # Download from repo
-cd /srv/www/email
+cd /srv/www/email || exit 0
 /opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
   /bin/echo "Repo failed to retrieve the file."

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This sets new site-wide repo for Verber app installs, used primarily or solely by the inkget serf

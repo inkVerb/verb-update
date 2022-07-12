@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This installs Ampache from inkisaverb.com/repo and links it to ampache....verb.kiwi
@@ -20,7 +20,7 @@ DBUSER=$2
 DBPASSWORD=$3
 
 # Install
-cd /srv/www/vapps
+cd /srv/www/vapps || exit 0
 /opt/verb/serfs/inkget ${CVAPPNAME} check; wait
 if [ "$?" = 4 ]; then
 /bin/echo "Repo failed to retrieve the file."
@@ -54,7 +54,7 @@ FLUSH PRIVILEGES;"
 #mysql --defaults-extra-file=/opt/verb/conf/mysqlboss.cnf ${DBASE} < /srv/www/vapps/ampache/sql/ampache.sql
 
 # Write the config for backup
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 APPDBASE=${DBASE}
 APPDDBUSR=${DBUSER}
 APPDDBPAS=${DBPASSWORD}" > /opt/verb/conf/vapp.${CVAPPNAME}

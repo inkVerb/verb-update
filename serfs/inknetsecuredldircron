@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This sets a cron job to delete directories in NAME.NAME.verb.ink/inknet/ older than 30 minutes every 14 and 44 minutes past the hour.
@@ -24,7 +24,7 @@ if [ -f "/opt/verb/conf/inknet/inknetrmcertdldirs.sh" ]; then
 . /opt/verb/conf/inknet/ca.verber.cnf
 
 # Create cron to delete inkNet download directories
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 # inkNet cron, verb.ink
 find /srv/www/html/${IAMCAHOST}/inknet/* -type d -mmin +30 -exec rm -rf {} \;
 " > /opt/verb/conf/inknet/inknetrmcertdldirs.sh

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This creates a domain inkDNS zone file on the server
@@ -21,7 +21,7 @@ prerequesite=(  )
 usedby=( newdomainshell )
 useserfs=( inkdnsserial inkdnsrefreshbind )
 useconfigs=( sitenameip )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkdnsadddomain.replace" ]; then . /opt/verb/mods/inkdnsadddomain.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkdnsadddomain.before" ]; then . /opt/verb/mods/inkdnsadddomain.before; return 0; fi # Replaces this script
 

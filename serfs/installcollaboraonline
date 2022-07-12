@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This Collabora Online to be used with Nextcloud
@@ -55,7 +55,7 @@ elif [ ${SERVERTYPE} = "laemp" ]; then
 fi
 
 # Write the config for status
-/bin/echo "#!/bin/sh
+/bin/echo "#!/bin/bash
 COVAPPSTATUS=\"INSTALLED\"
 COPORT=${PORT}
 COHOST=\"b.${blueURI}\"" > /opt/verb/conf/vapp.${CVAPPNAME}

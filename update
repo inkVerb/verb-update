@@ -65,6 +65,7 @@ VUPDATE_REPO="verb-update"
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
 . /opt/verb/conf/inklists/verberverno
+. conf/inklists/inkdnsrinks
 ## Check minimal updateable version
 if [ $(/bin/echo ${MIN_VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
 /bin/echo "Current Verber™ version is ${VERNO}, minimum ${MIN_VERNO} to use this updater.
@@ -98,7 +99,9 @@ cd /opt/verb
 if [ "${INKGET_LIST}" = "AUTO_UPDATE" ]; then
   /bin/cp -f /opt/verb/${VUPDATE_REPO}/inklists/repoverlist /opt/verb/conf/inklists/
   /bin/cp -f /opt/verb/${VUPDATE_REPO}/inklists/repolinks /opt/verb/conf/inklists/
-  /bin/cp -f /opt/verb/${VUPDATE_REPO}/inklists/inkdnsrinks /opt/verb/conf/inklists/
+  if [ -z "$CUSTOMRINK" ] || [ "$CUSTOMRINK" != "true" ]; then
+    /bin/cp -f /opt/verb/${VUPDATE_REPO}/inklists/inkdnsrinks /opt/verb/conf/inklists/
+  fi
   /bin/echo "Repo version list is up-to-date."
 else
   /bin/echo "Repo version list unchanged because this is a custom Verber."

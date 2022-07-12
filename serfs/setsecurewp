@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds/updates the secure salts to wp-config.php files of a pre-installed (or installing) WordPress site in www/domains
@@ -22,7 +22,7 @@ NONCE_SALT="$(/usr/bin/pwgen -s -1 27)"
 /bin/chmod -R 644 wp-config.php
 
 # Insert the random pwgen strings
-cd /srv/www/html/${DOMAIN}/
+cd /srv/www/html/${DOMAIN}/ || exit 0
 /bin/sed -i "s/define( 'AUTH_KEY',         .*/define( 'AUTH_KEY',         '${AUTH_KEY}' );/g" wp-config.php
 /bin/sed -i "s/define( 'SECURE_AUTH_KEY',  .*/define( 'SECURE_AUTH_KEY',  '${SECURE_AUTH_KEY}' );/g" wp-config.php
 /bin/sed -i "s/define( 'LOGGED_IN_KEY',    .*/define( 'LOGGED_IN_KEY',    '${LOGGED_IN_KEY}' );/g" wp-config.php

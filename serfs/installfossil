@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This installs fossil to be available at fossil.your-name.verb.vip/...
@@ -21,7 +21,7 @@ NEWEMAIL=$2
 NEWPASS=$3
 
 
-cd /srv/www/vapps
+cd /srv/www/vapps || exit 0
 /opt/verb/serfs/inkget ${CVAPPNAME}; wait
 ### Check
 /opt/verb/serfs/inkget ${CVAPPNAME} check
@@ -40,7 +40,7 @@ fossil all rebuild
 /bin/chown -R www:www /srv/www/vip
 
 # Create the first default fossil
-cd /srv/www/vip/fossil
+cd /srv/www/vip/fossil || exit 0
 fossil new index.fossil; wait
 /bin/chown www:www index.fossil; wait
 /bin/echo "#!/usr/bin/fossil
@@ -52,7 +52,7 @@ repository: /fossil/index.fossil
 /bin/chmod 750 index.cgi
 
 # Create a second demo fossil, dinosaur
-cd /srv/www/vip/fossil
+cd /srv/www/vip/fossil || exit 0
 fossil new dinosaur.fossil
 /bin/echo "#!/usr/bin/fossil
 repository: /fossil/dinosaur.fossil" > dinosaur.cgi

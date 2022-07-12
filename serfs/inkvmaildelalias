@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This delets an email alias in the inkvmail database
@@ -21,7 +21,7 @@ prerequesite=( inkvmailalias )
 usedby=(  )
 useserfs=(  )
 useconfigs=( sitemailpath )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkvmaildelalias.replace" ]; then . /opt/verb/mods/inkvmaildelalias.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkvmaildelalias.before" ]; then . /opt/verb/mods/inkvmaildelalias.before; return 0; fi # Replaces this script
 

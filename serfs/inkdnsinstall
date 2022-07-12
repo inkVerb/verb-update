@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This installs Bind DNS for managing DNS records in the inkDNS zone file on the server
@@ -23,7 +23,7 @@ prerequesite=(  )
 usedby=(  )
 useserfs=(  )
 useconfigs=( sitenameip servertype inkcertstatus )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkdnsinstall.replace" ]; then . /opt/verb/mods/inkdnsinstall.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkdnsinstall.before" ]; then . /opt/verb/mods/inkdnsinstall.before; return 0; fi # Replaces this script
 
@@ -82,7 +82,7 @@ fi
 # DNS serial number
 /bin/echo '0 0 * * * root /opt/verb/donjon/rmserial.sh > /dev/null 2>&1' > /etc/cron.d/dnsserial
 /bin/chmod 0644 /etc/cron.d/dnsserial
-/bin/echo '#!/bin/sh
+/bin/echo '#!/bin/bash
 /bin/rm -f /opt/verb/conf/inkdns/serial' > /opt/verb/donjon/rmserial.sh
 /bin/chmod 750 /opt/verb/donjon/rmserial.sh
 

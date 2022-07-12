@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #IVapp installer! verb.ink
 
 # This adds an IVapp inkNet Sailor based on the Client Verber profile

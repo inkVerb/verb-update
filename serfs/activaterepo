@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This activates the repo....verb.vip folder so the web will provide an index
@@ -26,7 +26,7 @@ prerequesite=(  )
 usedby=(  )
 useserfs=(  )
 useconfigs=(  )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/activaterepo.replace" ]; then . /opt/verb/mods/activaterepo.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/activaterepo.before" ]; then . /opt/verb/mods/activaterepo.before; return 0; fi # Replaces this script
 

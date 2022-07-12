@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #inkVerbSerf! verb.ink
 
 # This adds or updates a mailbox in the inkvmail database
@@ -32,7 +32,7 @@ prerequesite=( inkvmaildomain )
 usedby=(  )
 useserfs=(  )
 useconfigs=( sitemailpath )
-if [ -n "infoINKonly" ] && [ "infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
+if [ -n "$infoINKonly" ] && [ "$infoINKonly" = "true" ]; then return 0; fi # Must have for proper usage to not run the full serf
 if [ -e "/opt/verb/mods/inkvmailbox.replace" ]; then . /opt/verb/mods/inkvmailbox.replace; return 0; fi # Precedes this script
 if [ -e "/opt/verb/mods/inkvmailbox.before" ]; then . /opt/verb/mods/inkvmailbox.before; return 0; fi # Replaces this script
 
