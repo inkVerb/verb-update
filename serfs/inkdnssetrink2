@@ -51,23 +51,38 @@ if [ -e "/opt/verb/mods/inkdnssetrink2.before" ]; then . /opt/verb/mods/inkdnsse
 
 # Check variables present
 ## Domain
-if [ -z "$1" ] || [ -d "$1" ]; then
-  /bin/echo "Rink domain not specified; using default."
-  NSDOMAIN="${DEFAULTns2}"
+if [ -z "$1" ] || [ "$1" = "-d" ]; then
+  if [ -f "/opt/verb/conf/inkdns/sdns/dnshost" ]; then
+    /bin/echo "This is a DNS server, so its nameservers must be set manually."
+    return
+  else
+    /bin/echo "Rink domain not specified; using default."
+    NSDOMAIN="${DEFAULTns2}"
+  fi
 else
   NSDOMAIN="$1"
 fi
 ## IP4
-if [ -z "$2" ] || [ -d "$2" ]; then
-  /bin/echo "IP4 not specified; using default."
-  NSIP4="${RINKNS2ip4}"
+if [ -z "$2" ] || [ "$2" = "-i" ]; then
+  if [ -f "/opt/verb/conf/inkdns/sdns/dnshost" ]; then
+    /bin/echo "This is a DNS server, so its nameservers must be set manually."
+    return
+  else
+    /bin/echo "IP4 not specified; using default."
+    NSIP4="${RINKNS2ip4}"
+  fi
 else
   NSIP4="$2"
 fi
 ## IP6
-if [ -z "$3" ] || [ -d "$3" ]; then
-  /bin/echo "IP6 not specified; using default."
-  NSIP6="${RINKNS2ip6}"
+if [ -z "$3" ]; then
+  if [ -f "/opt/verb/conf/inkdns/sdns/dnshost" ]; then
+    /bin/echo "This is a DNS server, so its nameservers must be set manually."
+    return
+  else
+    /bin/echo "IP6 not specified; using default."
+    NSIP6="${RINKNS2ip6}"
+  fi
 else
   NSIP6="$3"
 fi

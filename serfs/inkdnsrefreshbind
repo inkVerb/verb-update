@@ -53,8 +53,8 @@ if [ "${INKDNSSTAT}" = "INSTALLED" ]; then
   ## rDNS config
   /usr/bin/rm -f /var/named/named.conf.rdns
   /bin/echo "// Created by inkDNS, managed automatically, edits will likely be deleted
-zone \"${SITEARPAIP6}\" { type master; allow-update { none; }; allow-transfer { ${SITERINKIP6}; ${SITERINKIP4}; ${SITE2RINKIP6}; ${SITE2RINKIP4}; }; file \"nv.verber\"; allow-query { any; }; };
-zone \"${SITEARPAIP4}\" { type master; allow-update { none; }; allow-transfer { ${SITERINKIP6}; ${SITERINKIP4}; ${SITE2RINKIP6}; ${SITE2RINKIP4}; }; file \"nv.verber\"; allow-query { any; }; };
+zone \"${SITEARPAIP6}\" { type master; allow-transfer { ${SITERINKIP6}; ${SITERINKIP4}; ${SITE2RINKIP6}; ${SITE2RINKIP4}; }; file \"nv.verber\"; allow-query { any; }; };
+zone \"${SITEARPAIP4}\" { type master; allow-transfer { ${SITERINKIP6}; ${SITERINKIP4}; ${SITE2RINKIP6}; ${SITE2RINKIP4}; }; file \"nv.verber\"; allow-query { any; }; };
 " > /var/named/named.conf.rdns
   ### Permissions
   /bin/chown root:named /var/named/named.conf.rdns
@@ -83,64 +83,66 @@ EOF
   for inkZoneDB in db.*; do
     inkZone="$(/bin/echo ${inkZoneDB} | sed 's/db\.//' )"
     if [ "${inkZone}" = '*' ]; then continue; fi
-      /bin/echo "zone \"${inkZone}\" { type master; allow-update { none; }; allow-transfer { ${SITERINKIP6}; ${SITERINKIP4}; ${SITE2RINKIP6}; ${SITE2RINKIP4}; }; file \"zones/db.${inkZone}\"; update-policy { grant inkCertbotKey name _acme-challenge.${inkZone}. txt; }; };" >> /var/named/named.conf.verb
+      # We don't use 'allow-update { none; };' because 'update-policy' will ignore 'allow-update'
+      /bin/echo "zone \"${inkZone}\" { type master; allow-transfer { ${SITERINKIP6}; ${SITERINKIP4}; ${SITE2RINKIP6}; ${SITE2RINKIP4}; }; file \"zones/db.${inkZone}\"; update-policy { grant inkCertbotKey name _acme-challenge.${inkZone}. txt; }; };" >> /var/named/named.conf.verb
       /bin/echo "\$INCLUDE \"/var/named/zones/nv.${inkZone}\";" >> /var/named/nv.verber
   done
-  ## Slave DNS server?
-  if [ -f "/opt/verb/conf/inkdns/sdns/dnshost" ]; then
-    . /opt/verb/conf/inkdns/sdns/dnshost
-    ### Create the zone files
-    SDNSDATESTAMP="$(date '+%Y%m%d')"
-    SDNSSERNO="${SDNSDATESTAMP}00"
-    #### DNS
-    /usr/bin/rm -f /var/named/db.slavedns
-    /usr/bin/cat <<EOF > /var/named/db.slavedns
-\$TTL    86400
-@		IN  SOA		${DNSSLAVE}. dns.inkisaverb.com. (
-${SDNSSERNO}		; Serial No
-10800			; Refresh
-3600			; Retry
-604800			; Expire
-1800 )			; Minimum TTL
-
-; Nameserver Defaults
-@		IN  NS		${SITERINKDNS}.
-@		IN  NS		${SITE2RINKDNS}.
-
-; Hosted Domains
-EOF
-    /bin/chown root:named /var/named/db.slavedns
-    /bin/chmod 644 /var/named/db.slavedns
-    #### rDNS
-    /usr/bin/rm -f /var/named/nv.slavedns
-    /usr/bin/cat <<EOF > /var/named/nv.slavedns
-; PTR Domain
-${SITEARPAIP4}		IN  PTR  ${DNSSLAVE}.
-${SITEARPAIP6}		IN  PTR  ${DNSSLAVE}.
-EOF
-    /bin/chown root:named /var/named/nv.slavedns
-    /bin/chmod 644 /var/named/nv.slavedns
-    ### If this is set as the tertiary DNS server
-    if [ "${DNSSLAVE}" = "${SITE2RINKDNS}" ]; then
-      /bin/echo "zone \"${inkZone}\" { type master; allow-update { none; }; allow-transfer { ${SITERINKIP6}; ${SITERINKIP4}; }; file \"db.slavedns\"; };" >> /var/named/named.conf.verb
-    ### If this is set as the secondary DNS server
-    elif [ "${DNSSLAVE}" = "${SITERINKDNS}" ]; then
-      /bin/echo "zone \"${inkZone}\" { type master; allow-update { none; }; allow-transfer { ${SITE2RINKIP6}; ${SITE2RINKIP4}; }; file \"db.slavedns\"; };" >> /var/named/named.conf.verb
-    ### If this is not set as the secondary or tertiary DNS server
-    else
-      /bin/echo "zone \"${inkZone}\" { type master; allow-update { none; }; allow-transfer { ${SITERINKIP6}; ${SITERINKIP4}; ${SITE2RINKIP6}; ${SITE2RINKIP4}; }; file \"db.slavedns\"; };" >> /var/named/named.conf.verb
-    fi
-    /bin/echo "\$INCLUDE \"/var/named/nv.slavedns\";" >> /var/named/nv.verber
-    ### Served slave records
-    if [ -e "/opt/verb/conf/inkdns/sdns/s.*" ]; then
-      for slv in /opt/verb/conf/inkdns/sdns/s.*; do
-        . ${slv}
-        /bin/echo "zone \"${SDOM}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"db.${SDOM}\"; };" >> /var/named/named.conf.verb
-        /bin/echo "zone \"${SIP4ARPA}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"nv4.${SDOM}\"; };" >> /var/named/nv.verber
-        /bin/echo "zone \"${SIP6ARPA}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"nv6.${SDOM}\"; };" >> /var/named/nv.verber
-      done
-    fi
-  fi # End Slave DNS
+# Dev, this is all handled elsewhere
+#   ## Slave DNS server?
+#   if [ -f "/opt/verb/conf/inkdns/sdns/dnshost" ]; then
+#     . /opt/verb/conf/inkdns/sdns/dnshost
+#     ### Create the zone files
+#     SDNSDATESTAMP="$(date '+%Y%m%d')"
+#     SDNSSERNO="${SDNSDATESTAMP}00"
+#     #### DNS
+#     /usr/bin/rm -f /var/named/db.slavedns
+#     /usr/bin/cat <<EOF > /var/named/db.slavedns
+# \$TTL    86400
+# @		IN  SOA		${DNSSLAVE}. dns.inkisaverb.com. (
+# ${SDNSSERNO}		; Serial No
+# 10800			; Refresh
+# 3600			; Retry
+# 604800			; Expire
+# 1800 )			; Minimum TTL
+#
+# ; Nameserver Defaults
+# @		IN  NS		${SITERINKDNS}.
+# @		IN  NS		${SITE2RINKDNS}.
+#
+# ; Hosted Domains
+# EOF
+#     /bin/chown root:named /var/named/db.slavedns
+#     /bin/chmod 644 /var/named/db.slavedns
+#     #### rDNS
+#     /usr/bin/rm -f /var/named/nv.slavedns
+#     /usr/bin/cat <<EOF > /var/named/nv.slavedns
+# ; PTR Domain
+# ${SITEARPAIP4}		IN  PTR  ${DNSSLAVE}.
+# ${SITEARPAIP6}		IN  PTR  ${DNSSLAVE}.
+# EOF
+#     /bin/chown root:named /var/named/nv.slavedns
+#     /bin/chmod 644 /var/named/nv.slavedns
+#     ### If this is set as the tertiary DNS server
+#     if [ "${DNSSLAVE}" = "${SITE2RINKDNS}" ]; then
+#       /bin/echo "zone \"${DNSSLAVE}\" { type master; allow-update { none; }; allow-transfer { ${SITERINKIP6}; ${SITERINKIP4}; }; file \"db.slavedns\"; };" >> /var/named/named.conf.verb
+#     ### If this is set as the secondary DNS server
+#     elif [ "${DNSSLAVE}" = "${SITERINKDNS}" ]; then
+#       /bin/echo "zone \"${DNSSLAVE}\" { type master; allow-update { none; }; allow-transfer { ${SITE2RINKIP6}; ${SITE2RINKIP4}; }; file \"db.slavedns\"; };" >> /var/named/named.conf.verb
+#     ### If this is not set as the secondary or tertiary DNS server
+#     else
+#       /bin/echo "zone \"${DNSSLAVE}\" { type master; allow-update { none; }; allow-transfer { ${SITERINKIP6}; ${SITERINKIP4}; ${SITE2RINKIP6}; ${SITE2RINKIP4}; }; file \"db.slavedns\"; };" >> /var/named/named.conf.verb
+#     fi
+#     /bin/echo "\$INCLUDE \"/var/named/nv.slavedns\";" >> /var/named/nv.verber
+#     ### Served slave records
+#     if [ -e "/opt/verb/conf/inkdns/sdns/s.*" ]; then
+#       for slv in /opt/verb/conf/inkdns/sdns/s.*; do
+#         . ${slv}
+#         /bin/echo "zone \"${SDOM}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"db.${SDOM}\"; };" >> /var/named/named.conf.verb
+#         /bin/echo "zone \"${SIP4ARPA}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"nv4.${SDOM}\"; };" >> /var/named/nv.verber
+#         /bin/echo "zone \"${SIP6ARPA}\" { type slave; masters { ${SIP6CMP}; ${SIP4}; }; allow-transfer { none; }; file \"nv6.${SDOM}\"; };" >> /var/named/nv.verber
+#       done
+#     fi
+#   fi # End Slave DNS
   ## Set the new serial (code imported from inkdnsserial)
   ### Create the datestamp
   DATESTAMP="$(date '+%Y%m%d')"
