@@ -85,7 +85,7 @@ cd /opt/verb/${VUPDATE_REPO}/u_tmp
 cd /opt/verb
 /bin/rm -f README.md
 /usr/bin/wget https://raw.githubusercontent.com/inkVerb/verb-dev/master/README.md
-/bin/echo "Serfs have been updated."
+/bin/echo "Serfs updated."
 
 # Update ink tools
 /bin/rm -rf /opt/verb/ink/felt/*
@@ -97,6 +97,7 @@ cd /opt/verb
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink /opt/verb/ink/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink.functions /opt/verb/ink/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink.run /opt/verb/ink/
+/bin/echo "Ink actions updated."
 
 # Update inkLists
 . /opt/verb/conf/siteinkget
@@ -106,7 +107,7 @@ if [ "${INKGET_LIST}" = "AUTO_UPDATE" ]; then
   if [ -z "$CUSTOMRINK" ] || [ "$CUSTOMRINK" != "true" ]; then
     /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/conf/inklists/inkdnsrinks /opt/verb/conf/inklists/
   fi
-  /bin/echo "Repo version list is up-to-date."
+  /bin/echo "Repo version list updated."
 else
   /bin/echo "Repo version list unchanged because this is a custom Verber."
 fi
