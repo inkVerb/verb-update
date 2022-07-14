@@ -77,7 +77,7 @@ fi
 mkdir -p /opt/verb/${VUPDATE_REPO}/u_tmp
 cd /opt/verb/${VUPDATE_REPO}/u_tmp
 /usr/bin/git clone https://github.com/${SITEUPDATEORG}/${SITEUPDATEREPO}
-
+exit 0 #DEV
 # Update Serfs
 /bin/rm -rf /opt/verb/serfs/*
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/serfs/* /opt/verb/serfs/
