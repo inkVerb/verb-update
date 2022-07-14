@@ -65,7 +65,7 @@ VUPDATE_REPO="verb-update"
 . /opt/verb/conf/sitenameip
 . /opt/verb/conf/siteurilist
 . /opt/verb/conf/inklists/verberverno
-. conf/inklists/inkdnsrinks
+. /opt/verb/conf/inklists/inkdnsrinks
 ## Check minimal updateable version
 if [ $(/bin/echo ${MIN_VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
 /bin/echo "Current Verber™ version is ${VERNO}, minimum ${MIN_VERNO} to use this updater.
@@ -73,9 +73,14 @@ Run updateverberlegacy for older versions."
 exit 0
 fi
 
+# Pull scripts and settings from the original verb repo
+mkdir -p /opt/verb/${VUPDATE_REPO}/u_tmp
+cd /opt/verb/${VUPDATE_REPO}
+/usr/bin/git clone https://github.com/${SITEUPDATEORG}/${SITEUPDATEREPO}
+
 # Update Serfs
 /bin/rm -rf /opt/verb/serfs/*
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/serfs/* /opt/verb/serfs/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/serfs/* /opt/verb/serfs/
 /bin/chmod 750 /opt/verb/serfs/*
 /bin/chmod 750 /opt/verb/donjon/*.sh
 cd /opt/verb
@@ -86,21 +91,21 @@ cd /opt/verb
 # Update ink tools
 /bin/rm -rf /opt/verb/ink/felt/*
 /bin/rm -rf /opt/verb/ink/help/*
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/felt/* /opt/verb/ink/felt/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/help/* /opt/verb/ink/help/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/PHPcities /opt/verb/ink/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/actions.pb /opt/verb/ink/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink /opt/verb/ink/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink.functions /opt/verb/ink/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/ink/ink.run /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/felt/* /opt/verb/ink/felt/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/help/* /opt/verb/ink/help/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/PHPcities /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/actions.pb /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink.functions /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink.run /opt/verb/ink/
 
 # Update inkLists
 . /opt/verb/conf/siteinkget
 if [ "${INKGET_LIST}" = "AUTO_UPDATE" ]; then
-  /bin/cp -f /opt/verb/${VUPDATE_REPO}/inklists/repoverlist /opt/verb/conf/inklists/
-  /bin/cp -f /opt/verb/${VUPDATE_REPO}/inklists/repolinks /opt/verb/conf/inklists/
+  /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/conf/inklists/repoverlist /opt/verb/conf/inklists/
+  /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/conf/inklists/repolinks /opt/verb/conf/inklists/
   if [ -z "$CUSTOMRINK" ] || [ "$CUSTOMRINK" != "true" ]; then
-    /bin/cp -f /opt/verb/${VUPDATE_REPO}/inklists/inkdnsrinks /opt/verb/conf/inklists/
+    /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/conf/inklists/inkdnsrinks /opt/verb/conf/inklists/
   fi
   /bin/echo "Repo version list is up-to-date."
 else
