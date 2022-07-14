@@ -74,7 +74,7 @@ exit 0
 fi
 
 # Pull scripts and settings from the original verb repo
-mkdir -p /opt/verb/${VUPDATE_REPO}/u_tmp
+/usr/bin/mkdir -p /opt/verb/${VUPDATE_REPO}/u_tmp
 cd /opt/verb/${VUPDATE_REPO}/u_tmp
 /usr/bin/git clone https://github.com/${SITEUPDATEORG}/${SITEUPDATEREPO}
 exit 0 #DEV
