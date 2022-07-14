@@ -75,7 +75,7 @@ fi
 
 # Pull scripts and settings from the original verb repo
 mkdir -p /opt/verb/${VUPDATE_REPO}/u_tmp
-cd /opt/verb/${VUPDATE_REPO}
+cd /opt/verb/${VUPDATE_REPO}/u_tmp
 /usr/bin/git clone https://github.com/${SITEUPDATEORG}/${SITEUPDATEREPO}
 
 # Update Serfs
