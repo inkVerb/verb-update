@@ -80,6 +80,10 @@ cd /opt/verb/${VUPDATE_REPO}/u_tmp
 # Update Serfs
 /bin/rm -rf /opt/verb/serfs/*
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/serfs/* /opt/verb/serfs/
+/bin/rm -rf /opt/verb/donjon/*.sh
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/donjon/*.sh /opt/verb/donjon/
+/bin/rm -rf /opt/verb/donjon/repoupdate/*.updaterepo
+/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/donjon/repoupdate/*.updaterepo /opt/verb/donjon/repoupdate/
 /bin/chmod 750 /opt/verb/serfs/*
 /bin/chmod 750 /opt/verb/donjon/*.sh
 cd /opt/verb
