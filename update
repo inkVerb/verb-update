@@ -101,6 +101,7 @@ cd /opt/verb
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink /opt/verb/ink/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink.functions /opt/verb/ink/
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink.run /opt/verb/ink/
+/bin/chmod 750 /opt/verb/ink/felt/*
 /bin/echo "Ink actions updated."
 
 # Update inkLists
