@@ -75,7 +75,7 @@ fi
 
 # Pull scripts and settings from the original verb repo
 /usr/bin/mkdir -p /opt/verb/${VUPDATE_REPO}/u_tmp
-cd /opt/verb/${VUPDATE_REPO}/u_tmp
+cd /opt/verb/${VUPDATE_REPO}/u_tmp || exit 1
 /usr/bin/git clone https://github.com/${SITEUPDATEORG}/verb
 # Update Serfs
 /bin/rm -rf /opt/verb/serfs/*
@@ -86,7 +86,7 @@ cd /opt/verb/${VUPDATE_REPO}/u_tmp
 /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/donjon/repoupdate/*.updaterepo /opt/verb/donjon/repoupdate/
 /bin/chmod 750 /opt/verb/serfs/*
 /bin/chmod 750 /opt/verb/donjon/*.sh
-cd /opt/verb
+cd /opt/verb || exit 1
 /bin/rm -f README.md
 /usr/bin/wget https://raw.githubusercontent.com/inkVerb/verb-dev/master/README.md
 /bin/echo "Serfs updated."
