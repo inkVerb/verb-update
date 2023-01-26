@@ -197,41 +197,6 @@ fi
 #fi
 ###############END#UPGRADE#PATCH#
 
-UPGRADE_PATCH_VERNO=0.90.01
-if [ "$(/bin/echo "${UPGRADE_PATCH_VERNO}" | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" -gt "$(/bin/echo "${VERNO} "| /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" ] ; then
-CLEAN_PATCH_VERNO="$(/bin/echo $UPGRADE_PATCH_VERNO | /bin/sed -e "s/\.//g")"
-PCLdoc="$(/bin/cat <<UPCL
-Patch ${UPGRADE_PATCH_VERNO} Changelog:
-## Patch Notes Here...
-UPCL
-)"
-/bin/echo "$PCLdoc"
-# So we can call a specific version later if needed
-eval "v$CLEAN_PATCH_VERNO='$(/bin/echo "$PCLdoc")'"
-
-# Move to working directory of the patch
-if [ -d "/opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/" ]; then
-cd /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/; fi
-
-# Run the update scripts for this patch
-
-##### SCRIPTS GO HERE #####
-# NOTE: PWD is /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/
-
-/usr/bin/mkdir -p /opt/verb/worker
-/usr/bin/chown -R worker:worker /opt/verb/worker
-/usr/bin/usermod -d /opt/verb/worker worker
-/usr/bin/rm -r /home/worker
-
-##### END SCRIPTS #########
-# Set and refresh the current version into inklists
-/bin/sed -i "s/VERNO=.*/VERNO=\"${UPGRADE_PATCH_VERNO}\"/g" /opt/verb/conf/inklists/verberverno
-. /opt/verb/conf/inklists/verberverno
-/bin/echo "Verber upgraded to v${VERNO}"
-else
-/bin/echo "${UPGRADE_PATCH_VERNO} patch not necessary..."
-fi
-###############END#UPGRADE#PATCH#
 
 # Security check
 /opt/verb/serfs/setsecure; wait
