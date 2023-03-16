@@ -6,7 +6,7 @@
 # This "updates" the serfs and "upgrades" Verber
 ## serfs are updated every time. Upgrades only relate to Verber framework which has verber version numbers related to each patch/release.
 ## This contains many version patches for a Verber™ sequentially, one version at a time.
-## This is run at the path: /opt/verb/${VUPDATE_REPO}/update
+## This is run at the path: /opt/verb/${VUPDATE_Repo}/update
 
 # To call a changelog for a specific version, use: `/bin/echo "$vCLEANVERNO"` Eg: `echo "$v08702"` for v0.87.02
 
@@ -16,11 +16,11 @@
 
 # DEV INSTRUCTIONS: Put all related files for each patch in a folder named by the version number, ie: 0.87.01/
 
-# DEV NOTE: Serfs are automatically copied & updated from ${VUPDATE_REPO}/serfs to the Verber before any patches run, after the verno check.
+# DEV NOTE: Serfs are automatically copied & updated from ${VUPDATE_Repo}/serfs to the Verber before any patches run, after the verno check.
 
 
 MIN_VERNO=0.90.00
-VUPDATE_REPO="verb-update"
+VUPDATE_Repo="verb-update"
 
 ## Sample version updater:
 #UPGRADE_PATCH_VERNO=0.88.02
@@ -36,13 +36,13 @@ VUPDATE_REPO="verb-update"
 #eval "v$CLEAN_PATCH_VERNO='$(/bin/echo "$PCLdoc")'"
 #
 ## Move to working directory of the patch
-#if [ -d "/opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/" ]; then
-#cd /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/; fi
+#if [ -d "/opt/verb/${VUPDATE_Repo}/${UPGRADE_PATCH_VERNO}/" ]; then
+#cd /opt/verb/${VUPDATE_Repo}/${UPGRADE_PATCH_VERNO}/; fi
 #
 ## Run the update scripts for this patch
 #
 ###### SCRIPTS GO HERE #####
-## NOTE: PWD is /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/
+## NOTE: PWD is /opt/verb/${VUPDATE_Repo}/${UPGRADE_PATCH_VERNO}/
 #
 ## eg: /bin/echo "I would update the serfs here, but that happens automatically."
 #
@@ -62,7 +62,7 @@ VUPDATE_REPO="verb-update"
 ## Version Check ##
 ### The minimum version that can use this updater
 ## Include the configs
-. /opt/verb/conf/sitenameip
+. /opt/verb/conf/servernameip
 . /opt/verb/conf/siteurilist
 . /opt/verb/conf/inklists/verberverno
 . /opt/verb/conf/inklists/inkdnsrinks
@@ -74,55 +74,59 @@ exit 0
 fi
 
 # Pull scripts and settings from the original verb repo
-/usr/bin/mkdir -p /opt/verb/${VUPDATE_REPO}/u_tmp
-cd /opt/verb/${VUPDATE_REPO}/u_tmp || exit 1
-/usr/bin/git clone https://github.com/${SITEUPDATEORG}/verb
+/usr/bin/mkdir -p /opt/verb/${VUPDATE_Repo}/u_tmp
+cd /opt/verb/${VUPDATE_Repo}/u_tmp || exit 1
+/usr/bin/git clone https://github.com/${ServerUpdateOrg}/verb
 # Update Serfs
 /bin/rm -rf /opt/verb/serfs/*
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/serfs/* /opt/verb/serfs/
+/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/serfs/* /opt/verb/serfs/
 /bin/rm -rf /opt/verb/donjon/*.sh
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/donjon/*.sh /opt/verb/donjon/
+/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/donjon/*.sh /opt/verb/donjon/
 /bin/rm -rf /opt/verb/donjon/repoupdate/*.updaterepo
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/donjon/repoupdate/*.updaterepo /opt/verb/donjon/repoupdate/
+/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/donjon/repoupdate/*.updaterepo /opt/verb/donjon/repoupdate/
 /bin/chmod 750 /opt/verb/serfs/*
 /bin/chmod 750 /opt/verb/donjon/*.sh
 cd /opt/verb || exit 1
 /bin/rm -f README.md
-/usr/bin/wget https://raw.githubusercontent.com/inkVerb/verb-dev/master/README.md
+/usr/bin/wget https://raw.githubusercontent.com/${ServerUpdateOrg}/verb/master/README.md
 /bin/echo "Serfs updated."
 
 # Update ink tools
 /bin/rm -rf /opt/verb/ink/felt/*
 /bin/rm -rf /opt/verb/ink/help/*
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/felt/* /opt/verb/ink/felt/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/help/* /opt/verb/ink/help/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/PHPcities /opt/verb/ink/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/actions.pb /opt/verb/ink/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink /opt/verb/ink/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink.functions /opt/verb/ink/
-/bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/ink/ink.run /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/ink/felt/* /opt/verb/ink/felt/
+/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/ink/help/* /opt/verb/ink/help/
+/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/ink/PHPcities /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/ink/actions.pb /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/ink/ink /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/ink/ink.functions /opt/verb/ink/
+/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/ink/ink.run /opt/verb/ink/
 /bin/chmod 750 /opt/verb/ink/felt/*
 /bin/echo "Ink actions updated."
 
 # Update inkLists
-. /opt/verb/conf/siteinkget
-if [ "${INKGET_LIST}" = "AUTO_UPDATE" ]; then
-  /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/conf/inklists/repoverlist /opt/verb/conf/inklists/
-  /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/conf/inklists/repolinks /opt/verb/conf/inklists/
+. /opt/verb/conf/serverinkget
+if [ "${InkGet_List}" = "AUTO_UPDATE" ]; then
+  /bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/conf/inklists/repoverlist /opt/verb/conf/inklists/
+  /bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/conf/inklists/repolinks /opt/verb/conf/inklists/
   if [ -z "$CUSTOMRINK" ] || [ "$CUSTOMRINK" != "true" ]; then
-    /bin/cp -f /opt/verb/${VUPDATE_REPO}/u_tmp/verb/conf/inklists/inkdnsrinks /opt/verb/conf/inklists/
+    /bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/conf/inklists/inkdnsrinks /opt/verb/conf/inklists/
   fi
   /bin/echo "Repo version list updated."
 else
   /bin/echo "Repo version list unchanged because this is a custom Verber."
 fi
 
+# Update MOTD
+/usr/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/conf/lib/nib /opt/verb/conf/lib/
+/usr/bin/cat /opt/verb/conf/lib/nib > /etc/motd
+
 # Update ClamAV
-# /bin/cp -f /opt/verb/${VUPDATE_REPO}/clamav /opt/verb/donjon/
+# /bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/conf/lib/vmail/clamav/clamav /opt/verb/donjon/
 # /bin/chmod 640 /opt/verb/donjon/clamav
 # /bin/echo "ClamAV definitions ready."
-# . /opt/verb/conf/sitemailpath
-# if [ "${SITEMAILSTATUS}" != "EMAIL_NOT_INSTALLED" ] && [ -d "/var/lib/clamav" ] && [ "${SASTATUS}" = "INSTALLED" ]; then
+# . /opt/verb/conf/servermailpath
+# if [ "${ServerMailStatus}" != "EMAIL_NOT_INSTALLED" ] && [ -d "/var/lib/clamav" ] && [ "${SASTATUS}" = "INSTALLED" ]; then
 #   . /opt/verb/donjon/clamav
 #   /usr/bin/mv -f /var/lib/clamav/main.cvd /var/lib/clamav/main.cvd.bak 2>/dev/null
 #   /usr/bin/mv -f /var/lib/clamav/daily.cvd /var/lib/clamav/daily.cvd.bak 2>/dev/null
@@ -175,13 +179,13 @@ fi
 #eval "v$CLEAN_PATCH_VERNO='$(/bin/echo "$PCLdoc")'"
 #
 ## Move to working directory of the patch
-#if [ -d "/opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/" ]; then
-#cd /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/; fi
+#if [ -d "/opt/verb/${VUPDATE_Repo}/${UPGRADE_PATCH_VERNO}/" ]; then
+#cd /opt/verb/${VUPDATE_Repo}/${UPGRADE_PATCH_VERNO}/; fi
 #
 ## Run the update scripts for this patch
 #
 ###### SCRIPTS GO HERE #####
-## NOTE: PWD is /opt/verb/${VUPDATE_REPO}/${UPGRADE_PATCH_VERNO}/
+## NOTE: PWD is /opt/verb/${VUPDATE_Repo}/${UPGRADE_PATCH_VERNO}/
 #
 ## eg: /bin/echo "I would update the serfs here, but that happens automatically."
 #
@@ -201,5 +205,8 @@ fi
 # Security check
 /opt/verb/serfs/setsecure; wait
 
+# Ink is a verb. Ink.
+/usr/bin/cat /opt/verb/conf/lib/nib
+
 # Finish
-/bin/echo "Verber at v${VERNO} framework from ${SITEUPDATEREPO}."
+/bin/echo "Verber at v${VERNO} framework from ${ServerUpdateRepo}."
