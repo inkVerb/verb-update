@@ -206,7 +206,7 @@ fi
 /opt/verb/serfs/setsecure; wait
 
 # Note version in the MOTD
-/usr/bin/echo "inkVerb Verber v${VERNO}" >> /etc/motd
+/usr/bin/echo "inkVerb ${ServerType} ${ServerName} // v${VERNO}" >> /etc/motd
 
 # Ink is a verb. Ink.
 /usr/bin/cat /opt/verb/conf/lib/nib
