@@ -118,7 +118,15 @@ fi
 
 # Update MOTD
 /usr/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/conf/lib/nib /opt/verb/conf/lib/
-/usr/bin/cat /opt/verb/conf/lib/nib > /etc/motd
+## Type-specific
+if [ -z "${RinkConfigured}" ]; then
+  /usr/bin/cat /opt/verb/conf/lib/nib > /etc/motd
+elif [ "${RinkConfigured}" = "true" ]; then
+  /usr/bin/echo "${ServerType} \"${ServerName}\" is configured for Rink control." > /etc/motd
+elif [ "${ServerType}" != "Verber" ]; then
+  /usr/bin/echo "" > /etc/motd
+fi
+/usr/bin/echo "${ServerIPv4} & ${ServerIPv6} running on ${ServerTimeCity} time." >> /etc/motd
 
 # Update ClamAV
 # /bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/conf/lib/vmail/clamav/clamav /opt/verb/donjon/
