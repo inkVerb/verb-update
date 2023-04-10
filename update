@@ -122,7 +122,7 @@ fi
 if [ -z "${RinkConfigured}" ]; then
   /usr/bin/cat /opt/verb/conf/lib/nib > /etc/motd
 elif [ "${RinkConfigured}" = "true" ]; then
-  /usr/bin/echo "${ServerType} \"${ServerName}\" is configured for Rink control." > /etc/motd
+  /usr/bin/echo "Configured for Rink control." > /etc/motd
 elif [ "${ServerType}" != "Verber" ]; then
   /usr/bin/echo "" > /etc/motd
 fi
