@@ -119,11 +119,11 @@ fi
 # Update MOTD
 /usr/bin/cp -f /opt/verb/${VUPDATE_Repo}/u_tmp/verb/conf/lib/nib /opt/verb/conf/lib/
 ## Type-specific
-if [ -z "${RinkConfigured}" ]; then
+if [ "${VerberType}" = "Verber" ]; then
   /usr/bin/cat /opt/verb/conf/lib/nib > /etc/motd
 elif [ "${RinkConfigured}" = "true" ]; then
   /usr/bin/echo "Configured for Rink control." > /etc/motd
-elif [ "${ServerType}" != "Verber" ]; then
+else
   /usr/bin/echo "" > /etc/motd
 fi
 /usr/bin/echo "${ServerIPv4} & ${ServerIPv6} running on ${ServerTimeCity} time." >> /etc/motd
@@ -213,7 +213,7 @@ fi
 /opt/verb/serfs/setsecure; wait
 
 # Note version in the MOTD
-/usr/bin/echo "inkVerb ${ServerType} ${ServerName} // v${VERNO}" >> /etc/motd
+/usr/bin/echo "inkVerb ${VerberType} ${ServerName} // v${VERNO}" >> /etc/motd
 
 # Ink is a verb. Ink.
 /usr/bin/cat /opt/verb/conf/lib/nib
