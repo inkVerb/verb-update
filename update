@@ -8,7 +8,7 @@
 ## This contains many version patches for a Verber™ sequentially, one version at a time.
 ## This is run at the path: /opt/verb/${vUpdateRepo}/update
 
-# To call a changelog for a specific version, use: `/bin/echo "$vCLEANVERNO"` Eg: `echo "$v08702"` for v0.87.02
+# To call a changelog for a specific version, use: `/bin/echo "$vCLEANVerno"` Eg: `echo "$v08702"` for v0.87.02
 
 # DEV NOTE: A directory, even empty, must exist in the same directory as this "update" file named by by each update version ie: 0.87.01/
 
@@ -23,26 +23,26 @@ minVerNo=0.90.00
 vUpdateRepo="verb-update"
 
 ## Sample version updater:
-#UPGRADE_PATCH_VERNO=0.88.02
-#if [ $(/bin/echo ${UPGRADE_PATCH_VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
-#CLEAN_PATCH_VERNO=$(/bin/echo $UPGRADE_PATCH_VERNO | /bin/sed -e "s/\.//g")
+#upgradePatchVerno=0.88.02
+#if [ $(/bin/echo ${upgradePatchVerno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${Verno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
+#cleanPatchVerno=$(/bin/echo $upgradePatchVerno | /bin/sed -e "s/\.//g")
 #PCLdoc="$(/bin/cat <<UPCL
-#Patch ${UPGRADE_PATCH_VERNO} Changelog:
+#Patch ${upgradePatchVerno} Changelog:
 ### Patch Notes Here...
 #UPCL
 #)"
 #/bin/echo "$PCLdoc"
 ## So we can call a specific version later if needed
-#eval "v$CLEAN_PATCH_VERNO='$(/bin/echo "$PCLdoc")'"
+#eval "v$cleanPatchVerno='$(/bin/echo "$PCLdoc")'"
 #
 ## Move to working directory of the patch
-#if [ -d "/opt/verb/${vUpdateRepo}/${UPGRADE_PATCH_VERNO}/" ]; then
-#cd /opt/verb/${vUpdateRepo}/${UPGRADE_PATCH_VERNO}/; fi
+#if [ -d "/opt/verb/${vUpdateRepo}/${upgradePatchVerno}/" ]; then
+#cd /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/; fi
 #
 ## Run the update scripts for this patch
 #
 ###### SCRIPTS GO HERE #####
-## NOTE: PWD is /opt/verb/${vUpdateRepo}/${UPGRADE_PATCH_VERNO}/
+## NOTE: PWD is /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/
 #
 ## eg: /bin/echo "I would update the serfs here, but that happens automatically."
 #
@@ -50,11 +50,11 @@ vUpdateRepo="verb-update"
 #
 ###### END SCRIPTS #########
 ## Set and refresh the current version into inklists
-#/bin/sed -i "s/VERNO=.*/VERNO=\"${UPGRADE_PATCH_VERNO}\"/g" /opt/verb/conf/inklists/verberverno
+#/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
 #. /opt/verb/conf/inklists/verberverno
-#/bin/echo "Verber upgraded to v${VERNO}"
+#/bin/echo "Verber upgraded to v${Verno}"
 #else
-#/bin/echo "${UPGRADE_PATCH_VERNO} patch not necessary..."
+#/bin/echo "${upgradePatchVerno} patch not necessary..."
 #fi
 ###############END#UPGRADE#PATCH#
 
@@ -66,8 +66,8 @@ vUpdateRepo="verb-update"
 . /opt/verb/conf/siteurilist
 . /opt/verb/conf/inklists/verberverno
 ## Check minimal updateable version
-if [ "$(/bin/echo "${minVerNo}" | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" -gt "$(/bin/echo ${VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" ] ; then
-/bin/echo "Current Verber™ version is ${VERNO}, minimum ${minVerNo} to use this updater.
+if [ "$(/bin/echo "${minVerNo}" | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" -gt "$(/bin/echo ${Verno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" ] ; then
+/bin/echo "Current Verber™ version is ${Verno}, minimum ${minVerNo} to use this updater.
 Run updateverberlegacy for older versions."
 exit 0
 fi
@@ -173,26 +173,26 @@ fi
 # Run version-by-version updates
 
 
-#UPGRADE_PATCH_VERNO=0.90.01
-#if [ $(/bin/echo ${UPGRADE_PATCH_VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${VERNO} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
-#CLEAN_PATCH_VERNO="$(/bin/echo $UPGRADE_PATCH_VERNO | /bin/sed -e "s/\.//g")"
+#upgradePatchVerno=0.90.01
+#if [ $(/bin/echo ${upgradePatchVerno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${Verno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
+#cleanPatchVerno="$(/bin/echo $upgradePatchVerno | /bin/sed -e "s/\.//g")"
 #PCLdoc="$(/bin/cat <<UPCL
-#Patch ${UPGRADE_PATCH_VERNO} Changelog:
+#Patch ${upgradePatchVerno} Changelog:
 ### Patch Notes Here...
 #UPCL
 #)"
 #/bin/echo "$PCLdoc"
 ## So we can call a specific version later if needed
-#eval "v$CLEAN_PATCH_VERNO='$(/bin/echo "$PCLdoc")'"
+#eval "v$cleanPatchVerno='$(/bin/echo "$PCLdoc")'"
 #
 ## Move to working directory of the patch
-#if [ -d "/opt/verb/${vUpdateRepo}/${UPGRADE_PATCH_VERNO}/" ]; then
-#cd /opt/verb/${vUpdateRepo}/${UPGRADE_PATCH_VERNO}/; fi
+#if [ -d "/opt/verb/${vUpdateRepo}/${upgradePatchVerno}/" ]; then
+#cd /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/; fi
 #
 ## Run the update scripts for this patch
 #
 ###### SCRIPTS GO HERE #####
-## NOTE: PWD is /opt/verb/${vUpdateRepo}/${UPGRADE_PATCH_VERNO}/
+## NOTE: PWD is /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/
 #
 ## eg: /bin/echo "I would update the serfs here, but that happens automatically."
 #
@@ -200,11 +200,11 @@ fi
 #
 ###### END SCRIPTS #########
 ## Set and refresh the current version into inklists
-#/bin/sed -i "s/VERNO=.*/VERNO=\"${UPGRADE_PATCH_VERNO}\"/g" /opt/verb/conf/inklists/verberverno
+#/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
 #. /opt/verb/conf/inklists/verberverno
-#/bin/echo "Verber upgraded to v${VERNO}"
+#/bin/echo "Verber upgraded to v${Verno}"
 #else
-#/bin/echo "${UPGRADE_PATCH_VERNO} patch not necessary..."
+#/bin/echo "${upgradePatchVerno} patch not necessary..."
 #fi
 ###############END#UPGRADE#PATCH#
 
@@ -213,10 +213,10 @@ fi
 /opt/verb/serfs/setsecure; wait
 
 # Note version in the MOTD
-/usr/bin/echo "inkVerb ${VerberType} ${ServerName} // v${VERNO}" >> /etc/motd
+/usr/bin/echo "inkVerb ${VerberType} ${ServerName} // v${Verno}" >> /etc/motd
 
 # Ink is a verb. Ink.
 /usr/bin/cat /opt/verb/conf/lib/nib
 
 # Finish
-/usr/bin/echo "Verber at v${VERNO} framework from ${ServerUpdateRepo}."
+/usr/bin/echo "Verber at v${Verno} framework from ${ServerUpdateRepo}."
