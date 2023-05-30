@@ -19,7 +19,7 @@
 # DEV NOTE: Serfs are automatically copied & updated from ${vUpdateRepo}/serfs to the Verber before any patches run, after the verno check.
 
 
-minVerNo=0.90.00
+minVerNo="0.90.00"
 vUpdateRepo="verb-update"
 
 ## Sample version updater:
