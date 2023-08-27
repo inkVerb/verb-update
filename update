@@ -59,19 +59,6 @@ vUpdateRepo="verb-update"
 ###############END#UPGRADE#PATCH#
 
 
-## Version Check ##
-### The minimum version that can use this updater
-## Include the configs
-. /opt/verb/conf/servernameip
-. /opt/verb/conf/siteurilist
-. /opt/verb/conf/inklists/verberverno
-## Check minimal updateable version
-if [ "$(/bin/echo "${minVerNo}" | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" -gt "$(/bin/echo ${Verno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" ] ; then
-/bin/echo "Current Verber™ version is ${Verno}, minimum ${minVerNo} to use this updater.
-Run updateverberlegacy for older versions."
-exit 0
-fi
-
 # Pull scripts and settings from the original verb repo
 /usr/bin/mkdir -p /opt/verb/${vUpdateRepo}/u_tmp
 cd /opt/verb/${vUpdateRepo}/u_tmp || exit 6
@@ -102,6 +89,25 @@ cd /opt/verb || exit 6
 /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/ink.run /opt/verb/ink/
 /bin/chmod 750 /opt/verb/ink/felt/*
 /bin/echo "Ink actions updated."
+
+# Check if Verb is setup for more updates...
+if [ ! -f "/opt/verb/conf/servernameip" ] || [ ! -f "/opt/verb/conf/siteurilist" ] || [ ! -f "/opt/verb/conf/inklists/verberverno" ]; then
+  /bin/echo "Verb not installed; all done."
+  exit 0
+fi
+
+## Version Check ##
+### The minimum version that can use this updater
+## Include the configs
+. /opt/verb/conf/servernameip
+. /opt/verb/conf/siteurilist
+. /opt/verb/conf/inklists/verberverno
+## Check minimal updateable version
+if [ "$(/bin/echo "${minVerNo}" | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" -gt "$(/bin/echo ${Verno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" ] ; then
+/bin/echo "Current Verber™ version is ${Verno}, minimum ${minVerNo} to use this updater.
+Run updateverberlegacy for older versions."
+exit 0
+fi
 
 # Update inkLists
 . /opt/verb/conf/serverinkget
