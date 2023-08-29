@@ -62,7 +62,8 @@ vUpdateRepo="verb-update"
 # Pull scripts and settings from the original verb repo
 /usr/bin/mkdir -p /opt/verb/${vUpdateRepo}/u_tmp
 cd /opt/verb/${vUpdateRepo}/u_tmp || exit 6
-/usr/bin/git clone https://github.com/${ServerUpdateOrg}/verb
+echo /usr/bin/git clone https://github.com/${ServerUpdateOrg}/verb
+exit 0
 # Update Serfs
 /bin/rm -rf /opt/verb/serfs/*
 /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/serfs/* /opt/verb/serfs/
