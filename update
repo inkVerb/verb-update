@@ -22,6 +22,16 @@
 minVerNo="0.90.00"
 vUpdateRepo="verb-update"
 
+# Include the config
+if [ -f "/opt/verb/conf/servernameip" ]; then
+  ## This is for updates on a setup verber
+  . /opt/verb/conf/servernameip
+else
+  ## This allows updates on a -premade or -made verber
+  ServerUpdateOrg="inkverb"
+  ServerUpdateRepo="verb-update"
+fi
+
 ## Sample version updater:
 #upgradePatchVerno=0.88.02
 #if [ $(/bin/echo ${upgradePatchVerno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${Verno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
@@ -62,8 +72,7 @@ vUpdateRepo="verb-update"
 # Pull scripts and settings from the original verb repo
 /usr/bin/mkdir -p /opt/verb/${vUpdateRepo}/u_tmp
 cd /opt/verb/${vUpdateRepo}/u_tmp || exit 6
-echo /usr/bin/git clone https://github.com/${ServerUpdateOrg}/verb
-exit 0
+/usr/bin/git clone https://github.com/${ServerUpdateOrg}/verb
 # Update Serfs
 /bin/rm -rf /opt/verb/serfs/*
 /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/serfs/* /opt/verb/serfs/
