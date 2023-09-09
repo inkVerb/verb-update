@@ -76,7 +76,7 @@ cd /opt/verb/${vUpdateRepo}/u_tmp || exit 6
 
 # Update tools
 /bin/rm -rf /opt/verb/conf/lib
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/lib /opt/verb/conf/
+/bin/cp -rf /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/lib /opt/verb/conf/
 /bin/rm -rf /opt/verb/donjon/*.sh
 /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/donjon/*.sh /opt/verb/donjon/
 /bin/chmod 750 /opt/verb/donjon/*.sh
