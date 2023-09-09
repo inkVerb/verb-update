@@ -73,21 +73,27 @@ fi
 /usr/bin/mkdir -p /opt/verb/${vUpdateRepo}/u_tmp
 cd /opt/verb/${vUpdateRepo}/u_tmp || exit 6
 /usr/bin/git clone https://github.com/${ServerUpdateOrg}/verb
-# Update Serfs
-/bin/rm -rf /opt/verb/serfs/*
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/serfs/* /opt/verb/serfs/
+
+# Update tools
+/bin/rm -rf /opt/verb/conf/lib
+/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/lib /opt/verb/conf/
 /bin/rm -rf /opt/verb/donjon/*.sh
 /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/donjon/*.sh /opt/verb/donjon/
+/bin/chmod 750 /opt/verb/donjon/*.sh
 /bin/rm -rf /opt/verb/donjon/repoupdate/*.updaterepo
 /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/donjon/repoupdate/*.updaterepo /opt/verb/donjon/repoupdate/
+/bin/echo "Tools updated."
+
+# Update serfs
+/bin/rm -rf /opt/verb/serfs/*
+/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/serfs/* /opt/verb/serfs/
 /bin/chmod 750 /opt/verb/serfs/*
-/bin/chmod 750 /opt/verb/donjon/*.sh
 cd /opt/verb || exit 6
 /bin/rm -f README.md
 /usr/bin/wget https://raw.githubusercontent.com/${ServerUpdateOrg}/verb/master/README.md
 /bin/echo "Serfs updated."
 
-# Update ink tools
+# Update ink
 /bin/rm -rf /opt/verb/ink/felt/*
 /bin/rm -rf /opt/verb/ink/help/*
 /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/felt/* /opt/verb/ink/felt/
@@ -99,6 +105,19 @@ cd /opt/verb || exit 6
 /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/ink.run /opt/verb/ink/
 /bin/chmod 750 /opt/verb/ink/felt/*
 /bin/echo "Ink actions updated."
+
+# Update inklists
+. /opt/verb/conf/serverinkget
+if [ "${InkGet_List}" = "AUTO_UPDATE" ]; then
+  /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/repoverlist /opt/verb/conf/inklists/
+  /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/repolinks /opt/verb/conf/inklists/
+  if [ -z "$CustomNS" ] || [ "$CustomNS" != "true" ]; then
+    /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/inkdnsnameservers /opt/verb/conf/inklists/
+  fi
+  /bin/echo "Repo version list updated."
+else
+  /bin/echo "Repo version list unchanged because this is a custom Verber."
+fi
 
 # Check if Verb is setup for more updates...
 if [ ! -f "/opt/verb/conf/servernameip" ] || [ ! -f "/opt/verb/conf/siteurilist" ] || [ ! -f "/opt/verb/conf/inklists/verberverno" ]; then
@@ -117,19 +136,6 @@ if [ "$(/bin/echo "${minVerNo}" | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g"
 /bin/echo "Current Verber™ version is ${Verno}, minimum ${minVerNo} to use this updater.
 Run updateverberlegacy for older versions."
 exit 0
-fi
-
-# Update inkLists
-. /opt/verb/conf/serverinkget
-if [ "${InkGet_List}" = "AUTO_UPDATE" ]; then
-  /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/repoverlist /opt/verb/conf/inklists/
-  /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/repolinks /opt/verb/conf/inklists/
-  if [ -z "$CustomNS" ] || [ "$CustomNS" != "true" ]; then
-    /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/inkdnsnameservers /opt/verb/conf/inklists/
-  fi
-  /bin/echo "Repo version list updated."
-else
-  /bin/echo "Repo version list unchanged because this is a custom Verber."
 fi
 
 # Update MOTD
