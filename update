@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # inkVerb updater for Verber™, verb.ink
 
 #set -e
@@ -8,7 +8,7 @@
 ## This contains many version patches for a Verber™ sequentially, one version at a time.
 ## This is run at the path: /opt/verb/${vUpdateRepo}/update
 
-# To call a changelog for a specific version, use: `/bin/echo "$vCLEANVerno"` Eg: `echo "$v08702"` for v0.87.02
+# To call a changelog for a specific version, use: `/usr/bin/echo "$vCLEANVerno"` Eg: `echo "$v08702"` for v0.87.02
 
 # DEV NOTE: A directory, even empty, must exist in the same directory as this "update" file named by by each update version ie: 0.87.01/
 
@@ -34,16 +34,16 @@ fi
 
 ## Sample version updater:
 #upgradePatchVerno=0.88.02
-#if [ $(/bin/echo ${upgradePatchVerno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${Verno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
-#cleanPatchVerno=$(/bin/echo $upgradePatchVerno | /bin/sed -e "s/\.//g")
-#PCLdoc="$(/bin/cat <<UPCL
+#if [ $(/usr/bin/echo ${upgradePatchVerno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") -gt $(/usr/bin/echo ${Verno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") ] ; then
+#cleanPatchVerno=$(/usr/bin/echo $upgradePatchVerno | /usr/bin/sed -e "s/\.//g")
+#PCLdoc="$(/usr/bin/cat <<UPCL
 #Patch ${upgradePatchVerno} Changelog:
 ### Patch Notes Here...
 #UPCL
 #)"
-#/bin/echo "$PCLdoc"
+#/usr/bin/echo "$PCLdoc"
 ## So we can call a specific version later if needed
-#eval "v$cleanPatchVerno='$(/bin/echo "$PCLdoc")'"
+#eval "v$cleanPatchVerno='$(/usr/bin/echo "$PCLdoc")'"
 #
 ## Move to working directory of the patch
 #if [ -d "/opt/verb/${vUpdateRepo}/${upgradePatchVerno}/" ]; then
@@ -54,74 +54,85 @@ fi
 ###### SCRIPTS GO HERE #####
 ## NOTE: PWD is /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/
 #
-## eg: /bin/echo "I would update the serfs here, but that happens automatically."
+## eg: /usr/bin/echo "I would update the serfs here, but that happens automatically."
 #
 #
 #
 ###### END SCRIPTS #########
 ## Set and refresh the current version into inklists
-#/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
+#/usr/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
 #. /opt/verb/conf/inklists/verberverno
-#/bin/echo "Verber upgraded to v${Verno}"
+#/usr/bin/echo "Verber upgraded to v${Verno}"
 #else
-#/bin/echo "${upgradePatchVerno} patch not necessary..."
+#/usr/bin/echo "${upgradePatchVerno} patch not necessary..."
 #fi
 ###############END#UPGRADE#PATCH#
 
 
 # Pull scripts and settings from the original verb repo
+/usr/bin/rm -rf /opt/verb/${vUpdateRepo}/u_tmp
 /usr/bin/mkdir -p /opt/verb/${vUpdateRepo}/u_tmp
 cd /opt/verb/${vUpdateRepo}/u_tmp || exit 6
 /usr/bin/git clone https://github.com/${ServerUpdateOrg}/verb
 
 # Update tools
-/bin/rm -rf /opt/verb/conf/lib
-/bin/cp -rf /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/lib /opt/verb/conf/
-/bin/rm -rf /opt/verb/donjon/*.sh
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/donjon/*.sh /opt/verb/donjon/
-/bin/chmod 750 /opt/verb/donjon/*.sh
-/bin/rm -rf /opt/verb/donjon/repoupdate/*.updaterepo
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/donjon/repoupdate/*.updaterepo /opt/verb/donjon/repoupdate/
-/bin/echo "Tools updated."
+/usr/bin/rm -rf /opt/verb/conf/lib
+/usr/bin/cp -rf /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/lib /opt/verb/conf/
+/usr/bin/rm -rf /opt/verb/donjon/*.sh
+/usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/donjon/*.sh /opt/verb/donjon/
+/usr/bin/chmod 750 /opt/verb/donjon/*.sh
+/usr/bin/rm -rf /opt/verb/donjon/repoupdate/*.updaterepo
+/usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/donjon/repoupdate/*.updaterepo /opt/verb/donjon/repoupdate/
+/usr/bin/echo "Tools updated."
 
 # Update serfs
-/bin/rm -rf /opt/verb/serfs/*
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/serfs/* /opt/verb/serfs/
-/bin/chmod 750 /opt/verb/serfs/*
+/usr/bin/rm -rf /opt/verb/serfs/*
+/usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/serfs/* /opt/verb/serfs/
+/usr/bin/chmod 750 /opt/verb/serfs/*
 cd /opt/verb || exit 6
-/bin/rm -f README.md
+/usr/bin/rm -f README.md
 /usr/bin/wget https://raw.githubusercontent.com/${ServerUpdateOrg}/verb/master/README.md
-/bin/echo "Serfs updated."
+/usr/bin/echo "Serfs updated."
 
 # Update ink
-/bin/rm -rf /opt/verb/ink/felt/*
-/bin/rm -rf /opt/verb/ink/help/*
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/felt/* /opt/verb/ink/felt/
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/help/* /opt/verb/ink/help/
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/PHPcities /opt/verb/ink/
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/actions.pb /opt/verb/ink/
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/ink /opt/verb/ink/
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/ink.functions /opt/verb/ink/
-/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/ink.run /opt/verb/ink/
-/bin/chmod 750 /opt/verb/ink/felt/*
-/bin/echo "Ink actions updated."
+/usr/bin/rm -rf /opt/verb/ink/felt/*
+/usr/bin/rm -rf /opt/verb/ink/help/*
+/usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/felt/* /opt/verb/ink/felt/
+/usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/help/* /opt/verb/ink/help/
+/usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/PHPcities /opt/verb/ink/
+/usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/actions.pb /opt/verb/ink/
+/usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/ink /opt/verb/ink/
+/usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/ink.functions /opt/verb/ink/
+/usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/ink/ink.run /opt/verb/ink/
+/usr/bin/chmod 750 /opt/verb/ink/felt/*
+/usr/bin/echo "Ink actions updated."
 
 # Update inklists
 . /opt/verb/conf/serverinkget
 if [ "${InkGet_List}" = "AUTO_UPDATE" ]; then
-  /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/repoverlist /opt/verb/conf/inklists/
-  /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/repolinks /opt/verb/conf/inklists/
+  /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/repoverlist /opt/verb/conf/inklists/
+  /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/repolinks /opt/verb/conf/inklists/
+  /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/inkmirrorlist /opt/verb/conf/inklists/
   if [ -z "$CustomNS" ] || [ "$CustomNS" != "true" ]; then
-    /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/inkdnsnameservers /opt/verb/conf/inklists/
+    /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/inklists/inkdnsnameservers /opt/verb/conf/inklists/
   fi
-  /bin/echo "Repo version list updated."
+  /usr/bin/echo "Repo version list updated."
 else
-  /bin/echo "Repo version list unchanged because this is a custom Verber."
+  /usr/bin/echo "Repo version list unchanged because this is a custom Verber."
+fi
+
+# If mirrorlist differs, install latest mirrors & update keyring, but not packages (stay lightweight)
+if /usr/bin/diff -q /opt/verb/conf/inklists/inkmirrorlist /etc/pacman.d/mirrorlist | /usr/bin/grep -q "differ"; then
+  /usr/bin/cp /opt/verb/conf/inklists/inkmirrorlist /etc/pacman.d/mirrorlist
+  /usr/bin/pacman-key --init
+  /usr/bin/pacman-key --populate archlinux
+  /usr/bin/pacman -Sy archlinux-keyring --noconfirm
 fi
 
 # Check if Verb is setup for more updates...
 if [ ! -f "/opt/verb/conf/servernameip" ] || [ ! -f "/opt/verb/conf/siteurilist" ] || [ ! -f "/opt/verb/conf/inklists/verberverno" ]; then
-  /bin/echo "Verb not installed; all done."
+  /usr/bin/echo "Verb not installed; all done."
+  /usr/bin/rm -rf /opt/verb/${vUpdateRepo}
   exit 0
 fi
 
@@ -132,8 +143,8 @@ fi
 . /opt/verb/conf/siteurilist
 . /opt/verb/conf/inklists/verberverno
 ## Check minimal updateable version
-if [ "$(/bin/echo "${minVerNo}" | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" -gt "$(/bin/echo ${Verno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g")" ] ; then
-/bin/echo "Current Verber™ version is ${Verno}, minimum ${minVerNo} to use this updater.
+if [ "$(/usr/bin/echo "${minVerNo}" | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g")" -gt "$(/usr/bin/echo ${Verno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g")" ] ; then
+/usr/bin/echo "Current Verber™ version is ${Verno}, minimum ${minVerNo} to use this updater.
 Run updateverberlegacy for older versions."
 exit 0
 fi
@@ -151,9 +162,9 @@ fi
 /usr/bin/echo "${ServerIPv4} & ${ServerIPv6} running on ${ServerTimeCity} time." >> /etc/motd
 
 # Update ClamAV
-# /bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/lib/vmail/clamav/clamav /opt/verb/donjon/
-# /bin/chmod 640 /opt/verb/donjon/clamav
-# /bin/echo "ClamAV definitions ready."
+# /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/conf/lib/vmail/clamav/clamav /opt/verb/donjon/
+# /usr/bin/chmod 640 /opt/verb/donjon/clamav
+# /usr/bin/echo "ClamAV definitions ready."
 # . /opt/verb/conf/servermailpath
 # if [ "${ServerMailStatus}" != "EMAIL_NOT_INSTALLED" ] && [ -d "/var/lib/clamav" ] && [ "${SASTATUS}" = "INSTALLED" ]; then
 #   . /opt/verb/donjon/clamav
@@ -189,23 +200,23 @@ fi
 #   /usr/bin/chmod 644 /var/lib/clamav/main.cvd
 #   /usr/bin/chmod 644 /var/lib/clamav/daily.cvd
 #   /usr/bin/chmod 644 /var/lib/clamav/bytecode.cvd
-#   /bin/echo "ClamAV definitions updated."
+#   /usr/bin/echo "ClamAV definitions updated."
 # fi
 
 # Run version-by-version updates
 
 
 #upgradePatchVerno=0.90.01
-#if [ $(/bin/echo ${upgradePatchVerno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") -gt $(/bin/echo ${Verno} | /bin/sed -e "s/\.//g" | /bin/sed -e "s/^0*//g") ] ; then
-#cleanPatchVerno="$(/bin/echo $upgradePatchVerno | /bin/sed -e "s/\.//g")"
-#PCLdoc="$(/bin/cat <<UPCL
+#if [ $(/usr/bin/echo ${upgradePatchVerno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") -gt $(/usr/bin/echo ${Verno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") ] ; then
+#cleanPatchVerno="$(/usr/bin/echo $upgradePatchVerno | /usr/bin/sed -e "s/\.//g")"
+#PCLdoc="$(/usr/bin/cat <<UPCL
 #Patch ${upgradePatchVerno} Changelog:
 ### Patch Notes Here...
 #UPCL
 #)"
-#/bin/echo "$PCLdoc"
+#/usr/bin/echo "$PCLdoc"
 ## So we can call a specific version later if needed
-#eval "v$cleanPatchVerno='$(/bin/echo "$PCLdoc")'"
+#eval "v$cleanPatchVerno='$(/usr/bin/echo "$PCLdoc")'"
 #
 ## Move to working directory of the patch
 #if [ -d "/opt/verb/${vUpdateRepo}/${upgradePatchVerno}/" ]; then
@@ -216,17 +227,17 @@ fi
 ###### SCRIPTS GO HERE #####
 ## NOTE: PWD is /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/
 #
-## eg: /bin/echo "I would update the serfs here, but that happens automatically."
+## eg: /usr/bin/echo "I would update the serfs here, but that happens automatically."
 #
 #
 #
 ###### END SCRIPTS #########
 ## Set and refresh the current version into inklists
-#/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
+#/usr/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
 #. /opt/verb/conf/inklists/verberverno
-#/bin/echo "Verber upgraded to v${Verno}"
+#/usr/bin/echo "Verber upgraded to v${Verno}"
 #else
-#/bin/echo "${upgradePatchVerno} patch not necessary..."
+#/usr/bin/echo "${upgradePatchVerno} patch not necessary..."
 #fi
 ###############END#UPGRADE#PATCH#
 
@@ -242,3 +253,4 @@ fi
 
 # Finish
 /usr/bin/echo "Verber at v${Verno} framework from ${ServerUpdateRepo}."
+/usr/bin/rm -rf /opt/verb/${vUpdateRepo}
