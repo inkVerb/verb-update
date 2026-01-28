@@ -5,6 +5,8 @@
 
 # This "updates" the serfs and "upgrades" Verber
 ## serfs are updated every time. Upgrades only relate to Verber framework which has verber version numbers related to each patch/release.
+## Other pre-setup parts of the framework are updates, use a search in this file to see which
+### verb/conf/* settings files are NOT updated with this and will need a fresh image install of verb from the git repo
 ## This contains many version patches for a Verber™ sequentially, one version at a time.
 ## This is run at the path: /opt/verb/${vUpdateRepo}/update
 
