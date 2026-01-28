@@ -85,9 +85,26 @@ cd /opt/verb/${vUpdateRepo}/u_tmp || exit 6
 /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/donjon/repoupdate/*.updaterepo /opt/verb/donjon/repoupdate/
 /usr/bin/echo "Tools updated."
 
+# Inst contents?
+if [ -f "/opt/verb/inst/make-preverber" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/make-preverber /opt/verb/inst/; fi
+if [ -f "/opt/verb/inst/make-dommod" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/make-dommod /opt/verb/inst/; fi
+if [ -f "/opt/verb/inst/make-dns" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/make-dns /opt/verb/inst/; fi
+if [ -f "/opt/verb/inst/make-verber-lamp" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/make-verber-lamp /opt/verb/inst/; fi
+if [ -f "/opt/verb/inst/make-verber-lemp" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/make-verber-lemp /opt/verb/inst/; fi
+if [ -f "/opt/verb/inst/make-verber-laemp" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/make-verber-laemp /opt/verb/inst/; fi
+if [ -f "/opt/verb/inst/setup" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/setup /opt/verb/inst/; fi
+if [ -f "/opt/verb/inst/PHP-Regions" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/PHP-Regions /opt/verb/inst/; fi
+if [ -f "/opt/verb/inst/preverboff" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/preverboff /opt/verb/inst/; fi
+if [ -f "/opt/verb/inst/preverbon" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/preverbon /opt/verb/inst/; fi
+if [ -f "/opt/verb/inst/ink.set" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/ink.set /opt/verb/inst/; fi
+if [ -f "/opt/verb/inst/file-folder-descriptions" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/file-folder-descriptions /opt/verb/inst/; fi
+if [ -d "/opt/verb/inst/root-config" ]; then /usr/bin/rm -rf /opt/verb/inst/root-config && /usr/bin/cp -rf /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/root-config /opt/verb/inst/; fi
+if [ -d "/opt/verb/inst/webserver" ]; then /usr/bin/rm -rf /opt/verb/inst/webserver && /usr/bin/cp -rf /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/webserver /opt/verb/inst/; fi
+
 # Update serfs
 /usr/bin/rm -rf /opt/verb/serfs/*
 /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/serfs/* /opt/verb/serfs/
+if [ -f "/opt/verb/inst/setup" ]; then /usr/bin/ln -sfn /opt/verb/inst/setup /opt/verb/serfs/; fi
 /usr/bin/chmod 750 /opt/verb/serfs/*
 cd /opt/verb || exit 6
 /usr/bin/rm -f README.md
