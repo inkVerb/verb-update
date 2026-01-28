@@ -23,13 +23,13 @@ minVerNo="0.90.00"
 vUpdateRepo="verb-update"
 
 # Include the config
-if [ -f "/opt/verb/conf/servernameip" ]; then
-  ## This is for updates on a setup verber
-  . /opt/verb/conf/servernameip
-else
+if [ -d "/opt/verb/inst" ]; then
   ## This allows updates on a -premade or -made verber
   ServerUpdateOrg="inkverb"
   ServerUpdateRepo="verb-update"
+else
+  ## This is for updates on a setup verber
+  . /opt/verb/conf/servernameip
 fi
 
 ## Sample version updater:
