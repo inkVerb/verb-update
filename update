@@ -106,7 +106,7 @@ if [ -d "/opt/verb/inst/webserver" ]; then /usr/bin/rm -rf /opt/verb/inst/webser
 # Update serfs
 /usr/bin/rm -rf /opt/verb/serfs/*
 /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/serfs/* /opt/verb/serfs/
-if [ -f "/opt/verb/inst/setup" ]; then /usr/bin/ln -sfn /opt/verb/inst/setup /opt/verb/serfs/&& /usr/bin/cat /dev/null > /root/.bash_history && unset HISTFILE && history -c ; fi # `history` is a builtin; if inst/setup exists, we want to clear the history for the verber image
+if [ -f "/opt/verb/inst/setup" ]; then /usr/bin/ln -sfn /opt/verb/inst/setup /opt/verb/serfs/; fi
 /usr/bin/chmod 750 /opt/verb/serfs/*
 cd /opt/verb || exit 6
 /usr/bin/rm -f README.md
