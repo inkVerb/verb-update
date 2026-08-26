@@ -261,6 +261,110 @@ fi
 ###############END#UPGRADE#PATCH#
 
 
+upgradePatchVerno=0.90.01
+if [ $(/usr/bin/echo ${upgradePatchVerno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") -gt $(/usr/bin/echo ${Verno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") ] ; then
+cleanPatchVerno="$(/usr/bin/echo $upgradePatchVerno | /usr/bin/sed -e "s/\.//g")"
+PCLdoc="$(/usr/bin/cat <<UPCL
+Patch ${upgradePatchVerno} Changelog:
+- Dovecot 2.4 configuration overhaul (required for Arch dovecot ≥ 2.4)
+- Refresh all /etc/dovecot templates from conf/lib/vmail/dovecot
+- Re-apply nameURI and SQL password substitutions
+- Preserve existing SSL cert configuration when present
+UPCL
+)"
+/usr/bin/echo "$PCLdoc"
+## So we can call a specific version later if needed
+eval "v$cleanPatchVerno='$(/usr/bin/echo "$PCLdoc")'"
+
+## Move to working directory of the patch
+if [ -d "/opt/verb/${vUpdateRepo}/${upgradePatchVerno}/" ]; then
+cd /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/; fi
+
+## Run the update scripts for this patch
+
+###### SCRIPTS GO HERE #####
+## NOTE: PWD is /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/
+## conf/lib was already refreshed by the global update step above
+
+# Only act on servers that already have the Postfix vmail stack
+. /opt/verb/conf/servermailpath 2>/dev/null || true
+. /opt/verb/conf/servermailpass 2>/dev/null || true
+. /opt/verb/conf/siteurilist 2>/dev/null || true
+. /opt/verb/conf/servernameip 2>/dev/null || true
+
+if [ "${ServerMailStatus}" = "VMAIL_SERVER" ] || [ "${ServerMailStatus}" = "VMAIL_READY" ]; then
+
+  /usr/bin/echo "Applying Dovecot 2.4 config refresh for existing vmail installation..."
+
+  # Ensure target directories exist
+  /usr/bin/mkdir -p /etc/dovecot/conf.d /etc/dovecot/sieve.before.d /etc/dovecot/sieve-filter /etc/dovecot/crt.d
+
+  # Copy the new templates (already present in /opt/verb/conf/lib from the global update)
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/dovecot.conf                /etc/dovecot/
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/dovecot-sql.conf.ext        /etc/dovecot/
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/conf.d/10-auth.conf         /etc/dovecot/conf.d/
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/conf.d/10-mail.conf         /etc/dovecot/conf.d/
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/conf.d/10-master.conf       /etc/dovecot/conf.d/
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/conf.d/10-ssl.conf          /etc/dovecot/conf.d/
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/conf.d/15-lda.conf          /etc/dovecot/conf.d/
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/conf.d/15-mailboxes.conf    /etc/dovecot/conf.d/
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/conf.d/20-lmtp.conf         /etc/dovecot/conf.d/
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/conf.d/20-managesieve.conf  /etc/dovecot/conf.d/
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/conf.d/90-plugin.conf       /etc/dovecot/conf.d/
+  /usr/bin/cp -f /opt/verb/conf/lib/vmail/dovecot/conf.d/90-sieve.conf        /etc/dovecot/conf.d/
+
+  # Drop the stock empty sieve-extprograms file if it reappears
+  /usr/bin/rm -f /etc/dovecot/conf.d/90-sieve-extprograms.conf
+
+  # Re-apply the same substitutions the install serf performs
+  if [ -n "${nameURI}" ]; then
+    /usr/bin/sed -i "s/nameURI286/${nameURI}/g" /etc/dovecot/conf.d/15-lda.conf
+    /usr/bin/sed -i "s/nameURI286/${nameURI}/g" /etc/dovecot/conf.d/10-ssl.conf
+  fi
+
+  if [ -n "${ServerMailPassApg}" ]; then
+    /usr/bin/sed -i "s/mailpassword/mailpass${ServerMailPassApg}/g" /etc/dovecot/dovecot-sql.conf.ext
+  fi
+
+  # Preserve real inkCert mail certs when they already exist; otherwise leave the
+  # snakeoil defaults that ship in the new 10-ssl.conf
+  if [ -f "/etc/ssl/server/mail/vmail.crt" ] && [ -f "/etc/ssl/server/mail/vmail.key" ]; then
+    /usr/bin/sed -i \
+      -e 's|^ssl_server_cert_file = /etc/ssl/server/server.crt|#ssl_server_cert_file = /etc/ssl/server/server.crt|' \
+      -e 's|^ssl_server_key_file = /etc/ssl/server/server.key|#ssl_server_key_file = /etc/ssl/server/server.key|' \
+      -e 's|^#ssl_cert = </etc/ssl/server/mail/vmail.crt|ssl_cert = </etc/ssl/server/mail/vmail.crt|' \
+      -e 's|^#ssl_key = </etc/ssl/server/mail/vmail.key|ssl_key = </etc/ssl/server/mail/vmail.key|' \
+      -e 's|^#ssl_dh = </etc/dovecot/dh.pem|ssl_dh = </etc/dovecot/dh.pem|' \
+      /etc/dovecot/conf.d/10-ssl.conf
+  fi
+
+  # Ownership & permissions (match installpostfixvmail)
+  /usr/bin/chown -R vmail:dovecot /etc/dovecot 2>/dev/null || true
+  /usr/bin/chmod -R o-rwx /etc/dovecot
+
+  # Restart so the new config is live
+  if /usr/bin/systemctl is-active --quiet dovecot; then
+    /usr/bin/systemctl restart dovecot
+    /usr/bin/echo "Dovecot restarted with 2.4-compatible configuration."
+  else
+    /usr/bin/echo "Dovecot not running; new configs are in place for next start."
+  fi
+
+else
+  /usr/bin/echo "No active VMAIL_SERVER installation detected; Dovecot 2.4 config refresh skipped."
+fi
+
+###### END SCRIPTS #########
+## Set and refresh the current version into inklists
+/usr/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
+. /opt/verb/conf/inklists/verberverno
+/usr/bin/echo "Verber upgraded to v${Verno}"
+else
+/usr/bin/echo "${upgradePatchVerno} patch not necessary..."
+fi
+###############END#UPGRADE#PATCH#
+
+
 # Security check
 /opt/verb/serfs/setsecure; wait
 
