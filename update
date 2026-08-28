@@ -437,6 +437,87 @@ fi
 ###############END#UPGRADE#PATCH#
 
 
+upgradePatchVerno=0.90.03
+if [ $(/usr/bin/echo ${upgradePatchVerno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") -gt $(/usr/bin/echo ${Verno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") ] ; then
+cleanPatchVerno="$(/usr/bin/echo $upgradePatchVerno | /usr/bin/sed -e "s/\.//g")"
+PCLdoc="$(/usr/bin/cat <<UPCL
+Patch ${upgradePatchVerno} Changelog:
+- appConfig= as the third assignment line on existing vapp.* files
+- Snapshot installed configs to conf/vapps/orig/ for verb web UI reset
+UPCL
+)"
+/usr/bin/echo "$PCLdoc"
+eval "v$cleanPatchVerno='$(/usr/bin/echo "$PCLdoc")'"
+
+if [ -d "/opt/verb/${vUpdateRepo}/${upgradePatchVerno}/" ]; then
+cd /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/; fi
+
+###### SCRIPTS GO HERE #####
+/usr/bin/mkdir -p /opt/verb/conf/vapps/orig
+guess_cfg() {
+  local base="$1"
+  local vfile="/opt/verb/conf/vapps/${base}"
+  case "${base}" in
+    vapp.wp.*) echo "/srv/www/vapps/${base#vapp.}/wp-config.php" ;;
+    vapp.pdt.*) echo "/opt/verb/conf/vapps/pdt.${base#vapp.pdt.}.config" ;;
+    vapp.pw99.*) echo "/srv/www/vapps/${base#vapp.}/config.php" ;;
+    vapp.badad.*) echo "/opt/verb/conf/vapps/badad.${base#vapp.badad.}.config" ;;
+    vapp.nextcloud) echo "/srv/www/vapps/nextcloud/config/config.php" ;;
+    vapp.orangehrm) echo "/srv/www/vapps/orangehrm/lib/confs/Conf.php" ;;
+    vapp.suitecrm) echo "/srv/www/vapps/suitecrm/config.php" ;;
+    vapp.owncloud) echo "/srv/cloud/ocis/config/ocis.yaml" ;;
+    vapp.ampache) echo "/srv/www/vapps/ampache/config/ampache.cfg.php" ;;
+    vapp.mediawiki) echo "/srv/www/vapps/mediawiki/LocalSettings.php" ;;
+    vapp.phpmyadmin) echo "/srv/www/vapps/phpmyadmin/config.inc.php" ;;
+    vapp.net2ftp) echo "/srv/www/vapps/net2ftp/settings.inc.php" ;;
+    vapp.ghost.inkblog)
+      local gd
+      gd="$(/usr/bin/grep -m1 '^ghostdomain=' "${vfile}" 2>/dev/null | /usr/bin/sed 's/^ghostdomain=//;s/^["'\'']//;s/["'\'']$//')"
+      if [ -n "${gd}" ]; then echo "/srv/ghost/${gd}/config.production.json"; fi
+      ;;
+    vapp.ghost.*) echo "/srv/ghost/${base#vapp.ghost.}/config.production.json" ;;
+    vapp.iwpadmin.*)
+      local dom dir
+      dom="${base#vapp.iwpadmin.}"
+      dir="$(/usr/bin/grep -m1 '^IWPADMIN_directory=' "${vfile}" 2>/dev/null | /usr/bin/sed 's/^IWPADMIN_directory=//;s/^["'\'']//;s/["'\'']$//')"
+      if [ -n "${dir}" ]; then echo "/srv/www/html/${dom}/${dir}/iwp-config.php"; fi
+      ;;
+    vapp.collaboraonline|vapp.collabora)
+      if [ -f /etc/coolwsd/coolwsd.xml ]; then echo "/etc/coolwsd/coolwsd.xml"
+      elif [ -f /etc/loolwsd/loolwsd.xml ]; then echo "/etc/loolwsd/loolwsd.xml"
+      fi
+      ;;
+    *) echo "" ;;
+  esac
+}
+if [ -d /opt/verb/conf/vapps ]; then
+  for vfile in /opt/verb/conf/vapps/vapp.*; do
+    [ -f "${vfile}" ] || continue
+    base="$(/usr/bin/basename "${vfile}")"
+    case "${base}" in
+      *roundcube*|*inkmail*|*postfixadmin*|*pfa*|*maddy*|*inkemail*) continue ;;
+    esac
+    cfg="$(guess_cfg "${base}")"
+    if [ -z "${cfg}" ]; then
+      cfg="$(/usr/bin/grep -m1 '^appConfig=' "${vfile}" | /usr/bin/sed 's/^appConfig=//')"
+    fi
+    if [ -n "${cfg}" ] && [ -x /opt/verb/serfs/setvappconfig ]; then
+      /opt/verb/serfs/setvappconfig "${base}" "${cfg}" || true
+    fi
+  done
+fi
+/usr/bin/echo "vapp appConfig lines applied."
+
+###### END SCRIPTS #########
+/usr/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
+. /opt/verb/conf/inklists/verberverno
+/usr/bin/echo "Verber upgraded to v${Verno}"
+else
+/usr/bin/echo "${upgradePatchVerno} patch not necessary..."
+fi
+###############END#UPGRADE#PATCH#
+
+
 # Security check
 
 /opt/verb/serfs/setsecure; wait
