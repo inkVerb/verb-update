@@ -1,2 +1,3 @@
 vapp appConfig= patch. Logic lives in ../update (0.90.03 block).
+Puts appConfig= first on each vapp.* file, then the DB credential lines.
 Snapshots installed configs to conf/vapps/orig/ for the verb web UI reset.

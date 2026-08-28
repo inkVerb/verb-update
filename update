@@ -442,7 +442,7 @@ if [ $(/usr/bin/echo ${upgradePatchVerno} | /usr/bin/sed -e "s/\.//g" | /usr/bin
 cleanPatchVerno="$(/usr/bin/echo $upgradePatchVerno | /usr/bin/sed -e "s/\.//g")"
 PCLdoc="$(/usr/bin/cat <<UPCL
 Patch ${upgradePatchVerno} Changelog:
-- appConfig= as the third assignment line on existing vapp.* files
+- appConfig= as the first assignment on existing vapp.* files (before the DB credential lines)
 - Snapshot installed configs to conf/vapps/orig/ for verb web UI reset
 UPCL
 )"
@@ -466,6 +466,7 @@ guess_cfg() {
     vapp.orangehrm) echo "/srv/www/vapps/orangehrm/lib/confs/Conf.php" ;;
     vapp.suitecrm) echo "/srv/www/vapps/suitecrm/config.php" ;;
     vapp.owncloud) echo "/srv/cloud/ocis/config/ocis.yaml" ;;
+    vapp.pydio) echo "/srv/cloud/pydio/pydio.json" ;;
     vapp.ampache) echo "/srv/www/vapps/ampache/config/ampache.cfg.php" ;;
     vapp.mediawiki) echo "/srv/www/vapps/mediawiki/LocalSettings.php" ;;
     vapp.phpmyadmin) echo "/srv/www/vapps/phpmyadmin/config.inc.php" ;;
