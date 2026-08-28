@@ -365,7 +365,80 @@ fi
 ###############END#UPGRADE#PATCH#
 
 
+upgradePatchVerno=0.90.02
+if [ $(/usr/bin/echo ${upgradePatchVerno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") -gt $(/usr/bin/echo ${Verno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") ] ; then
+cleanPatchVerno="$(/usr/bin/echo $upgradePatchVerno | /usr/bin/sed -e "s/\.//g")"
+PCLdoc="$(/usr/bin/cat <<UPCL
+Patch ${upgradePatchVerno} Changelog:
+- BIMI TXT (default._bimi) for every existing zone in conf/inkdns/inkzones and conf/inkdns/zones
+- Logo at https://domain.tld/bimi.svg (nib-logo.svg copied when missing)
+- ink set bimi / setbimi serf, ink mail framework, Go inkMail + verb web UI
+UPCL
+)"
+/usr/bin/echo "$PCLdoc"
+eval "v$cleanPatchVerno='$(/usr/bin/echo "$PCLdoc")'"
+
+if [ -d "/opt/verb/${vUpdateRepo}/${upgradePatchVerno}/" ]; then
+cd /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/; fi
+
+###### SCRIPTS GO HERE #####
+## Loop existing zone files and add BIMI statements (skip if already present)
+bimi_one() {
+  local zonefile="$1"
+  local domain="$2"
+  local verberny="$3"
+  [ -f "${zonefile}" ] || return 0
+  if /usr/bin/grep -Fq "; BIMI ${domain}" "${zonefile}" || /usr/bin/grep -Fq "default._bimi" "${zonefile}"; then
+    return 0
+  fi
+  if [ ! -f "/srv/www/html/${domain}/bimi.svg" ] && [ -f "/opt/verb/conf/lib/logo/nib-logo.svg" ]; then
+    /usr/bin/mkdir -p "/srv/www/html/${domain}"
+    /usr/bin/cp /opt/verb/conf/lib/logo/nib-logo.svg "/srv/www/html/${domain}/bimi.svg"
+    /usr/bin/chown www:www "/srv/www/html/${domain}/bimi.svg" 2>/dev/null || true
+    /usr/bin/chmod 644 "/srv/www/html/${domain}/bimi.svg"
+  fi
+  /usr/bin/echo "; BIMI ${domain}" >> "${zonefile}"
+  /usr/bin/echo "default._bimi.${domain}.	IN  TXT	\"v=BIMI1; l=https://${domain}/bimi.svg;\"" >> "${zonefile}"
+  /usr/bin/echo ";; End BIMI ${domain}" >> "${zonefile}"
+  if [ -x /opt/verb/serfs/inkdnsserial ]; then
+    /opt/verb/serfs/inkdnsserial ${domain}${verberny} || true
+  fi
+}
+
+if [ -d /opt/verb/conf/inkdns/zones ]; then
+  for zonefile in /opt/verb/conf/inkdns/zones/db.*; do
+    [ -f "${zonefile}" ] || continue
+    domain="$(/usr/bin/basename "${zonefile}" | /usr/bin/sed 's/^db\.//')"
+    bimi_one "${zonefile}" "${domain}" ""
+  done
+fi
+if [ -d /opt/verb/conf/inkdns/inkzones ]; then
+  for zonefile in /opt/verb/conf/inkdns/inkzones/db.*; do
+    [ -f "${zonefile}" ] || continue
+    domain="$(/usr/bin/basename "${zonefile}" | /usr/bin/sed 's/^db\.//')"
+    bimi_one "${zonefile}" "${domain}" " verber"
+  done
+fi
+if [ -f /opt/verb/conf/inkdnsconf ]; then
+  . /opt/verb/conf/inkdnsconf
+  if [ "${InkDNSStat}" = "INSTALLED" ] && [ -x /opt/verb/serfs/inkdnsrefreshbind ]; then
+    /opt/verb/serfs/inkdnsrefreshbind || true
+  fi
+fi
+/usr/bin/echo "BIMI records applied to existing zones."
+
+###### END SCRIPTS #########
+/usr/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
+. /opt/verb/conf/inklists/verberverno
+/usr/bin/echo "Verber upgraded to v${Verno}"
+else
+/usr/bin/echo "${upgradePatchVerno} patch not necessary..."
+fi
+###############END#UPGRADE#PATCH#
+
+
 # Security check
+
 /opt/verb/serfs/setsecure; wait
 
 # Note version in the MOTD
