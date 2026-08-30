@@ -72,10 +72,22 @@ fi
 
 
 # Pull scripts and settings from the original verb repo
+# Branch comes from this verber's Vbranch (stock main; make-branch sets dev)
+Vbranch="main"
+if [ -f "/opt/verb/conf/inklists/verberverno" ]; then
+  . /opt/verb/conf/inklists/verberverno
+fi
+Vbranch="${Vbranch:-main}"
+
 /usr/bin/rm -rf /opt/verb/${vUpdateRepo}/u_tmp
 /usr/bin/mkdir -p /opt/verb/${vUpdateRepo}/u_tmp
 cd /opt/verb/${vUpdateRepo}/u_tmp || exit 6
 /usr/bin/git clone https://github.com/${ServerUpdateOrg}/verb
+e="$?"; [[ "$e" = "0" ]] || exit 6
+cd /opt/verb/${vUpdateRepo}/u_tmp/verb || exit 6
+/usr/bin/git checkout "${Vbranch}"
+e="$?"; [[ "$e" = "0" ]] || exit 6
+/usr/bin/echo "Using verb branch ${Vbranch}."
 
 # Update tools
 /usr/bin/rm -rf /opt/verb/conf/lib
@@ -99,6 +111,7 @@ if [ -f "/opt/verb/inst/PHP-Regions" ]; then /usr/bin/cp -f /opt/verb/${vUpdateR
 if [ -f "/opt/verb/inst/preverboff" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/preverboff /opt/verb/inst/; fi
 if [ -f "/opt/verb/inst/preverbon" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/preverbon /opt/verb/inst/; fi
 if [ -f "/opt/verb/inst/ink.set" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/ink.set /opt/verb/inst/; fi
+if [ -d "/opt/verb/inst" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/make-branch /opt/verb/inst/; /usr/bin/chmod 750 /opt/verb/inst/make-branch; fi
 if [ -f "/opt/verb/inst/file-folder-descriptions" ]; then /usr/bin/cp -f /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/file-folder-descriptions /opt/verb/inst/; fi
 if [ -d "/opt/verb/inst/root-config" ]; then /usr/bin/rm -rf /opt/verb/inst/root-config && /usr/bin/cp -rf /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/root-config /opt/verb/inst/; fi
 if [ -d "/opt/verb/inst/webserver" ]; then /usr/bin/rm -rf /opt/verb/inst/webserver && /usr/bin/cp -rf /opt/verb/${vUpdateRepo}/u_tmp/verb/inst/webserver /opt/verb/inst/; fi
@@ -110,7 +123,7 @@ if [ -f "/opt/verb/inst/setup" ]; then /usr/bin/ln -sfn /opt/verb/inst/setup /op
 /usr/bin/chmod 750 /opt/verb/serfs/*
 cd /opt/verb || exit 6
 /usr/bin/rm -f README.md
-/usr/bin/wget https://raw.githubusercontent.com/${ServerUpdateOrg}/verb/master/README.md
+/usr/bin/wget https://raw.githubusercontent.com/${ServerUpdateOrg}/verb/${Vbranch}/README.md
 /usr/bin/echo "Serfs updated."
 
 # Update ink
