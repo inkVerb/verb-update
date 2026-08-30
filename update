@@ -532,6 +532,67 @@ fi
 ###############END#UPGRADE#PATCH#
 
 
+upgradePatchVerno=0.90.04
+if [ $(/usr/bin/echo ${upgradePatchVerno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") -gt $(/usr/bin/echo ${Verno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") ] ; then
+cleanPatchVerno="$(/usr/bin/echo $upgradePatchVerno | /usr/bin/sed -e "s/\.//g")"
+PCLdoc="$(/usr/bin/cat <<UPCL
+Patch ${upgradePatchVerno} Changelog:
+- Add Vbranch=main to existing verberverno (make-branch \$1 switches it)
+- Maddy TLS: ACL archive privkeys and inkcert paths so User=maddy can read them
+UPCL
+)"
+/usr/bin/echo "$PCLdoc"
+eval "v$cleanPatchVerno='$(/usr/bin/echo "$PCLdoc")'"
+
+if [ -d "/opt/verb/${vUpdateRepo}/${upgradePatchVerno}/" ]; then
+cd /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/; fi
+
+###### SCRIPTS GO HERE #####
+# Live verberverno is never replaced by the updater copy step
+if [ -f /opt/verb/conf/inklists/verberverno ]; then
+  if ! /usr/bin/grep -q '^Vbranch=' /opt/verb/conf/inklists/verberverno; then
+    /usr/bin/echo 'Vbranch="main"' >> /opt/verb/conf/inklists/verberverno
+    /usr/bin/echo "Vbranch=main added to verberverno."
+  else
+    /usr/bin/echo "Vbranch already set, leaving it."
+  fi
+fi
+
+# Maddy: privkey.pem under live/ is a symlink; grant ACL on archive + parent dirs
+if [ -f /etc/systemd/system/maddy.service ]; then
+  if [ ! -x /usr/bin/setfacl ]; then
+    /usr/bin/pacman -S --noconfirm --needed acl || true
+  fi
+  if [ -x /usr/bin/setfacl ]; then
+    [ -d /etc/inkcert ] && /usr/bin/setfacl -m u:maddy:--x /etc/inkcert
+    [ -d /etc/inkcert/le ] && /usr/bin/setfacl -m u:maddy:--x /etc/inkcert/le
+    for tree in /etc/letsencrypt/live /etc/letsencrypt/archive /etc/inkcert/le/live /etc/inkcert/le/archive; do
+      if [ -d "${tree}" ]; then
+        /usr/bin/setfacl -R -m u:maddy:rX "${tree}"
+        /usr/bin/setfacl -R -d -m u:maddy:rX "${tree}"
+      fi
+    done
+  fi
+  if /usr/bin/grep -q '^ReadOnlyPaths=' /etc/systemd/system/maddy.service && ! /usr/bin/grep -q '/etc/inkcert/le/live/' /etc/systemd/system/maddy.service; then
+    /usr/bin/sed -i 's|^ReadOnlyPaths=.*|ReadOnlyPaths=/etc/maddy /etc/maddy/certs/ /etc/letsencrypt/archive/ /etc/letsencrypt/live/ /etc/inkcert/le/archive/ /etc/inkcert/le/live/ /run/postgresql/|' /etc/systemd/system/maddy.service
+    /usr/bin/systemctl daemon-reload
+  fi
+  if /usr/bin/systemctl is-active --quiet maddy.service; then
+    /usr/bin/systemctl restart maddy.service || true
+  fi
+  /usr/bin/echo "Maddy TLS ACLs applied."
+fi
+
+###### END SCRIPTS #########
+/usr/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
+. /opt/verb/conf/inklists/verberverno
+/usr/bin/echo "Verber upgraded to v${Verno}"
+else
+/usr/bin/echo "${upgradePatchVerno} patch not necessary..."
+fi
+###############END#UPGRADE#PATCH#
+
+
 # Security check
 
 /opt/verb/serfs/setsecure; wait
