@@ -1,0 +1,3 @@
+0.90.05
+- maddy-tls-grant.sh: chgrp maddy, 0750 dirs, 0640 privkeys
+- maddy.service ReadOnlyPaths=/etc/inkcert/le (parent) so live→archive symlinks work

@@ -593,6 +593,44 @@ fi
 ###############END#UPGRADE#PATCH#
 
 
+upgradePatchVerno=0.90.05
+if [ $(/usr/bin/echo ${upgradePatchVerno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") -gt $(/usr/bin/echo ${Verno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") ] ; then
+cleanPatchVerno="$(/usr/bin/echo $upgradePatchVerno | /usr/bin/sed -e "s/\.//g")"
+PCLdoc="$(/usr/bin/cat <<UPCL
+Patch ${upgradePatchVerno} Changelog:
+- Maddy TLS: chgrp maddy + 0640 on archive privkeys (does not need setfacl)
+- Bind-mount parent /etc/inkcert/le (not live/ and archive/ apart — that breaks privkey symlinks)
+UPCL
+)"
+/usr/bin/echo "$PCLdoc"
+eval "v$cleanPatchVerno='$(/usr/bin/echo "$PCLdoc")'"
+
+if [ -d "/opt/verb/${vUpdateRepo}/${upgradePatchVerno}/" ]; then
+cd /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/; fi
+
+###### SCRIPTS GO HERE #####
+if [ -x /opt/verb/donjon/maddy-tls-grant.sh ]; then
+  /opt/verb/donjon/maddy-tls-grant.sh || true
+fi
+if [ -f /etc/systemd/system/maddy.service ]; then
+  /usr/bin/sed -i 's|^ReadOnlyPaths=.*|ReadOnlyPaths=/etc/maddy /etc/inkcert/le /etc/letsencrypt /run/postgresql/|' /etc/systemd/system/maddy.service
+  /usr/bin/systemctl daemon-reload
+  if /usr/bin/systemctl is-enabled --quiet maddy.service 2>/dev/null; then
+    /usr/bin/systemctl restart maddy.service || /usr/bin/systemctl start maddy.service || true
+  fi
+  /usr/bin/echo "Maddy TLS grant and unit ReadOnlyPaths updated."
+fi
+
+###### END SCRIPTS #########
+/usr/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
+. /opt/verb/conf/inklists/verberverno
+/usr/bin/echo "Verber upgraded to v${Verno}"
+else
+/usr/bin/echo "${upgradePatchVerno} patch not necessary..."
+fi
+###############END#UPGRADE#PATCH#
+
+
 # Security check
 
 /opt/verb/serfs/setsecure; wait
