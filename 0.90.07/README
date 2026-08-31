@@ -1,0 +1,3 @@
+0.90.07
+- One switch: donjon/maddy-tls-grant.sh maddy_permissions_hack=
+- UNPLUG: set false (upstream setfacl + symlink). No unit or maddy.conf edit.
