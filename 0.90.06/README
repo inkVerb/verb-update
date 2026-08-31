@@ -1,0 +1,3 @@
+0.90.06
+- maddy_permissions_hack: copy LE privkeys into /etc/maddy/certs (User=maddy never runs as root)
+- Stop bind-mounting /etc/inkcert/le (symlink to /etc/letsencrypt)
