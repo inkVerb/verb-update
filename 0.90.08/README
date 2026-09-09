@@ -1,4 +1,4 @@
 0.90.08
 - BIND-safe DKIM TXT (split quoted strings at 255 octets)
-- inkdnsaddinkdkim upserts from OpenDKIM (vmail) or Maddy keys
-- updateinkdnsdkim rewrites all inkzones/ and zones/ DKIM records
+- Native verb: only nameURI, and only if the zone has MX or smtp/mail
+- Hosted zones: same MX/smtp/mail + live-key check; no other verb TLDs

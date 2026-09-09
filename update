@@ -727,8 +727,8 @@ cleanPatchVerno="$(/usr/bin/echo $upgradePatchVerno | /usr/bin/sed -e "s/\.//g")
 PCLdoc="$(/usr/bin/cat <<UPCL
 Patch ${upgradePatchVerno} Changelog:
 - BIND-safe DKIM TXT (split quoted strings at 255 octets; named dns_rdata_fromtext)
-- inkdnsaddinkdkim upserts from OpenDKIM (vmail) or Maddy keys
-- Rewrite existing inkzones/ and zones/ DKIM records via updateinkdnsdkim
+- Native verb: only nameURI, and only if the zone has MX or smtp/mail
+- Hosted zones: same MX/smtp/mail + live-key check; does not walk other verb TLDs
 UPCL
 )"
 /usr/bin/echo "$PCLdoc"
