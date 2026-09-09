@@ -721,6 +721,39 @@ fi
 ###############END#UPGRADE#PATCH#
 
 
+upgradePatchVerno=0.90.08
+if [ $(/usr/bin/echo ${upgradePatchVerno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") -gt $(/usr/bin/echo ${Verno} | /usr/bin/sed -e "s/\.//g" | /usr/bin/sed -e "s/^0*//g") ] ; then
+cleanPatchVerno="$(/usr/bin/echo $upgradePatchVerno | /usr/bin/sed -e "s/\.//g")"
+PCLdoc="$(/usr/bin/cat <<UPCL
+Patch ${upgradePatchVerno} Changelog:
+- BIND-safe DKIM TXT (split quoted strings at 255 octets; named dns_rdata_fromtext)
+- inkdnsaddinkdkim upserts from OpenDKIM (vmail) or Maddy keys
+- Rewrite existing inkzones/ and zones/ DKIM records via updateinkdnsdkim
+UPCL
+)"
+/usr/bin/echo "$PCLdoc"
+eval "v$cleanPatchVerno='$(/usr/bin/echo "$PCLdoc")'"
+
+if [ -d "/opt/verb/${vUpdateRepo}/${upgradePatchVerno}/" ]; then
+cd /opt/verb/${vUpdateRepo}/${upgradePatchVerno}/; fi
+
+###### SCRIPTS GO HERE #####
+if [ -x /opt/verb/serfs/updateinkdnsdkim ]; then
+  /opt/verb/serfs/updateinkdnsdkim || true
+else
+  /usr/bin/echo "updateinkdnsdkim not present; skipped."
+fi
+
+###### END SCRIPTS #########
+/usr/bin/sed -i "s/Verno=.*/Verno=\"${upgradePatchVerno}\"/g" /opt/verb/conf/inklists/verberverno
+. /opt/verb/conf/inklists/verberverno
+/usr/bin/echo "Verber upgraded to v${Verno}"
+else
+/usr/bin/echo "${upgradePatchVerno} patch not necessary..."
+fi
+###############END#UPGRADE#PATCH#
+
+
 # Security check
 
 /opt/verb/serfs/setsecure; wait
