@@ -1,0 +1,4 @@
+0.90.09
+- Node 22 LTS for Ghost via setserverlts (isolated from pacman)
+- Runtime verb/conf/serverlts (not in git, not from setup)
+- One-shot: later updateverber runs do not re-download Node
