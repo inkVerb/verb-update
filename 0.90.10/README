@@ -1,0 +1,5 @@
+0.90.10
+- pw99 → winston99 (vapps, ink install winston99, GitHub JesseSteele/Winston99)
+- pdt-news → winstonpress (vapps, ink install winstonpress, GitHub JesseSteele/winstonpress)
+- Live move: /srv/www/vapps/pw99.DOMAIN → winston99.DOMAIN (and pdt.* → winstonpress.*)
+- Old ink install pw99 / pdt remain aliases
