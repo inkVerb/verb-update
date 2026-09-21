@@ -1,0 +1,3 @@
+0.90.16
+- isURL: path is optional (https://jesse.church is valid)
+- ink wp url: -d church.jesse.house  -o https://jesse.church  -t https://church.jesse.house
