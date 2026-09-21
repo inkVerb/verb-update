@@ -1,0 +1,4 @@
+0.90.12
+- rinkdelistdomain → domains/delisted/fresh on ns1/ns2
+- inkdnsrefreshbind drops /var/named/db.domain.tld (and .jnl) once, then archives to delisted/
+- Same one-shot as killed/fresh (also fixes killed/fresh mv path)
