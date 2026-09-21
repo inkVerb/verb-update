@@ -1,4 +1,0 @@
-0.90.15
-- ink wp url -d DOMAIN -o OLD -t NEW
-- serfs/wpurl OLD NEW -d DOMAIN
-- Generic dburl.php (serialized PHP + JSON) in conf/lib/vapptools/
