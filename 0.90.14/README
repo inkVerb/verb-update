@@ -1,0 +1,5 @@
+0.90.14
+- Serve download links: /srv/www/verb/TLD.serve/DIR + https://ServerServePath/file
+- backup no longer doubles ServeDir; no more html/ path
+- inkvpnclientdl: cdir (was empty cDIR) and ServerServeTLD
+- rmdldirs.sh sources servernameip
