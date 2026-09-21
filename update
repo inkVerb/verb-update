@@ -919,6 +919,9 @@ fi
 ###############END#UPGRADE#PATCH#
 
 
+# Next framework patch: 0.90.14 (only when a patch block must run live ops)
+
+
 # Security check
 
 /opt/verb/serfs/setsecure; wait
