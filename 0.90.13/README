@@ -1,0 +1,4 @@
+0.90.13
+- backup* : tar -h includes inkDrive bind mounts and /mnt/{h|s}dd symlinks (wp-content etc.)
+- Space check: 110% of du -L plus 100M leftover; fail if nowhere fits
+- Write .vbak to the roomiest attached disk /vip, symlink /srv/www/vip
